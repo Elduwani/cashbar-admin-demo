@@ -1,0 +1,1 @@
+type _Object = Record<string, any>

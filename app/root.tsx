@@ -35,9 +35,11 @@ export default function App() {
       <body>
         <main className="app h-screen flex flex-col antialiased relative">
           <Header />
-          <div className="bg-gray-50 flex flex-1 overflow-x-auto lg:overflow-hidden">
+          <div className="bg-slate-50 flex flex-1 overflow-x-auto lg:overflow-hidden p-0">
             <Sidebar />
-            <Outlet />
+            <div className="w-full overflow-y-auto scrollbar flush-bottom">
+              <Outlet />
+            </div>
           </div>
         </main>
         <ScrollRestoration />

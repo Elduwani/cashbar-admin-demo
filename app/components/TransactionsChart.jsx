@@ -1,11 +1,24 @@
-import { useState, useRef, useLayoutEffect, useEffect } from 'react'
-import { transform } from "framer-motion"
-import { getChartData, niceNumbers, getPastDate, dateFilterOptions } from '@utils/chart.utils'
-import { metricPrefix } from '@utils/index'
-import { GiPlainCircle } from "react-icons/gi"
 import "@styles/chart.css"
+import { dateFilterOptions, getChartData, getPastDate, niceNumbers } from '@utils/chart.utils'
+import { metricPrefix } from '@utils/index'
+import { transform } from "framer-motion"
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { GiPlainCircle } from "react-icons/gi"
+import { useHydrated } from '~/hooks/useHydrated'
+import Spinner from './Spinner'
 
 export default function TransactionsChart(props) {
+    const hydrated = useHydrated()
+
+    return hydrated ?
+        <CustomChart {...props} />
+        :
+        <div className="border rounded-md h-[400px] w-full grid place-content-center">
+            <Spinner />
+        </div>
+}
+
+function CustomChart(props) {
     const [key, setKey] = useState(0)
 
     useEffect(() => {
@@ -18,11 +31,9 @@ export default function TransactionsChart(props) {
     return <LineChart key={key} {...props} />
 }
 
-
 function LineChart({ dataSet, title, endDate, setEndDate, height, labels = true, shadow }) {
     const containerRef = useRef()
     const [viewBox, setViewBox] = useState({ width: 960, height: height ?? 300, padding: 20 })
-    // console.log(endDate.value)
 
     const chartData = dataSet.map(set => getChartData(set.data, endDate.value))
     const { yAxisNumbers, maxNumber } = niceNumbers(Math.max(...chartData.map(set => set.maxAmount + 2000), 5000), 5) //10k is fallback value when there are no transactions, otherwise renders empty

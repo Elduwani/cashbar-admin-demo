@@ -21,52 +21,50 @@ export default function Index() {
   ]
 
   return (
-    <div className="bg-slate-100">
-      <div className="bg-gray-50 md:px-6 px-4 pb-4 flex-1 space-y-6 overflow-y-auto scrollbar flush-bottom">
-        <div className="p-6 md:px-4 bg-indigo-600 space-y-2 md:space-y-0 divide-y md:divide-y-0 md:divide-x divide-indigo-500 md:grid md:grid-cols-5 items-center rounded-b-xl">
-          <Detail
-            title="Total Income"
-            amount={totalIncome}
-            trend="15%"
-            currency="N"
-          />
-          <Detail
-            title="Net Liquidations"
-            amount={totalLiquidation}
-            trend="-2.01%"
-            currency="N"
-          />
-          <Detail
-            title="Net Expenses"
-            amount={totalExpenses}
-            trend="0.04%"
-          />
-          <Detail
-            title="Customers"
-            amount={167}
-            trend="10.45%"
-          />
-          <Detail
-            title="Transactions"
-            amount={totalTransactions}
-            trend="10.45%"
-          />
-        </div>
-        <TransactionsChart
-          // key={isLoading}
-          title="Overview"
-          dataSet={dataSet}
-          setEndDate={setEndDate}
-          endDate={endDate}
-          shadow
+    <div className="md:px-6 px-4 pb-4 flex-1 space-y-6">
+      <div className="p-6 md:px-4 bg-indigo-600 space-y-2 md:space-y-0 divide-y md:divide-y-0 md:divide-x divide-indigo-500 md:grid md:grid-cols-5 items-center rounded-b-xl">
+        <Detail
+          title="Total Income"
+          amount={totalIncome}
+          trend="15%"
+          currency="N"
         />
-        <div className="max-w-xs">
-          <Button goto="transaction" variant="blue">See all transactions</Button>
-        </div>
-        <div className="space-y-4 md:space-y-0 md:flex md:space-x-4">
-          <Activities title="Updates" />
-          <Activities reverse />
-        </div>
+        <Detail
+          title="Net Liquidations"
+          amount={totalLiquidation}
+          trend="-2.01%"
+          currency="N"
+        />
+        <Detail
+          title="Net Expenses"
+          amount={totalExpenses}
+          trend="0.04%"
+        />
+        <Detail
+          title="Customers"
+          amount={167}
+          trend="10.45%"
+        />
+        <Detail
+          title="Transactions"
+          amount={totalTransactions}
+          trend="10.45%"
+        />
+      </div>
+      <TransactionsChart
+        // key={isLoading}
+        title="Overview"
+        dataSet={dataSet}
+        setEndDate={setEndDate}
+        endDate={endDate}
+        shadow
+      />
+      <div className="max-w-xs">
+        <Button goto="transaction" variant="blue">See all transactions</Button>
+      </div>
+      <div className="space-y-4 md:space-y-0 md:flex md:space-x-4">
+        <Activities title="Updates" />
+        <Activities reverse />
       </div>
     </div>
   );
