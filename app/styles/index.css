@@ -1,0 +1,13 @@
+:root {
+   --clr-accent-green: #5FE3A1;
+   --clr-accent-green-2: #3dbdc2;
+   --clr-lightgreen: #e6ffef;
+   --clr-darkgreen: #339e69;
+   --clr-accent-yellow: #e8bd51;
+   --clr-accent-blue: #5850EC;
+   --clr-lightblue: #aca8e9;
+   --clr-accent-red: #DB2456;
+   --transition-all: all 0.3s ease;
+
+   font-size: 16px;
+}

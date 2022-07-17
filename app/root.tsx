@@ -7,10 +7,16 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
+import defaultStyles from "app/styles/index.css";
 import styles from "./tailwind.css";
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }]
+  return [
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: defaultStyles },
+  ]
 }
 
 export const meta: MetaFunction = () => ({
@@ -27,7 +33,13 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <main className="app h-screen flex flex-col antialiased relative">
+          <Header />
+          <div className="bg-gray-50 flex flex-1 overflow-x-auto lg:overflow-hidden">
+            <Sidebar />
+            <Outlet />
+          </div>
+        </main>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
