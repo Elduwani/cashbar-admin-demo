@@ -1,28 +1,17 @@
 // Import the functions you need from the SDKs you need
-import * as admin from "firebase-admin";
+import * as admin from "firebase-admin/app";
 import { ServiceAccount } from "firebase-admin";
-import { DocumentData, QueryDocumentSnapshot } from "firebase-admin/firestore";
+import { DocumentData, getFirestore, QueryDocumentSnapshot } from "firebase-admin/firestore";
 import serviceAccount from './firebase-admin-service-key.json';
+import { getDatabase } from 'firebase-admin/database'
 
-let db: ReturnType<typeof admin['initializeApp']>
-
-if (!admin.apps.length) {
-   db = admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount as ServiceAccount),
-      databaseURL: "https://lendo-demo.firebaseio.com"
+if (admin.getApps().length === 0) {
+   admin.initializeApp({
+      credential: admin.cert(serviceAccount as ServiceAccount),
    })
-} else {
-   db = admin.apps[0] as ReturnType<typeof admin['initializeApp']>
 }
 
-// const ref = db.database().ref('customers')
-// ref.on("value", (snapshot) => {
-//    console.log("inner");
-//    console.log(snapshot.val());
-// }, (error) => console.log(error));
-
-export default db
-
+export const firestore = getFirestore()
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
