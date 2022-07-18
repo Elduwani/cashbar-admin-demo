@@ -32,10 +32,16 @@ export const action: ActionFunction = async ({ request }) => {
           batch.set(doc(ref), customer);
         }
 
+        await batch.commit()
+
         //return firebase data
         const snapshot = await getDocs(ref)
         const responseData = snapshot.docs.map(mapDataId)
-        return json(responseData, 200);
+        return json({
+          status: "success",
+          message: `${customers.data.length} customers were seeded successfully`,
+          data: responseData
+        }, 200);
 
       } catch (error) {
         return json("Could not seed customers", 400);

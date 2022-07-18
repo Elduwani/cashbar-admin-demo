@@ -40,7 +40,12 @@ export const createPlan = async (plan: PlanPayload) => {
 
 /** Transactions **/
 export const getTransactions = async () => {
-   const response = await axios.get(`https://api.paystack.co/transaction`, { headers });
-   //use query params to fetch all data here
+   /**
+    * Only fetch successful transactions
+    * Limit of 5k
+    **/
+   const query = `perPage=5000&status=success`
+   const response = await axios.get(`https://api.paystack.co/transaction?${query}`, { headers });
+   console.log(response.data.data.length)
    return response.data as PaystackResponse<PaystackTransaction[]>;
 }

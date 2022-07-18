@@ -22,41 +22,51 @@ export const action: ActionFunction = async ({ request }) => {
          try {
             const transactions = await getTransactions();
             const firebaseCustomers = await getDocs(customersRef)
+
+            //Bring ID's forward to avoid further multiple loops 
             const firebaseCustomersData = firebaseCustomers.docs.map(mapDataId).reduce((acc, curr) => {
                acc[curr.paystack_id] = curr
                return acc
             }, {})
 
-            let print = true
-            const batch = writeBatch(db)
+            //Firebase batch only allows 500 writes per request
+            //Split data into chunks
+            let seededCount = 0
+            const chunkLimit = 500
+            const batchCount = Math.ceil(transactions.data.length / chunkLimit)
 
-            for (const trx of transactions.data) {
-               //map data and remove id field
-               trx['paystack_id'] = trx.id
-               trx['updatedAt'] = new Date().toISOString()
-               delete (trx as Partial<typeof trx>).id
+            for (let i = 0; i < batchCount; i++) {
+               const batch = writeBatch(db)
+               const [start, end] = [i * chunkLimit, chunkLimit * (i + 1)]
+               const chunk = transactions.data.slice(start, end)
 
-               const currentCustomer = firebaseCustomersData[trx.customer.id]
+               for (const trx of chunk) {
+                  //map data and remove id field
+                  trx['paystack_id'] = trx.id
+                  trx['updatedAt'] = new Date().toISOString()
+                  delete (trx as Partial<typeof trx>).id
 
-               if (currentCustomer?.id) {
-                  trx['customer'] = currentCustomer.id
-                  if (print) {
-                     console.log(trx.customer, currentCustomer?.id)
-                     print = false
+                  const currentCustomer = firebaseCustomersData[trx.customer.id]
+
+                  if (currentCustomer?.id) {
+                     trx['customer'] = currentCustomer.id
+                     //populate firebase with data
+                     batch.set(doc(ref), trx);
+                     seededCount++
+                     continue
                   }
-                  //populate firebase with data
-                  // console.log("Writing", currentCustomer.id, trx.paystack_id)
-                  // batch.set(doc(ref), trx);
-                  continue
+
+                  console.log(`Firebase customer not found for ${trx.customer.email}`)
                }
 
-               console.log(`Firebase customer not found for ${trx.customer.email}`)
+               //Commit chunk
+               await batch.commit()
             }
 
-            //return firebase data
-            // const snapshot = await getDocs(ref)
-            // const responseData = snapshot.docs.map(mapDataId)
-            return json({}, 200);
+            return json({
+               status: "success",
+               message: `${seededCount} transactions were seeded successfully`
+            }, 200);
 
          } catch (error) {
             console.log(error)
