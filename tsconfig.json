@@ -31,6 +31,9 @@
       "@components/*": [
         "app/components/*"
       ],
+      "@controllers/*": [
+        "app/controllers/*"
+      ],
       "@styles/*": [
         "app/styles/*"
       ],

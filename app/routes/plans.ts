@@ -1,6 +1,6 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node"; // or "@remix-run/cloudflare"
 import { json } from "@remix-run/node"; // or "@remix-run/cloudflare"
-import { createPlan, getPlans } from "~/functions/paystack";
+import { createPlan, getPlans } from "@controllers/paystack.server";
 
 //handle GET request
 export const loader: LoaderFunction = async () => {

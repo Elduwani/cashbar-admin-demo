@@ -4,25 +4,10 @@ interface PaystackResponse<T> {
    data: T
 }
 
-interface PaystackCustomer {
-   id: number,
-   integration: number
-   first_name: string
-   last_name: string
-   email: string
-   phone: string
-   metadata: {
-      gender: string
-      state: string
-      date_of_birth: string
-      address: string
-   },
-   domain: string
+interface PaystackCustomer extends Customer {
    customer_code: string
-   risk_action: string
-   createdAt: string
-   updatedAt: string
-   [key: string]: any
+   integration: number
+   domain: string
 }
 
 interface PaystackPlan {
@@ -76,18 +61,10 @@ interface PaystackSubscription {
    updatedAt: string
 }
 
-interface PaystackTransaction {
-   id: number
+interface PaystackTransaction extends Transaction {
    domain: string
-   status: string
-   reference: string
-   amount: number
    message?: string
    gateway_response: string
-   paid_at: string
-   created_at: string
-   channel: string
-   currency: string
    ip_address?: string
    metadata: {
       invoice_action: string
@@ -116,11 +93,10 @@ interface PaystackTransaction {
    createdAt: string
    requested_amount: number,
    source: {
-      source: "merchant_api"
-      type: "api"
+      source: string
+      type: string
       identifier?: any
-      entry_point: "charge"
+      entry_point: string
    },
    pos_transaction_data?: {}
-   [key: string]: any
 }

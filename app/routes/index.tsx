@@ -1,17 +1,25 @@
 import { getPastDate, metricPrefix } from "@utils/index";
 import { useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
-import Button from "~/components/Button";
+import Button from "@components/Button";
 import TransactionsChart from "@components/TransactionsChart"
-import Activities from "~/components/Activities";
+import Activities from "@components/Activities";
+import { json, LoaderFunction } from "@remix-run/node";
+import { getSummary } from "@controllers/transactions.server";
+import { useLoaderData } from "@remix-run/react";
+
+type LoaderData = Awaited<ReturnType<typeof getSummary>>
+// export const loader: LoaderFunction = async () => {
+//   return json<LoaderData>(await getSummary());
+// }
 
 export default function Index() {
+  // const data = useLoaderData() as LoaderData
+  const data = {} as LoaderData
   const [endDate, setEndDate] = useState(getPastDate())
 
   const totalExpenses = 245000
-  const totalIncome = 38500000
   const totalTransactions = 1670
-  const totalLiquidation = 1300500
 
   const dataSet = [
     //because of SVG ordering foreground elements must be put last.
@@ -25,13 +33,13 @@ export default function Index() {
       <div className="p-6 md:px-4 bg-indigo-600 space-y-2 md:space-y-0 divide-y md:divide-y-0 md:divide-x divide-indigo-500 md:grid md:grid-cols-5 items-center rounded-b-xl">
         <Detail
           title="Total Income"
-          amount={totalIncome}
+          amount={data.investmentVolume}
           trend="15%"
           currency="N"
         />
         <Detail
           title="Net Liquidations"
-          amount={totalLiquidation}
+          amount={data.liquidationVolume}
           trend="-2.01%"
           currency="N"
         />
@@ -47,7 +55,7 @@ export default function Index() {
         />
         <Detail
           title="Transactions"
-          amount={totalTransactions}
+          amount={data.transactionCount}
           trend="10.45%"
         />
       </div>
