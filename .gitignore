@@ -33,3 +33,8 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+/.netlify
+.env*
+
+firebase-admin-service*
