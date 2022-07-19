@@ -12,7 +12,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   switch (req.method) {
     case "GET": {
       //return customers
+      return res.send(null)
     }
+
     case "POST": {
       try {
         const batch = firestore.batch()
@@ -42,6 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json("Could not seed customers")
       }
     }
+
     case "PUT": {
       /* handle "PUT" */
     }

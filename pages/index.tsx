@@ -1,25 +1,18 @@
 import Activities from "@components/Activities";
 import Button from "@components/Button";
-import TransactionsChart from "@components/TransactionsChart"
+import TransactionsChart from "@components/TransactionsChart";
+import getAggregate from "@controllers/aggregates";
 import { getPastDate, metricPrefix } from "@utils/index";
+import { GetServerSideProps } from "next";
 import { useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
-import { firestore } from "@controllers/firebase.server";
-import { GetServerSideProps } from "next";
 
-interface LoaderData {
-  transactionCount: number
-  investmentVolume: number
-  liquidationVolume: number
+interface Props {
+  aggregate: Awaited<ReturnType<typeof getAggregate>>
 }
 
-export default function Index() {
-  const data: _Object = {}
-  // const data = {} as LoaderData
+export default function Index(props: Props) {
   const [endDate, setEndDate] = useState(getPastDate())
-
-  const totalExpenses = 245000
-  const totalTransactions = 1670
 
   const dataSet = [
     //because of SVG ordering foreground elements must be put last.
@@ -32,20 +25,20 @@ export default function Index() {
     <div className="md:px-6 px-4 pb-4 flex-1 space-y-6">
       <div className="p-6 md:px-4 bg-indigo-600 space-y-2 md:space-y-0 divide-y md:divide-y-0 md:divide-x divide-indigo-500 md:grid md:grid-cols-5 items-center rounded-b-xl">
         <Detail
-          title="Total Income"
-          amount={data.investmentVolume}
+          title="Revenue"
+          amount={props.aggregate.investmentVolume}
           trend="15%"
           currency="N"
         />
         <Detail
-          title="Net Liquidations"
-          amount={data.liquidationVolume}
+          title="Liquidations"
+          amount={props.aggregate.liquidationVolume}
           trend="-2.01%"
           currency="N"
         />
         <Detail
-          title="Net Expenses"
-          amount={totalExpenses}
+          title="Expenses"
+          amount={props.aggregate.expenseVolume}
           trend="0.04%"
         />
         <Detail
@@ -55,7 +48,7 @@ export default function Index() {
         />
         <Detail
           title="Transactions"
-          amount={data.transactionCount}
+          amount={props.aggregate.transactionCount}
           trend="10.45%"
         />
       </div>
@@ -99,24 +92,11 @@ function Detail(props: DetailProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  // const investmentsRef = await firestore.collection("transactions").get()
-  // const liquidationsRef = await firestore.collection("liquidations").where('validated', '==', true).get()
-
-  // const invTotals = investmentsRef.docs.reduce((acc, trx) => {
-  //   acc += trx.data().amount
-  //   return acc
-  // }, 0)
-
-  // const liqTotals = liquidationsRef.docs.reduce((acc, liq) => {
-  //   acc += liq.data().amount
-  //   return acc
-  // }, 0)
+  const aggregate = await getAggregate()
 
   return {
     props: {
-      // transactionCount: investmentsRef.size,
-      // liquidationVolume: liqTotals,
-      // investmentVolume: invTotals
+      aggregate
     }
   }
 }

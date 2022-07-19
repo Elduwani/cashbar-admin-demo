@@ -1,5 +1,6 @@
 import { firestore, mapDataId } from "@controllers/firebase.server";
 import { getTransactions } from "@controllers/paystack.server";
+import { sub } from "date-fns";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 const ref = firestore.collection("transactions");
@@ -8,14 +9,18 @@ const customersRef = firestore.collection("customers");
 //handle GET request
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
    if (req.headers["x-seed-records"] !== process.env.SEED_SECRET) {
-      return res.status(400).send("Invalid req headers")
+      return res.status(400).send("Invalid request headers")
    }
+
+   const batchLimit = 500
+
    switch (req.method) {
       case "GET": {
          const snapshot = await ref.get()
          const responseData = snapshot.docs.map(mapDataId)
          return res.send(responseData)
       }
+
       case "POST": {
          try {
             console.log("Fetching Paystack transactions")
@@ -36,12 +41,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             //Firebase batch only allows 500 writes per request
             //Split data into chunks
             let seededCount = 0
-            const chunkLimit = 500
-            const batchCount = Math.ceil(transactions.data.length / chunkLimit)
+            const batchCount = Math.ceil(transactions.data.length / batchLimit)
 
             for (let i = 0; i < batchCount; i++) {
                const batch = firestore.batch()
-               const [start, end] = [i * chunkLimit, chunkLimit * (i + 1)]
+               const [start, end] = [i * batchLimit, batchLimit * (i + 1)]
                const chunk = transactions.data.slice(start, end)
                console.log({ start, end })
 
@@ -78,20 +82,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case "DELETE": {
-         const transactions = await ref.get()
-         if (transactions.size) {
-            let count = 0
-            for (const trx of transactions.docs) {
-               const data = trx.data()
-               if (!data.reference || !data.customer) {
-                  await trx.ref.delete()
-                  count++
-               }
+         console.log("** Fetching records **")
+         const timestamp = sub(new Date(), { months: 12 }).toISOString()
+         const transactions = await ref.where('paid_at', '<', timestamp).get()
+         console.log(`** Fetched ${transactions.size} records **`)
+
+         /**
+          * Delete incomplete dummy data entered during collection creation
+            if (!data.reference || !data.customer) {
+               console.log("deleting invalid entry", data.id)
+               batch.delete(snapshot.ref)
+               count++
             }
-            return res.status(400).json(`${count} invalid documents were removed`)
+          */
+
+         if (transactions.size) {
+            const batchCount = Math.ceil(transactions.size / batchLimit)
+
+            for (let i = 0; i < batchCount; i++) {
+               const batch = firestore.batch()//Must be initialised here on every new batch iteration
+               const [start, end] = [i * batchLimit, batchLimit * (i + 1)]
+               const chunk = transactions.docs.slice(start, end)
+
+               for (const snapshot of chunk) {
+                  console.log("deleting", snapshot.id)
+                  batch.delete(snapshot.ref)
+               }
+
+               await batch.commit()
+            }
+
+            return res.status(400).json(`${transactions.size} invalid documents were removed`)
          }
 
-         return res.status(400).json("Transactions have not been seeded")
+         return res.status(404).json("Not found")
       }
    }
 }

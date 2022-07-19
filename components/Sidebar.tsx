@@ -14,7 +14,7 @@ export default function Sidebar() {
     const isMobile = screenSize.match(/xs|sm|md/i)
 
     useEffect(() => {
-        if (!screenSize.match(/lg/i) && isOpen) {
+        if (!screenSize.match(/lg/i)) {
             setIsOpen(false)
         }
     }, [screenSize])
