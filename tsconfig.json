@@ -30,6 +30,9 @@
       "@controllers/*": [
         "controllers/*"
       ],
+      "@contexts/*": [
+        "contexts/*"
+      ],
       "@styles/*": [
         "styles/*"
       ],
@@ -38,6 +41,9 @@
       ],
       "@hooks/*": [
         "hooks/*"
+      ],
+      "@configs/*": [
+        "configs/*"
       ]
     },
   },

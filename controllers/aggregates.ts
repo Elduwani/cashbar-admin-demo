@@ -15,6 +15,7 @@ interface Aggregate {
 }
 
 export default async function getAggregate(): Promise<Aggregate> {
+   console.log(`** Fetching records **`)
    const revenueRef = await firestore.collection("transactions").get()
    const liquidationsRef = await firestore.collection("liquidations").where('validated', '==', true).get()
    const customerssRef = await firestore.collection("customers").get()
