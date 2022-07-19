@@ -1,21 +1,42 @@
+import Activities from "@components/Activities";
+import Button from "@components/Button";
+import TransactionsChart from "@components/TransactionsChart";
+import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { getPastDate, metricPrefix } from "@utils/index";
 import { useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
-import Button from "@components/Button";
-import TransactionsChart from "@components/TransactionsChart"
-import Activities from "@components/Activities";
-import { json, LoaderFunction } from "@remix-run/node";
-import { getSummary } from "@controllers/transactions.server";
-import { useLoaderData } from "@remix-run/react";
+import { firestore } from "~/controllers/firebase.server";
+interface LoaderData {
+  transactionCount: number
+  investmentVolume: number
+  liquidationVolume: number
+}
 
-type LoaderData = Awaited<ReturnType<typeof getSummary>>
-// export const loader: LoaderFunction = async () => {
-//   return json<LoaderData>(await getSummary());
-// }
+export const loader: LoaderFunction = async () => {
+  const investmentsRef = await firestore.collection("transactions").get()
+  const liquidationsRef = await firestore.collection("liquidations").where('validated', '==', true).get()
+
+  const invTotals = investmentsRef.docs.reduce((acc, trx) => {
+    acc += trx.data().amount
+    return acc
+  }, 0)
+
+  const liqTotals = liquidationsRef.docs.reduce((acc, liq) => {
+    acc += liq.data().amount
+    return acc
+  }, 0)
+
+  return json<LoaderData>({
+    transactionCount: investmentsRef.size,
+    liquidationVolume: liqTotals,
+    investmentVolume: invTotals
+  });
+}
 
 export default function Index() {
-  // const data = useLoaderData() as LoaderData
-  const data = {} as LoaderData
+  const data = useLoaderData() as LoaderData
+  // const data = {} as LoaderData
   const [endDate, setEndDate] = useState(getPastDate())
 
   const totalExpenses = 245000

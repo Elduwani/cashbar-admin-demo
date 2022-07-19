@@ -14,6 +14,9 @@ export const loader: LoaderFunction = async () => {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+  if (request.headers.get("x-seed-records") !== process.env.SEED_SECRET) {
+    return json("Invalid request headers", 400)
+  }
   switch (request.method) {
     case "POST": {
       try {
