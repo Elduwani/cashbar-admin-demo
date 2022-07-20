@@ -127,13 +127,13 @@ export function useInfiniteFetch<T>({ url, key, enabled = true }: Pick<_FetchPro
 function useHandleFetch() {
    const fetchClient = useFetchClient()
    return (url: string) => {
-      const address = BASE_API_URL + (url)
-      // console.log("fetching " + address)
+      // const address = BASE_API_URL + (url)
+      console.log("fetching " + url)
       if (url.match('undefined')) {
       }
       return async () => {
          if (url) {
-            const response = await fetchClient.get(address)
+            const response = await fetchClient.get(url)
             return response.data
          }
       }

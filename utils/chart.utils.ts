@@ -1,7 +1,7 @@
 import { sub, eachDayOfInterval, startOfWeek, isFirstDayOfMonth } from "date-fns"
 import { formatDate } from "./index"
 
-export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months", "1 year"]
+export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months", "1 year"] as const
 
 type Trx = Transaction | Expense | Liquidation
 type Interval = 'weekly' | 'monthly' | 'daily'
@@ -91,26 +91,28 @@ export function getChartData(transactions: Trx[], endDate: string) {
    return { data: Array.from(map), maxAmount }
 }
 
-function aggregateTotals(map: MyMap, transactions: Trx[]) {
+function aggregateTotals(map: MyMap, transactions?: Trx[]) {
    let maxAmount = 0
    map.forEach((value, key) => {
-      transactions.forEach((trx) => {
-         let { paid_at, amount, status } = trx
-         let trxDate = formatDate(new Date(paid_at), false)
-         let { dates } = value
+      if (transactions?.length) {
+         transactions.forEach((trx) => {
+            let { paid_at, amount, status } = trx
+            let trxDate = formatDate(new Date(paid_at), false)
+            let { dates } = value
 
-         if (status === "success") {
-            /**
-             * <<dates>> is an array of all the dates between 
-             * and also the two dates that are the keys
-            */
-            if (dates?.includes(trxDate) || trxDate === key) {
-               // Must use map.get() bcos this inner loop references stale data
-               const { total } = map.get(key)!
-               map.set(key, { ...value, total: total + (amount / 100) })
+            if (status === "success") {
+               /**
+                * <<dates>> is an array of all the dates between 
+                * and also the two dates that are the keys
+               */
+               if (dates?.includes(trxDate) || trxDate === key) {
+                  // Must use map.get() bcos this inner loop references stale data
+                  const { total } = map.get(key)!
+                  map.set(key, { ...value, total: total + (amount / 100) })
+               }
             }
-         }
-      })
+         })
+      }
 
       //update maximum amount
       const { total } = map.get(key)!
@@ -122,18 +124,18 @@ function aggregateTotals(map: MyMap, transactions: Trx[]) {
    return maxAmount
 }
 
-export function getPastDate(dateLabel: string) {
+export function getPastDate(dateLabel?: typeof dateFilterOptions[number]) {
    dateLabel = dateLabel ?? dateFilterOptions[0]
-   let [count, modifier] = dateLabel.split(" ")
+   let [count, period] = dateLabel.split(" ")
    let date = new Date()
 
-   if (["week", "weeks"].includes(modifier)) {
+   if (period.match(/week/i,)) {
       date = sub(date, { weeks: +count })
    }
-   if (["month", "months"].includes(modifier)) {
+   if (period.match(/month/i)) {
       date = sub(date, { months: +count })
    }
-   if (["year", "years"].includes(modifier)) {
+   if (period.match(/year/i)) {
       date = sub(date, { years: +count })
    }
 

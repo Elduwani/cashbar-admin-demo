@@ -1,9 +1,10 @@
 import Activities from "@components/Activities";
 import Button from "@components/Button";
-import TransactionsChart from "@components/TransactionsChart";
+import TransactionsChart, { DataSet } from "@components/TransactionsChart";
 import getAggregate from "@controllers/aggregates";
-import { useFetch } from "@utils/fetch";
-import { getPastDate, metricPrefix } from "@utils/index";
+import { getPastDate } from "@utils/chart.utils";
+import { placeholderData, useFetch } from "@utils/fetch";
+import { metricPrefix } from "@utils/index";
 import { GetServerSideProps } from "next";
 import { useState } from "react";
 import { FiArrowUp } from "react-icons/fi";
@@ -15,17 +16,17 @@ interface Props {
 export default function Index(props: Props) {
    const [period, setPeriod] = useState(getPastDate())
 
-   const { data: transactions } = useFetch({
-      enabled: false,
-      key: ["chart_data", period],
-      // url: `transactions/date-ranged?from=${period.value}&to=${new Date().toISOString()}`
+   const { data, isFetching } = useFetch({
+      key: ["chart_data", period.label],
+      url: `/transactions?time_period=${period.label}`,
+      placeholderData: {}
    })
 
-   const dataSet = [
+   const dataSet: DataSet[] = [
       //because of SVG ordering foreground elements must be put last.
-      { label: "expenses", color: "text-green-600", data: props.aggregate.data.expenses },
-      { label: "liquidation", color: "text-red-600", data: props.aggregate.data.liquidations },
-      { label: "revenue", color: "text-indigo-600", data: props.aggregate.data.revenue, circle: true },
+      { label: "expenses", color: "text-green-600", data: [] },
+      { label: "liquidation", color: "text-red-600", data: [] },
+      { label: "revenue", color: "text-indigo-600", data: data.transactions, circle: true },
    ]
 
    return (
@@ -60,11 +61,11 @@ export default function Index(props: Props) {
             />
          </div>
          <TransactionsChart
-            // key={isLoading}
             title="Overview"
             dataSet={dataSet}
             setPeriod={setPeriod}
             period={period}
+            loading={isFetching}
             shadow
          />
          <div className="max-w-xs">
@@ -99,8 +100,8 @@ function Detail(props: DetailProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-   const aggregate = await getAggregate()
-   // const aggregate = {}
+   // const aggregate = await getAggregate()
+   const aggregate = {}
 
    return {
       props: {

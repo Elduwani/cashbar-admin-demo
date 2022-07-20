@@ -7,7 +7,7 @@ interface Aggregate {
    liquidationVolume: number
    transactionCount: number
    customerCount: number
-   data: {
+   data?: {
       revenue: Transaction[]
       liquidations: Liquidation[]
       expenses: Expense[]
@@ -29,11 +29,11 @@ export default async function getAggregate(): Promise<Aggregate> {
       liquidationVolume: liqTotals,
       investmentVolume: invTotals,
       expenseVolume: 0,
-      data: {
-         expenses: [],
-         liquidations: liquidationsRef.docs.map(mapDataId) as Liquidation[],
-         revenue: revenueRef.docs.map(mapDataId) as Transaction[],
-      }
+      // data: {
+      //    expenses: [],
+      //    liquidations: liquidationsRef.docs.map(mapDataId) as Liquidation[],
+      //    revenue: revenueRef.docs.map(mapDataId) as Transaction[],
+      // }
    }
 
    return responseData

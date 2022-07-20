@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInMonths, differenceInWeeks, format, formatRelative, sub } from "date-fns";
+import { differenceInDays, differenceInMonths, differenceInWeeks, format, formatRelative } from "date-fns";
 
 export function metricPrefix(number: number) {
    if (invalidNumbers([number])) return '0.00'
@@ -265,27 +265,4 @@ function parseNumber(number: number | string) {
    if (Number.isNaN(number)) return new Error(number + " is not a number type")
    if (typeof number === "number" || isFinite(+number)) return number
    return new Error(number + " is not a number type")
-}
-
-export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months", "1 year"]
-
-export function getPastDate(dateLabel?: string) {
-   dateLabel = dateLabel ?? dateFilterOptions[0]
-   let [count, modifier] = dateLabel.split(" ")
-   let date = new Date()
-
-   if (["week", "weeks"].includes(modifier)) {
-      date = sub(date, { weeks: +count })
-   }
-   if (["month", "months"].includes(modifier)) {
-      date = sub(date, { months: +count })
-   }
-   if (["year", "years"].includes(modifier)) {
-      date = sub(date, { years: +count })
-   }
-
-   return {
-      label: dateLabel,
-      value: date.toISOString()
-   }
 }
