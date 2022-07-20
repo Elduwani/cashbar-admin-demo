@@ -1,58 +1,61 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./@types"
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "@components/*": [
-        "components/*"
+   "compilerOptions": {
+      "target": "es5",
+      "lib": [
+         "dom",
+         "dom.iterable",
+         "esnext"
       ],
-      "@controllers/*": [
-        "controllers/*"
+      "allowJs": true,
+      "skipLibCheck": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "noEmit": true,
+      "esModuleInterop": true,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "jsx": "preserve",
+      "incremental": true,
+      "typeRoots": [
+         "./node_modules/@types",
+         "./@types"
       ],
-      "@contexts/*": [
-        "contexts/*"
-      ],
-      "@styles/*": [
-        "styles/*"
-      ],
-      "@utils/*": [
-        "utils/*"
-      ],
-      "@hooks/*": [
-        "hooks/*"
-      ],
-      "@configs/*": [
-        "configs/*"
-      ]
-    },
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+      "baseUrl": ".",
+      "paths": {
+         "@components/*": [
+            "components/*"
+         ],
+         "@controllers/*": [
+            "controllers/*"
+         ],
+         "@layouts/*": [
+            "layouts/*"
+         ],
+         "@contexts/*": [
+            "contexts/*"
+         ],
+         "@styles/*": [
+            "styles/*"
+         ],
+         "@utils/*": [
+            "utils/*"
+         ],
+         "@hooks/*": [
+            "hooks/*"
+         ],
+         "@configs/*": [
+            "configs/*"
+         ]
+      },
+   },
+   "include": [
+      "next-env.d.ts",
+      "**/*.ts",
+      "**/*.tsx"
+   ],
+   "exclude": [
+      "node_modules"
+   ]
 }

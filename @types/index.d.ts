@@ -1,4 +1,15 @@
 type _Object = Record<string, any>
+interface _ModalState {
+   name?: _ModalName
+   data?: any,
+   title?: string
+}
+
+interface _Tab {
+   name: string,
+   route?: string,
+   element?: (args?: any) => JSX.Element
+}
 
 interface User {
    username: string
