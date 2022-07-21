@@ -1,4 +1,4 @@
-import { firestore, mapDataId } from "@controllers/firebase.server";
+import { batchLimit, firestore, mapDataId } from "@controllers/firebase.server";
 import { getTransactions } from "@controllers/paystack.server";
 import { sub } from "date-fns";
 import { NextApiRequest, NextApiResponse } from "next/types";
@@ -6,7 +6,6 @@ import { NextApiRequest, NextApiResponse } from "next/types";
 
 //handle GET request
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-   const batchLimit = 500
    const collectionName = 'transactions'
    const ref = firestore.collection(collectionName);
    const customersRef = firestore.collection("customers");
@@ -16,12 +15,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    }
 
    switch (req.method) {
-      case "GET": {
-         const snapshot = await ref.get()
-         const responseData = snapshot.docs.map(mapDataId)
-         return res.send(responseData)
-      }
-
       case "POST": {
          try {
             console.log("Fetching Paystack transactions")
@@ -120,6 +113,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
          }
 
          return res.status(404).json("Not found")
+      }
+
+      default: {
+         return res.status(500).json("Invalid request method")
       }
    }
 }

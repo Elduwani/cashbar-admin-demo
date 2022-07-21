@@ -11,7 +11,7 @@ interface PaystackCustomer extends Customer {
 }
 
 interface PaystackPlan {
-   id: number
+   id: string
    pages: any[]
    name: string
    plan_code: string
@@ -35,12 +35,13 @@ interface PaystackPlan {
    active_subscriptions: number
    total_subscriptions_revenue: number
    subscriptions: PaystackSubscription[]
+   [key: string]: any
 }
 
 interface PaystackSubscription {
-   id: number,
-   customer: number,
-   plan: number
+   id: string,
+   customer: string,
+   plan: string
    integration: number
    domain: string
    start: number
@@ -59,6 +60,7 @@ interface PaystackSubscription {
    cancelledAt: string
    createdAt: string
    updatedAt: string
+   [key: string]: any
 }
 
 interface PaystackTransaction extends Transaction {

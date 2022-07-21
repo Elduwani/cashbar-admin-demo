@@ -3,7 +3,7 @@ import Button from "@components/Button";
 import TransactionsChart, { DataSet } from "@components/TransactionsChart";
 import getAggregate from "@controllers/aggregates";
 import { getPastDate } from "@utils/chart.utils";
-import { placeholderData, useFetch } from "@utils/fetch";
+import { useFetch } from "@utils/fetch";
 import { metricPrefix } from "@utils/index";
 import { GetServerSideProps } from "next";
 import { useState } from "react";
@@ -21,8 +21,6 @@ export default function Index(props: Props) {
       url: `/transactions?time_period=${period.label}`,
       placeholderData: {}
    })
-
-   console.log(data);
 
    const dataSet: DataSet[] = [
       //because of SVG ordering foreground elements must be put last.
@@ -102,12 +100,9 @@ function Detail(props: DetailProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-   // const aggregate = await getAggregate()
-   const aggregate = {}
-
    return {
       props: {
-         aggregate
+         aggregate: {}
       }
    }
 }

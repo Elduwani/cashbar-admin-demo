@@ -1,7 +1,10 @@
+import { formatDataToCSV } from '@utils/index';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
-import { FiArrowLeftCircle } from 'react-icons/fi';
+import { HiArrowSmDown } from 'react-icons/hi';
 import { IconType } from 'react-icons/lib';
+import { CSVLink } from "react-csv";
 
 export type ButtonProps = {
    children?: React.ReactNode,
@@ -53,6 +56,31 @@ export default function Button(props: ButtonProps) {
    )
 }
 
+interface DownloadCSVProps {
+   data: Record<string, any>[],
+   text: string,
+   filename: string,
+   headers: _TableHeader[]
+}
+export function DownloadCSV({ data = [], text = "Export", headers, filename }: DownloadCSVProps) {
+   const date = format(new Date(), "_dd-MMM-yy")
+   const { formattedData, formattedHeaders } = formatDataToCSV(data, headers)
+
+   return (
+      <CSVLink
+         data={formattedData}
+         className="text-current"
+         headers={formattedHeaders}
+         filename={filename + "_" + date + ".csv"}
+         target="_blank"
+      >
+         <Button icon={HiArrowSmDown} variant='blue' shrink secondary>
+            {text}
+         </Button>
+      </CSVLink>
+   )
+}
+
 function getClasses({ variant, border, disabled, defaultClasses }: ButtonProps): string {
    switch (variant) {
       case "outline":
@@ -76,19 +104,4 @@ function getClasses({ variant, border, disabled, defaultClasses }: ButtonProps):
       default:
          return `${defaultClasses} ${disabled ? "bg-gray-700" : "bg-gray-800 bg-opacity-60"} text-white`
    }
-}
-
-export function BackButton({ text = "Back", to }: { text?: string, to?: string }) {
-   const router = useRouter()
-   return (
-      <motion.div
-         initial={{ x: 30, opacity: 0 }}
-         animate={{ x: 0, opacity: 1 }}
-         className="p-6 flex text-xl items-center space-x-4 cursor-pointer text-gray-400"
-         onClick={() => to?.length ? router.push(to) : router.back()}
-      >
-         <span className="text-5xl text-white"><FiArrowLeftCircle /></span>
-         <span className="">{text}</span>
-      </motion.div>
-   )
 }

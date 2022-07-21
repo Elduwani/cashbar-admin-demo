@@ -3,15 +3,22 @@ import { formatDate, formatNumber } from "@utils/index"
 import { getPastDate } from "@utils/chart.utils"
 import TransactionsChart, { DataSet } from "@components/TransactionsChart"
 import { useRouter } from "next/router"
+import { useFetch } from "@utils/fetch"
+import { queryKeys } from "@configs/reactQueryConfigs"
 
 const TransactionsTable = () => null
 
 export default function Overview() {
    const router = useRouter()
-   const tableHead = ["status", "amount", "date", "reference", "channel"]
    const [period, setPeriod] = useState(getPastDate())
 
-   const { startDate, investment, liquidation, interest, balance, data, total } = {} as _Object
+   const { data, isFetching } = useFetch({
+      key: [queryKeys.investments, 'overview'],
+      url: `/customers/aggregate`,
+      placeholderData: {}
+   })
+
+   const { startDate, investment, liquidation, interest, balance, total } = {} as _Object
    const [investmentData, liquidationData] = [[], []]
 
    const dataSet: DataSet[] = [
@@ -23,7 +30,8 @@ export default function Overview() {
       <div className="space-y-8">
          <div className="grid grid-cols-4 gap-2 lg:gap-4">
             <OverviewCard
-               title={"balance"}
+               // title={"balance"}
+               title={router.query.id as string}
                amount={balance}
                subTitle="Updated today"
                selected
@@ -94,3 +102,26 @@ function OverviewCard({ color = "gray", ...props }: CardProps) {
       </div>
    )
 }
+
+const tabelColumns: _TableColumn[] = [
+   {
+      label: "",
+      key: "status",
+      modifier: (_, index) => index + 1,
+      headerStyle: { maxWidth: 20 }
+   },
+   {
+      key: "amount",
+      cell: (cell) => formatNumber(cell.getValue())
+   },
+   {
+      label: "date",
+      key: "paid_at",
+      cell: (cell) => formatDate(cell.getValue(), true)
+   },
+   { key: "reference" },
+   {
+      key: "channel",
+      // cell: (cell) => `${cell.row.original.customer?.surname} ${cell.row.original.customer?.forenames}`
+   },
+]

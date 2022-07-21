@@ -49,3 +49,9 @@ export const getTransactions = async () => {
    console.log(response.data.data.length)
    return response.data as PaystackResponse<PaystackTransaction[]>;
 }
+
+/** Subscriptions **/
+export const getSubscriptions = async () => {
+   const response = await axios.get(`https://api.paystack.co/subscription`, { headers });
+   return response.data as PaystackResponse<PaystackSubscription[]>;
+}

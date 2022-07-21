@@ -11,11 +11,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    }
 
    switch (req.method) {
-      case "GET": {
-         //return customers
-         return res.send(null)
-      }
-
       case "POST": {
          try {
             const batch = firestore.batch()
@@ -59,6 +54,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
          }
 
          res.send(`${dummy.size} ${collectionName} records were deleted`)
+      }
+
+      default: {
+         return res.status(500).json("Invalid request method")
       }
    }
 }

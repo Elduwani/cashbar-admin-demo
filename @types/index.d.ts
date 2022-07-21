@@ -1,3 +1,5 @@
+declare module 'react-csv';
+
 type _Object = Record<string, any>
 interface _ModalState {
    name?: _ModalName
@@ -95,11 +97,11 @@ interface Transaction {
    [key: string]: any
 }
 
-interface _TableHeader {
+interface _TableColumn {
    key: string,
    label?: string,
    sticky?: boolean,
-   modifier?: (value: any, element?: any) => string | number | JSX.Element | null,
+   modifier?: (element: any, index: number) => string | number | JSX.Element | null,
    cell?: (cell) => string | number | JSX.Element | null,
    cellStyle?: (element?: any) => string,
    capitalize?: boolean,
