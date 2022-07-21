@@ -1,16 +1,18 @@
-import Button from "@components/Button";
-import CustomersLayout from "@layouts/customers/Customers.layout";
-import TabsList from "@components/TabsList";
-import { useModal } from "@contexts/Modal.context";
-import { useRouter } from "next/router";
-import { GetServerSideProps } from "next/types";
-import { ReactElement, useState } from "react";
-import { FiPhone, FiMapPin, FiMail } from "react-icons/fi";
-import { queryKeys } from "@configs/reactQueryConfigs";
-import { useFetch } from "@utils/fetch";
-import Avatar from "@components/Avatar";
+import Avatar from '@components/Avatar'
+import Button from '@components/Button'
+import TabsList from '@components/TabsList'
+import { queryKeys } from '@configs/reactQueryConfigs'
+import { useModal } from '@contexts/Modal.context'
+import { CustomersLayout } from '@layouts/customers/Customers.layout'
+import Overview from '@layouts/customers/Customers.overview'
+import { useFetch } from '@utils/fetch'
+import { getDynamicPath } from '@utils/index'
+import { useRouter } from 'next/router'
+import { GetServerSideProps } from 'next/types'
+import { ReactElement, useEffect, useState } from 'react'
+import { FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
 
-export default function Customer() {
+export default function CustomerID() {
    const router = useRouter()
    const { openModal } = useModal()
    const [tabIndex, setTabIndex] = useState(0)
@@ -22,10 +24,30 @@ export default function Customer() {
    })
 
    const tabs: _Tab[] = [
-      { name: "overview", route: '' },
-      { name: "subscriptions", route: '' },
-      { name: "settings", route: '' }
+      { name: "overview", element: Overview },
+      { name: "subscriptions" },
+      { name: "settings" }
    ]
+
+   const TabbedLayout = tabs[tabIndex].element
+
+   useEffect(() => {
+      if (router.query.id) {
+         const pathname = getDynamicPath(router.route, '[id]', router.query.id as string)
+         // console.log(pathname + "?tab=");
+         router.replace(
+            {
+               pathname,
+               query: {
+                  ...router.query,
+                  tab: tabs[tabIndex].name // override the tab property
+               },
+            },
+            undefined,
+            { shallow: true }
+         )
+      }
+   }, [tabIndex])
 
    const activeCustomer = (customers as Customer[])?.find(c => c.id === router.query.id)
 
@@ -39,28 +61,42 @@ export default function Customer() {
                <div className="flex flex-1 flex-shrink-0">
                   <Avatar name={first_name} />
                   <div className="space-y-1 pl-4">
-                     <h1 className="text-2xl font-medium text-gray-600 capitalize">{`${first_name} ${last_name}`}</h1>
+                     <h1 className="text-2xl font-medium text-gray-600 capitalize">
+                        {`${first_name} ${last_name}`}
+                     </h1>
                      <div className="flex space-x-4">
                         {phone ? <div className="flex space-x-2 items-center text-gray-600 text-sm">
-                           <FiPhone className="text-gray-400" /><span>{phone}</span>
+                           <FiPhone className="text-gray-400" />
+                           <span>{phone}</span>
                         </div> : null}
                         {metadata?.state ? <div className="flex space-x-2 items-center text-gray-600 text-sm capitalize">
-                           <FiMapPin className="text-gray-400" /><span>{metadata.state}</span>
+                           <FiMapPin className="text-gray-400" />
+                           <span>{metadata.state}</span>
                         </div> : null}
                         <div className="flex space-x-2 items-center text-gray-600 text-sm">
-                           <FiMail className="text-gray-400" /><span>{email}</span>
+                           <FiMail className="text-gray-400" />
+                           <span>{email}</span>
                         </div>
                      </div>
                   </div>
                   <div className="ml-auto">
-                     <Button variant="teal" onClick={() => openModal({ name: "addTransaction", data: {} })}>Add Record</Button>
+                     <Button
+                        variant="teal"
+                        onClick={() => openModal({ name: "addTransaction", data: {} })}
+                     >Add Record</Button>
                   </div>
                </div>
 
                <TabsList tabs={tabs} setIndex={setTabIndex} key={email} index={tabIndex} />
-
             </div>
-            <NestedChildren />
+
+            {
+               TabbedLayout &&
+               <div className="p-6">
+                  <TabbedLayout />
+               </div>
+            }
+
          </div>
       )
    }
@@ -75,25 +111,16 @@ export default function Customer() {
    )
 }
 
-function NestedChildren() {
-   const { tab } = useRouter().query
-
-   let child = null
-   return child
-}
-
-Customer.getLayout = function getLayout(page: ReactElement) {
+CustomerID.getLayout = function getLayout(page: ReactElement) {
    return (
-      <>
-         <CustomersLayout>
-            {page}
-         </CustomersLayout>
-      </>
+      <CustomersLayout>
+         {page}
+      </CustomersLayout>
    )
 }
 
-//Simply exporting this will ensure useRouter isn't empty on initial render
-export const getServerSideProps: GetServerSideProps = async (context) => {
+//Simply exporting this makes sure useRouter is populated on initial render
+export const getServerSideProps: GetServerSideProps = async () => {
    return {
       props: {}
    }

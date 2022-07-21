@@ -204,46 +204,8 @@ export function formatDataToCSV(data: any[], headers: _TableHeader[]) {
    return { formattedData, formattedHeaders }
 }
 
-export function animationOptions() {
-   return {
-      container: {
-         hidden: {
-            y: -20,
-            opacity: 0,
-            scale: 1.1,
-         },
-         show: {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            transition: {
-               staggerChildren: 0.5,
-               type: "tween",
-               duration: 0.3
-            }
-         },
-      },
-      child: {
-         hidden: { opacity: 0, y: -10 },
-         show: {
-            y: 0,
-            opacity: 1,
-            transition: {
-               type: "tween",
-               duration: 0.5
-            }
-         }
-      }
-   }
-}
-
-export function transformResponse(data: _Object[]) {
-   return data.map((e) => {
-      if (e.attributes) {
-         e.attributes.id = e.id
-      }
-      return e.attributes ?? e
-   })
+export function getDynamicPath(route: string, routeID: string, id: string) {
+   return route.replace(routeID, id)
 }
 
 export function getFileExtension(filename: string) {

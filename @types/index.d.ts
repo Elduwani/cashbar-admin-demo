@@ -6,8 +6,9 @@ interface _ModalState {
 }
 
 interface _Tab {
-   name: string,
-   route?: string,
+   name: string
+   route?: string
+   onClick?(): any
    element?: (args?: any) => JSX.Element
 }
 

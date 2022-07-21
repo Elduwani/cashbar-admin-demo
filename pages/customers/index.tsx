@@ -1,4 +1,4 @@
-import CustomersLayout from "@layouts/customers/Customers.layout";
+import { CustomersLayout } from "@layouts/customers/Customers.layout";
 import { ReactElement } from "react";
 
 export default function CustomerPage() {
@@ -12,10 +12,8 @@ export default function CustomerPage() {
 
 CustomerPage.getLayout = function getLayout(page: ReactElement) {
    return (
-      <>
-         <CustomersLayout>
-            {page}
-         </CustomersLayout>
-      </>
+      <CustomersLayout>
+         {page}
+      </CustomersLayout>
    )
 }
