@@ -1,14 +1,11 @@
-import { useState } from "react"
-import { formatDate, formatNumber } from "@utils/index"
-import { getPastDate } from "@utils/chart.utils"
+import ReactTable from "@components/ReactTable"
 import TransactionsChart, { DataSet } from "@components/TransactionsChart"
-import { useRouter } from "next/router"
-import { useFetch } from "@utils/fetch"
 import { queryKeys } from "@configs/reactQueryConfigs"
-import FullPageCenterItems from "@components/FullPageCenterItems"
-import Spinner from "@components/Spinner"
-
-const TransactionsTable = () => null
+import { getPastDate } from "@utils/chart.utils"
+import { useFetch } from "@utils/fetch"
+import { formatDate, formatNumber } from "@utils/index"
+import { useRouter } from "next/router"
+import { useState } from "react"
 
 export default function Overview() {
    const { id } = useRouter().query
@@ -27,7 +24,7 @@ export default function Overview() {
 
    const dataSet: DataSet[] = [
       { label: "liquidation", color: "text-red-600", data: liquidations },
-      { label: "investment", color: "text-indigo-600", data: transactions },
+      { label: "investment", color: "text-indigo-600", data: transactions, circle: true },
    ]
 
    return (
@@ -61,21 +58,22 @@ export default function Overview() {
          </div>
 
          <TransactionsChart
-            title="Overview"
+            title=""
             dataSet={dataSet}
             setPeriod={setPeriod}
             period={period}
-            // labels={false}
             height={250}
             loading={isFetching}
          />
 
-         <TransactionsTable
-         // tableHead={tableHead}
-         // transactions={data}
-         // total={total}
-         // hideControls
-         />
+         {
+            transactions?.length ?
+               <ReactTable
+                  columns={tabelColumns}
+                  data={transactions}
+               />
+               : null
+         }
       </div>
    )
 }
@@ -93,7 +91,7 @@ function OverviewCard({ color = "gray", ...props }: CardProps) {
 
    return (
       <div
-         className={`p-4 cursor-pointer space-y-1 flex flex-col rounded-lg shadow-lg overflow-hidden
+         className={`p-4 space-y-1 flex flex-col rounded-lg shadow-lg overflow-hidden
             ${props.selected ? `bg-indigo-600 text-white` : `bg-white text-gray-500`}
          `}
       >
@@ -117,22 +115,25 @@ function OverviewCard({ color = "gray", ...props }: CardProps) {
 }
 
 const tabelColumns: _TableColumn[] = [
-   {
-      label: "",
-      key: "status",
-      modifier: (_, index) => index + 1,
-      headerStyle: { maxWidth: 20 }
-   },
+   // {
+   //    label: "",
+   //    key: "status",
+   //    modifier: (_, index) => typeof index === 'number' ? index + 1 : "*",
+   //    headerStyle: { maxWidth: 20 }
+   // },
    {
       key: "amount",
-      cell: (cell) => formatNumber(cell.getValue())
+      cell: (cell) => formatNumber(cell.getValue(), '', false)
    },
    {
       label: "date",
       key: "paid_at",
-      cell: (cell) => formatDate(cell.getValue(), true)
+      cell: (cell) => formatDate(cell.getValue(), true, true)
    },
-   { key: "reference" },
+   {
+      key: "reference",
+      cell: (cell) => (cell.getValue() as string).substring(0, 20)
+   },
    {
       key: "channel",
       // cell: (cell) => `${cell.row.original.customer?.surname} ${cell.row.original.customer?.forenames}`

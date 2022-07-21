@@ -108,7 +108,7 @@ function aggregateTotals(map: MyMap, transactions?: Trx[]) {
                if (dates?.includes(trxDate) || trxDate === key) {
                   // Must use map.get() bcos this inner loop references stale data
                   const { total } = map.get(key)!
-                  map.set(key, { ...value, total: total + (amount / 100) })
+                  map.set(key, { ...value, total: total + amount })
                }
             }
          })

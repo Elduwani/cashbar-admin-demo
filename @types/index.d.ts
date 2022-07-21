@@ -101,7 +101,7 @@ interface _TableColumn {
    key: string,
    label?: string,
    sticky?: boolean,
-   modifier?: (element: any, index: number) => string | number | JSX.Element | null,
+   modifier?: (element?: any, index?: number) => string | number | JSX.Element | null,
    cell?: (cell) => string | number | JSX.Element | null,
    cellStyle?: (element?: any) => string,
    capitalize?: boolean,

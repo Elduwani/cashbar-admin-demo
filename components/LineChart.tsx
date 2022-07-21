@@ -73,7 +73,11 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
             {
                labels ?
                   <div className="_header-container md:flex md:space-x-8 pt-2">
-                     <h3 className="text-xl text-gray-700 font-medium capitalize">{props.title}</h3>
+                     {props.title &&
+                        <h3 className="text-xl text-gray-700 font-medium capitalize">
+                           {props.title}
+                        </h3>
+                     }
                      <div className="_labels flex space-x-4">
                         {
                            props.dataSet.slice().reverse().map(({ label, color = "text-gray-500" }, i) =>
@@ -179,7 +183,6 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
                      //Draw dots and tooltips
                      vectors.map((set, i) => { //[set[vectors], set[vectors]]
                         const { color = "text-gray-500", circle, label } = props.dataSet[i]
-                        // console.log(dataSet[i])
 
                         return set.map((coord, j) => { //[vectors<"x,y">, vectors<"x,y">]
                            const { height } = canvasBox

@@ -1,4 +1,5 @@
 import { differenceInDays, differenceInMonths, differenceInWeeks, format, formatRelative } from "date-fns";
+import { DocumentData, QueryDocumentSnapshot } from "firebase-admin/firestore";
 
 export function metricPrefix(number: number) {
    if (invalidNumbers([number])) return '0.00'
@@ -99,6 +100,12 @@ export function formatNumber(num: number | string, currencySign = "", decimals?:
 
 export function formatBaseCurrency(n: number) {
    return n / 100
+}
+
+export function mapDataAmount(doc: QueryDocumentSnapshot<DocumentData>) {
+   const data = doc.data()
+   data.amount = formatBaseCurrency(data.amount)
+   return data
 }
 
 export function p(n: number | string) {

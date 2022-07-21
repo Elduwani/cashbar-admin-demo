@@ -136,15 +136,12 @@ export default function ReactTable({ sort = true, ...props }: Props) {
                                        {...{
                                           onMouseDown: header.getResizeHandler(),
                                           onTouchStart: header.getResizeHandler(),
-                                          className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''
-                                             }`,
+                                          className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''}`,
                                           style: {
                                              transform:
                                                 columnResizeMode === 'onEnd' &&
                                                    header.column.getIsResizing()
-                                                   ? `translateX(${instance.getState().columnSizingInfo
-                                                      .deltaOffset
-                                                   }px)`
+                                                   ? `translateX(${instance.getState().columnSizingInfo.deltaOffset}px)`
                                                    : '',
                                           },
                                        }}
@@ -158,7 +155,7 @@ export default function ReactTable({ sort = true, ...props }: Props) {
                </thead>
                <tbody className="divide-y divide-gray-200">
                   {
-                     instance.getRowModel().rows.map(row => {
+                     instance.getRowModel().rows.map((row, index) => {
                         return (
                            <tr
                               key={row.id}
@@ -166,19 +163,18 @@ export default function ReactTable({ sort = true, ...props }: Props) {
                               onClick={() => props.onClick?.(row.original)}
                            >
                               {
-                                 row.getVisibleCells().map((cell, i) => {
+                                 row.getVisibleCells().map(cell => {
                                     const { capitalize = true, cellStyle, modifier } = props.columns.find(el => el.key === cell.column.id)!
                                     const entry = row.original as _Object
                                     const rStyles = props.rowStyles?.(entry)
                                     const cStyle = cellStyle?.(entry)
-                                    const value = modifier?.(entry, i) ?? cell.getValue() as any
+                                    const value = modifier?.(entry, index)
 
                                     return (
                                        <td
                                           key={cell.id}
                                           className={`
                                              px-6 py-4 max-h-16 text-sm ${rStyles} ${cStyle}
-                                             ${(value)?.length < 35 ? "whitespace-nowrap" : ''}
                                              ${capitalize ? "capitalize" : ''}
                                           `}
                                        >{value ?? cell.renderCell()}</td>

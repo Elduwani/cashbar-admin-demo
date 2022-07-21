@@ -11,10 +11,10 @@ export interface DataSet {
    circle?: boolean
 }
 export interface ChartProps {
-   title: string
    dataSet: DataSet[]
    setPeriod(t: ReturnType<typeof getPastDate>): void
    period: ReturnType<typeof getPastDate>
+   title?: string
    height?: number
    loading?: boolean
    shadow?: boolean

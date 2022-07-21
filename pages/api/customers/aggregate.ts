@@ -1,5 +1,5 @@
 import { firestore } from "@controllers/firebase.server";
-import { formatBaseCurrency } from "@utils/index";
+import { formatBaseCurrency, mapDataAmount } from "@utils/index";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                total_liquidation: formatBaseCurrency(total_liquidation),
                startDate: new Date().toISOString(),
                balance: formatBaseCurrency(total_investment - total_liquidation), //TODO minus liquidation
-               transactions: snapshot.docs.map(d => d.data()),
+               transactions: snapshot.docs.map(mapDataAmount).reverse(),
                liquidations: []
             })
          }
@@ -39,5 +39,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    } catch (error: any) {
       return res.status(400).send(error.message)
    }
-
 }
