@@ -1,31 +1,44 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Search from "@components/Search"
 import { useRouter } from 'next/router';
 import { useFetch } from '@utils/fetch';
 import { queryKeys } from '@configs/reactQueryConfigs';
+import Button from '@components/Button';
+import FullPageCenterItems from '@components/FullPageCenterItems';
+import Spinner from '@components/Spinner';
 
 export default function CustomersSidebar() {
-   const router = useRouter()
-   const [filteredData, setFilteredData] = useState([])
-
+   const [filteredData, setFilteredData] = useState<Customer[]>([])
    const { data: customers, isFetching, isError } = useFetch({
       key: [queryKeys.customers],
-      url: `/transactions`,
+      url: `/customers`,
       placeholderData: []
    })
 
+   const data = filteredData.length ? filteredData : customers
+
+   if (isFetching) return (
+      <FullPageCenterItems className="text-center border-r space-y-3 text-gray-500">
+         <div className="flex flex-col items-center space-y-3">
+            <Spinner />
+            <p>Fetching customers</p>
+         </div>
+      </FullPageCenterItems>
+   )
+
    if (isError) return (
-      <div className="w-full h-full grid place-content-center text-center">
+      <FullPageCenterItems className="text-center border-r space-y-3 text-gray-500">
          <p>Could not fetch customers</p>
-      </div>
+         <Button variant="teal">Retry</Button>
+      </FullPageCenterItems>
    )
 
    return (
       <div className="w-full h-full flex flex-col border-r">
          <div className="h-36 space-y-2 pt-6 px-4 border-b flex-shrink-0">
-            <h3 className="text-gray-700">Filter by search</h3>
+            <h3 className="text-gray-700">Search</h3>
             <Search
-               data={filteredData}
+               data={customers}
                callback={setFilteredData}
                placeholder=": name, email, phone..."
                matchList={["first_name", "last_name"]}
@@ -33,7 +46,7 @@ export default function CustomersSidebar() {
          </div>
          <div className="flush-bottom h-full flex flex-col overflow-y-auto scrollbar divide-y">
             {
-               customers.map((customer, i) => {
+               (data as Customer[]).map?.((customer, i) => {
                   return (
                      <Customer
                         customer={customer}
@@ -47,38 +60,30 @@ export default function CustomersSidebar() {
    );
 }
 
-function Customer({ customer }) {
+function Customer({ customer }: { customer: Customer }) {
+   const router = useRouter()
    const ref = useRef<HTMLDivElement>(null)
 
    let { first_name, last_name, id, email } = customer
+   const isSelected = router.query.id === id
    last_name = last_name.length > 10 ? last_name.split(" ")[0] : last_name
-
-   const isSelected = activeCustomer.id === id
-
-   if (isSelected) {
-      //For now I really only need to update customer names
-      let x = customers.find(c => c.id === id)
-      first_name = x.first_name
-      last_name = x.last_name
-   }
 
    useEffect(() => {
       if (isSelected) {
-         // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView
-         ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
    }, [isSelected]);
 
    return (
       <div
          ref={isSelected ? ref : null}
-         onClick={() => setActiveCustomer(customer)}
-         className={`cursor-pointer p-4 text-sm ${isSelected ? "bg-indigo-600 text-white" : "bg-white text-gray-600"}`}
+         onClick={() => router.push(`/customers/${customer.id}`)}
+         className={`cursor-pointer p-4 text-sm ${isSelected ? "bg-teal-100 text-teal-900" : "bg-white text-gray-600"}`}
       >
-         <p className="truncate capitalize">
-            {`${first_name} ${_last_name}`}
+         <p className={`truncate capitalize ${isSelected && 'font-semibold'}`}>
+            {`${first_name} ${last_name}`}
          </p>
-         <p className={isSelected ? "text-indigo-200" : undefined}>{email}</p>
+         <p className={isSelected ? "opacity-70" : undefined}>{email}</p>
       </div>
    );
 }

@@ -1,20 +1,20 @@
 interface Props {
-    fullscreen?: boolean,
-    height?: number,
-    className?: string,
-    children: React.ReactNode
+   fullscreen?: boolean,
+   height?: number,
+   className?: string,
+   children: React.ReactNode
 }
 
-export default function FullPageCenterItems({ fullscreen, height = 500, className, children }: Props) {
-    return (
-        <div
-            style={{ height: fullscreen ? `100vh` : (height ?? `100%`) }}
-            className={`flex-shrink-0 flex-1`}
-        >
-            <div className={`grid place-content-center h-full ${className}`}>
-                {children}
-            </div>
-        </div>
-    )
+export default function FullPageCenterItems(props: Props) {
+   return (
+      <div
+         style={{ height: props.fullscreen ? `100vh` : (props.height ?? `100%`) }}
+         className={`flex-shrink-0 flex-1`}
+      >
+         <div className={`grid place-content-center h-full ${props.className}`}>
+            {props.children}
+         </div>
+      </div>
+   )
 
 }

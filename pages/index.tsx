@@ -22,6 +22,8 @@ export default function Index(props: Props) {
       placeholderData: {}
    })
 
+   console.log(data);
+
    const dataSet: DataSet[] = [
       //because of SVG ordering foreground elements must be put last.
       { label: "expenses", color: "text-green-600", data: [] },

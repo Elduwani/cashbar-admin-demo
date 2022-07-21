@@ -1,14 +1,20 @@
 import { useToast } from "@contexts/Notification.context"
-import axios from "axios"
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import axios from "axios"
 
-export const BASE_API_URL = 'api'
+//https://docs.netlify.com/configure-builds/environment-variables/#deploy-urls-and-metadata
+export const BASE_API_URL = process.env.NODE_ENV === 'development' ?
+   `${process.env.NEXT_PUBLIC_URL}/api` : `${process.env.URL}/api`
+
+if (!BASE_API_URL.startsWith('http')) {
+   throw new Error("HOSTNAME env variable not set or incorrect")
+}
+
 export const placeholderData = { data: [] }
-export const queryLimit = 25
 
 export function useFetchClient() {
    // const { data: session } = useSession()
-   let instance = axios.create({ baseURL: BASE_API_URL as string })
+   let instance = axios.create()
 
    // if (session?.access_token) {
    //     instance.defaults.headers.common['Authorization'] = `Bearer ${session.access_token}`;
@@ -126,16 +132,13 @@ export function useInfiniteFetch<T>({ url, key, enabled = true }: Pick<_FetchPro
 
 function useHandleFetch() {
    const fetchClient = useFetchClient()
+
    return (url: string) => {
-      // const address = BASE_API_URL + (url)
-      console.log("fetching " + url)
-      if (url.match('undefined')) {
-      }
-      return async () => {
-         if (url) {
-            const response = await fetchClient.get(url)
-            return response.data
-         }
+      const address = BASE_API_URL + (url)
+      // console.log("fetching " + url)
+      return async function () {
+         const response = await fetchClient.get(address)
+         return response.data
       }
    }
 }
