@@ -97,6 +97,10 @@ export function formatNumber(num: number | string, currencySign = "", decimals?:
    }
 }
 
+export function formatBaseCurrency(n: number) {
+   return n / 100
+}
+
 export function p(n: number | string) {
    return parseInt(String(n))
 }
@@ -190,13 +194,13 @@ export function isModified(values: _Object, data: _Object) {
    return modified
 }
 
-export function formatDataToCSV(data: any[], headers: _TableHeader[]) {
+export function formatDataToCSV(data: any[], headers: _TableColumn[]) {
    const formattedHeaders = headers.map(h => (h.key ?? h.label).replace(/_/gi, " ").toUpperCase())
    const formattedData = data?.map(d => {
       return headers.map(h => {
          let value = d[h.key ?? h.label]
          if (!!h.label) {
-            value = h.modifier?.(value) ?? value
+            value = h.modifier?.(value, 0) ?? value
          }
          return value
       })

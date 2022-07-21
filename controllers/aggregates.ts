@@ -1,4 +1,5 @@
-import { firestore, mapDataId } from "@controllers/firebase.server";
+import { firestore } from "@controllers/firebase.server";
+import { formatBaseCurrency } from "@utils/index";
 import { DocumentData, QueryDocumentSnapshot } from "firebase-admin/firestore";
 
 interface Aggregate {
@@ -26,9 +27,9 @@ export default async function getAggregate(): Promise<Aggregate> {
    const responseData: Aggregate = {
       transactionCount: revenueRef.size,
       customerCount: customerssRef.size,
-      liquidationVolume: liqTotals,
-      investmentVolume: invTotals,
-      expenseVolume: 0,
+      liquidationVolume: formatBaseCurrency(liqTotals),
+      investmentVolume: formatBaseCurrency(invTotals),
+      expenseVolume: formatBaseCurrency(0),
       // data: {
       //    expenses: [],
       //    liquidations: liquidationsRef.docs.map(mapDataId) as Liquidation[],
@@ -42,7 +43,7 @@ export default async function getAggregate(): Promise<Aggregate> {
 function sumAmount(docs: QueryDocumentSnapshot<DocumentData>[]) {
    return docs.reduce((acc, liq) => {
       //All amounts are in the lowest denomination [kobo, cents]
-      acc += liq.data().amount / 100
+      acc += liq.data().amount
       return acc
    }, 0)
 }

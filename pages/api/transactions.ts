@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             //    .where('validated', '==', true)
             //    .get()
             const responseData = {
-               transactions: snapshot.docs.map(mapDataId),
+               transactions: snapshot.docs.map(d => d.data()),
                // liquidations: liquidationsRef.docs.map(mapDataId),
                // expenses: expensesRef.docs.map(mapDataId)
             }

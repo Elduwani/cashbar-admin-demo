@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
          case "GET": {
             console.log("Fetching customers...")
             const snapshot = await customerRef.get()
-            const responseData = snapshot.docs
+            const responseData = snapshot.docs.map(d => d.data())
             return res.send(responseData)
          }
 

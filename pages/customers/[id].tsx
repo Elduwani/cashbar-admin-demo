@@ -49,7 +49,7 @@ export default function CustomerID() {
       }
    }, [tabIndex])
 
-   const activeCustomer = (customers as Customer[])?.find(c => c.id === router.query.id)
+   const activeCustomer = (customers as Customer[])?.find(c => String(c.id) === router.query.id)
 
    if (activeCustomer?.id) {
       let { first_name, last_name, phone, email, metadata } = activeCustomer

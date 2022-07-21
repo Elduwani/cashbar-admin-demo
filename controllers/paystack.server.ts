@@ -43,6 +43,7 @@ export const getTransactions = async () => {
    /**
     * Only fetch successful transactions
     * Limit of 10k
+    * Only fetch successful transactions
     **/
    const query = `perPage=10000&status=success`
    const response = await axios.get(`https://api.paystack.co/transaction?${query}`, { headers });
