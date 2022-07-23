@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                const batch = firestore.batch()
                const [start, end] = [i * batchLimit, batchLimit * (i + 1)]
                const chunk = subscriptions.data.slice(start, end)
-               console.log("*".repeat(50))
+               console.log("><".repeat(30))
                console.log({ start, end })
 
                for (const sub of chunk) {

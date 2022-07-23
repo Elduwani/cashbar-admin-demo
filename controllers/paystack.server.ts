@@ -29,6 +29,8 @@ export const updateCustomer = async (data: Partial<PaystackCustomer>, id: number
 /** Plans **/
 export async function getPlans<T = PaystackPlan>() {
    const response = await axios.get(`https://api.paystack.co/plan`, { headers })
+   const filteredPlans = (response.data.data as PaystackPlan[]).filter(p => !p.is_deleted && !p.is_archived)
+   response.data.data = filteredPlans
    return response.data as PaystackResponse<T[]>;
 }
 

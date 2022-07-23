@@ -1,6 +1,9 @@
 declare module 'react-csv';
 
 type _Object = Record<string, any>
+
+type _ModalName = 'subscriptionTransactions'
+
 interface _ModalState {
    name?: _ModalName
    data?: any,
@@ -86,7 +89,7 @@ interface RecipientMeta {
 
 interface Transaction {
    id: string
-   status: string
+   status: 'success' | 'failed' | 'abandoned'
    reference: string
    amount: number
    paid_at: string

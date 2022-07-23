@@ -21,7 +21,7 @@ export default function CustomerID() {
    const { openModal } = useModal()
    const [tabIndex, setTabIndex] = useState(0)
 
-   const { data: customers } = useFetch({
+   const { data: customers, isFetching } = useFetch({
       key: [queryKeys.customers],
       url: `/customers`,
       placeholderData: []
@@ -85,6 +85,8 @@ export default function CustomerID() {
          </div>
       )
    }
+
+   if (isFetching) return null
 
    return (
       <div className="w-full flex-1 bg-slate-100 grid place-content-center text-center">

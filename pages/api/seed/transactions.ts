@@ -16,9 +16,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).send("Invalid request headers")
    }
 
-   switch (req.method) {
-      case "POST": {
-         try {
+   try {
+      switch (req.method) {
+         case "POST": {
             console.log("Fetching Paystack transactions")
             const paystackTransactions = await getTransactions();
             if (!paystackTransactions.data?.length) {
@@ -39,9 +39,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             //Bring user ID's forward for faster reference 
             const firebaseCustomersData = firebaseCustomers.docs.reduce((acc, curr) => {
-               acc[curr.id] = curr
+               acc[curr.id] = curr.id
                return acc
-            }, {} as _Object)
+            }, {} as Record<string, string>)
 
             //Firebase batch only allows 500 writes per request, so split data into chunks
             let seededCount = 0
@@ -51,17 +51,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                const batch = firestore.batch()
                const [start, end] = [i * batchLimit, batchLimit * (i + 1)]
                const chunk = transactions.slice(start, end)
-               console.log("*".repeat(30))
+               console.log("><".repeat(30))
                console.log({ start, end })
 
                for (const trx of chunk) {
                   trx['updatedAt'] = new Date().toISOString()
                   const customer = firebaseCustomersData[trx.customer.id]
 
-                  if (customer?.id) {
+                  if (customer?.length) {
                      console.log(`Adding ${trx.customer.email}...`)
-                     trx['customer'] = customer.id
-                     //populate firebase with data
+                     //@ts-ignore
+                     trx['customer'] = +customer
                      batch.set(ref.doc(String(trx.id)), trx);
                      seededCount++
                   }
@@ -80,26 +80,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                status: "success",
                message: `${seededCount} ${collectionName} were seeded successfully`
             });
-
-         } catch (error) {
-            console.log(error)
-            return res.status(400).send(`Could not seed ${collectionName}`)
          }
-      }
 
-      case "PUT": {
-         /**
-          * This function will get the related plan information for all seeded transactions
-          * so they can be linked, as Paystack doesn't link transaction to plans unless
-          * when said transaction is verified.
-          */
-         try {
+         case "PUT": {
+            /**
+             * This function will get the related plan information for all seeded transactions
+             * so they can be linked, as Paystack doesn't link transaction to plans unless
+             * when said transaction is verified.
+             */
 
             const dir = path.join(process.cwd(), 'verified_transactions_log.json')
             console.log(`>> Checking content from ${dir}`)
-            const verifiedTransactions = JSON.parse(fs.readFileSync(dir, 'utf8'))
+            const verifiedTransactions = JSON.parse(fs.readFileSync(dir, 'utf8')) as PaystackTransaction[]
 
             if (verifiedTransactions?.[0]?.plan?.length) {
+               //Use local content saved to file
                console.log(`>> Using local content <<`)
                const batchCount = Math.ceil(verifiedTransactions.length / batchLimit)
 
@@ -107,13 +102,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   const batch = firestore.batch()
                   const [start, end] = [i * batchLimit, batchLimit * (i + 1)]
                   const chunk = verifiedTransactions.slice(start, end)
-                  console.log("*".repeat(30))
+                  console.log("><".repeat(30))
                   console.log({ start, end })
 
                   for (const trx of chunk) {
                      console.log(`Adding ${trx.id}...`)
+                     //@ts-ignore
+                     trx.customer = +trx.customer
                      const dataToMerge = { plan: trx.plan }
-                     batch.set(ref.doc(String(trx.id)), dataToMerge, { merge: true })
+                     batch.set(ref.doc(String(trx.id)), trx)
                   }
 
                   //Commit chunk
@@ -124,6 +121,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             } else {
 
+               //Use cloud content
                const data = []
                const transactions = await ref.get()
                console.log(`>> Fetched ${transactions.size} transactions <<`)
@@ -152,16 +150,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             }
 
+            await removeDummyRecords(ref, collectionName)
             return res.send("Done")
+         }
 
-         } catch (err: any) {
-            console.error(err.message)
-            return res.status(400).json(err.message)
+         default: {
+            return res.status(500).json("Invalid request method")
          }
       }
 
-      default: {
-         return res.status(500).json("Invalid request method")
-      }
+   } catch (error: any) {
+      console.log(error.message)
+      return res.status(400).send(`error.message`)
    }
 }

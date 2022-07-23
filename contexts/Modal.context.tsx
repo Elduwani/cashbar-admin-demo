@@ -1,4 +1,6 @@
+import SubscriptionTransactions from '@layouts/customers/Customers.subscription.transactions';
 import { AnimatePresence } from 'framer-motion';
+import DrawerModal from 'modals/Drawer.modal';
 import React, { createContext, useContext, useState } from 'react';
 
 type Args = Parameters<ContextProps["openModal"]>
@@ -7,11 +9,11 @@ interface ContextProps {
    closeModal(): void,
 }
 
+const emptyModalState: _ModalState = { name: undefined, data: undefined, title: undefined }
 export const ModalContext = createContext({} as ContextProps)
 export const useModal = () => useContext(ModalContext)
 
 export const ModalProvider = (props: { children: React.ReactNode }) => {
-   const emptyModalState: _ModalState = { name: undefined, data: undefined, title: undefined }
    const [modal, setModal] = useState<_ModalState>(emptyModalState)
 
    const closeModal = () => setModal(emptyModalState)
@@ -23,6 +25,15 @@ export const ModalProvider = (props: { children: React.ReactNode }) => {
       const [name, data, title] = args
 
       switch (name) {
+         case "subscriptionTransactions":
+            return (
+               <DrawerModal
+                  isOpen={modal.name === name}
+                  close={closeModal}
+               >
+                  <SubscriptionTransactions data={data} />
+               </DrawerModal>
+            )
          default:
             return null;
       }

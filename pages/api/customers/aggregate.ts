@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                const message = `Invalid customer_id [id] parameter.`
                throw new Error(message)
             }
-            const snapshot = await trxRef.where('customer', '==', customerID).get()
+            const snapshot = await trxRef.where('customer', '==', +customerID).get()
             const total_investment = snapshot.docs.reduce((acc, curr) => acc += curr.data().amount, 0)
             const total_liquidation = 0
 

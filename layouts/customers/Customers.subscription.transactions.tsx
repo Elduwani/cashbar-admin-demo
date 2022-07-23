@@ -5,25 +5,21 @@ import { queryKeys } from "@configs/reactQueryConfigs"
 import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
-import { FiCheck, FiX } from "react-icons/fi"
 
 interface Props {
-   planCode: string
-   customerID: string
+   data: {
+      plan: PaystackPlan
+      customerID: string
+   }
 }
-export default function SubscriptionTransactions(props: Props) {
-   const { data, isFetching } = useFetch({
-      key: [queryKeys.subscriptions, queryKeys.transactions, props.planCode],
-      url: `/customers/subscriptions/transactions?plan_code=${props.planCode}&customer_id=${props.customerID}`,
+export default function SubscriptionTransactions({ data, ...props }: Props) {
+   const { data: trx, isFetching } = useFetch({
+      key: [queryKeys.transactions, data.plan.plan_code],
+      url: `/customers/subscriptions/transactions?plan_code=${data.plan.plan_code}&customer_id=${data.customerID}`,
       placeholderData: []
    })
 
-   const subscriptions = (data as Subscription[])
-   // const onClick = (customer: Subscription) => router.push(`/customers/${String(customer.id)}`)
-   const rowStyles = (subscription: Subscription) => `
-      py-6 ${subscription.status === 'active' && `bg-teal-50`}
-      ${subscription.status === 'cancelled' && `bg-slate-50/50 text-slate-500`}
-   `
+   const transactions = (trx as PaystackTransaction[])
 
    if (isFetching) return (
       <FullPageCenterItems height={500}>
@@ -33,12 +29,13 @@ export default function SubscriptionTransactions(props: Props) {
 
    return (
       <div className="">
+         <h2 className="text-2xl">Subscription payment history</h2>
+         <h2 className="uppercase text-sm tracking-wider opacity-70">{data.plan.name}</h2>
          {
-            subscriptions?.length ?
+            transactions?.length ?
                <ReactTable
                   columns={tabelColumns}
-                  data={subscriptions}
-                  rowStyles={rowStyles}
+                  data={transactions}
                />
                : null
          }
@@ -50,7 +47,7 @@ const tabelColumns: _TableColumn[] = [
    {
       label: "",
       key: "status",
-      cell: (cell) => tableRowStatus(cell.getValue() === 'active'),
+      cell: (cell) => tableRowStatus(cell.getValue() === 'success'),
       headerStyle: { maxWidth: 20 }
    },
    {
@@ -58,26 +55,8 @@ const tabelColumns: _TableColumn[] = [
       cell: (cell) => formatNumber(cell.getValue(), '', false)
    },
    {
-      key: "plan",
-      cell: (cell) => {
-         const sub = cell.row.original as Subscription
-         return sub.plan.name ?? ''
-      }
-   },
-   {
-      label: "next payment",
-      key: "next_payment_date",
-      cell: (cell) => {
-         const sub = cell.row.original as PaystackSubscription
-         const elements: Record<typeof sub.status, any> = {
-            'active': formatDate(cell.getValue(), true, true),
-            'complete': <FiCheck className="text-slate-400 text-lg" />,
-            'cancelled': <FiX className="text-slate-400 text-lg" />,
-         }
-         return elements[sub.status]
-      }
-   },
-   {
-      key: "status",
-   },
+      label: "date",
+      key: "paid_at",
+      cell: (cell) => formatDate(cell.getValue(), true, true),
+   }
 ]
