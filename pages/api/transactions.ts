@@ -1,4 +1,4 @@
-import { firestore, mapDataId } from "@controllers/firebase.server";
+import { firestore } from "@controllers/firebase.server";
 import { dateFilterOptions, getPastDate } from "@utils/chart.utils";
 import { NextApiRequest, NextApiResponse } from "next/types";
 

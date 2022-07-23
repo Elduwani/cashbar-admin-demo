@@ -1,4 +1,4 @@
-import { firestore } from "@controllers/firebase.server";
+import { firestore, removeDummyRecords } from "@controllers/firebase.server";
 import { getPlans, getSubscriptions } from "@controllers/paystack.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
@@ -46,6 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                await batch.commit()
             }
 
+            await removeDummyRecords(ref, collectionName)
+
             console.log("**** Success ****")
 
             return res.json({
@@ -57,23 +59,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log(error)
             return res.status(400).send(`Could not seed ${collectionName}`)
          }
-      }
-
-      case "DELETE": {
-         const dummy = await ref.where('dummy', '==', true).get()
-         console.log(`** Fetched ${dummy.size} dummy records **`)
-
-         /**
-          * Delete incomplete dummy data entered during collection creation
-          */
-         if (dummy.size) {
-            const dummyBatch = firestore.batch()
-            dummy.forEach(d => dummyBatch.delete(d.ref))
-            await dummyBatch.commit()
-            console.log(`** Deleted ${dummy.size} ${collectionName} dummy data **`)
-         }
-
-         return res.send(`${dummy.size} invalid ${collectionName} were removed`)
       }
 
       default: {

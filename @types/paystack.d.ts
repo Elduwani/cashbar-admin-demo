@@ -50,6 +50,7 @@ interface PaystackSubscription extends Subscription {
    open_invoice?: string
    invoice_limit: number
    split_code?: string
+   [key: string]: any
 }
 
 interface PaystackTransaction extends Transaction {
@@ -78,16 +79,6 @@ interface PaystackTransaction extends Transaction {
       signature: string
       account_name?: string
    },
-   // plan: PaystackPlan
-   customer: PaystackCustomer
-   paidAt: string
-   createdAt: string
+   plan: string
    requested_amount: number,
-   source: {
-      source: string
-      type: string
-      identifier?: any
-      entry_point: string
-   },
-   pos_transaction_data?: {}
 }
