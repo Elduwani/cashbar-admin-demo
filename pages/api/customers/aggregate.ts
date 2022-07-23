@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next/types";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
    try {
-      const collectionName = 'transactions'
+      const collectionName: Collection = 'transactions'
       const trxRef = firestore.collection(collectionName)
 
       switch (req.method) {

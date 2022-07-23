@@ -4,7 +4,7 @@ import { getCustomers } from "@controllers/paystack.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-   const collectionName = 'customers'
+   const collectionName: Collection = 'customers'
    //TODO: return appropriate response
    if (req.headers["x-seed-records"] !== process.env.SEED_SECRET) {
       return res.status(400).json("Invalid request headers")

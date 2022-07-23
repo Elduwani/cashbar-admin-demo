@@ -125,3 +125,5 @@ interface _TableColumn {
    selected?: boolean,
    headerStyle?: Record<string, string | number>
 }
+
+type Collection = "transactions" | "customers" | "expenses" | "liquidations" | "plans" | "subscriptions"

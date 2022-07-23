@@ -1,12 +1,11 @@
-import { firestore, removeDummyRecords } from "@controllers/firebase.server";
+import { batchLimit, firestore, removeDummyRecords } from "@controllers/firebase.server";
 import { getPlans, getSubscriptions } from "@controllers/paystack.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 
 //handle GET request
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-   const batchLimit = 500
-   const collectionName = 'subscriptions'
+   const collectionName: Collection = 'subscriptions'
    const ref = firestore.collection(collectionName);
 
    if (req.headers["x-seed-records"] !== process.env.SEED_SECRET) {

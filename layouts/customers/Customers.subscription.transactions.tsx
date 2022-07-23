@@ -5,15 +5,16 @@ import { queryKeys } from "@configs/reactQueryConfigs"
 import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
-import { useRouter } from "next/router"
 import { FiCheck, FiX } from "react-icons/fi"
 
-export default function Subscriptions() {
-   const router = useRouter()
-
+interface Props {
+   planCode: string
+   customerID: string
+}
+export default function SubscriptionTransactions(props: Props) {
    const { data, isFetching } = useFetch({
-      key: [queryKeys.subscriptions, router.query.id],
-      url: `/customers/subscriptions?customer_id=${router.query.id}`,
+      key: [queryKeys.subscriptions, queryKeys.transactions, props.planCode],
+      url: `/customers/subscriptions/transactions?plan_code=${props.planCode}&customer_id=${props.customerID}`,
       placeholderData: []
    })
 
@@ -67,13 +68,12 @@ const tabelColumns: _TableColumn[] = [
       label: "next payment",
       key: "next_payment_date",
       cell: (cell) => {
-         const sub = cell.row.original as Subscription
+         const sub = cell.row.original as PaystackSubscription
          const elements: Record<typeof sub.status, any> = {
             'active': formatDate(cell.getValue(), true, true),
             'complete': <FiCheck className="text-slate-400 text-lg" />,
             'cancelled': <FiX className="text-slate-400 text-lg" />,
          }
-         // return sub.plan.plan_code
          return elements[sub.status]
       }
    },

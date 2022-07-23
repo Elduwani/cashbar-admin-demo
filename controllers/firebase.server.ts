@@ -38,7 +38,7 @@ export function formatDocumentAmount(doc: Doc, key = 'amount') {
    return data
 }
 
-export async function removeDummyRecords(ref: CollectionReference<DocumentData>, collectionName: string) {
+export async function removeDummyRecords(ref: CollectionReference<DocumentData>, collectionName: Collection) {
    /**
     * Delete incomplete dummy data entered during collection creation
     */

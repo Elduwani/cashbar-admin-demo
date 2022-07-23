@@ -14,4 +14,5 @@ export const queryKeys = {
    customers: 'customers',
    expenses: 'expenses',
    subscriptions: 'subscriptions',
+   transactions: 'transactions',
 }

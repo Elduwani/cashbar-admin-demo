@@ -8,7 +8,7 @@ import path from "path";
 
 //handle GET request
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-   const collectionName = 'transactions'
+   const collectionName: Collection = 'transactions'
    const ref = firestore.collection(collectionName);
    const customersRef = firestore.collection("customers");
 
@@ -136,6 +136,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   const trx = transactions.docs[i].data()
                   console.log(trx.paid_at)
                   const verifiedTrx = await verifyTransaction(trx.reference)
+                  //TODO: this is the plan code only, revise to link plan ID instead
                   trx.plan = verifiedTrx.data.plan
                   data.push(trx)
                   console.log(`>> Verified ${i} of ${transactions.size} <<`)

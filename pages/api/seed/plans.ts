@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next/types";
 
 //handle GET request
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-   const collectionName = 'plans'
+   const collectionName: Collection = 'plans'
    const ref = firestore.collection(collectionName);
 
    if (req.headers["x-seed-records"] !== process.env.SEED_SECRET) {

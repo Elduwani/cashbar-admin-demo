@@ -7,14 +7,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     * to avoid fetching all records.
     */
    try {
-      const collectionName = 'subscriptions'
+      const collectionName: Collection = 'subscriptions'
       const subsRef = firestore.collection(collectionName)
 
       switch (req.method) {
          case "GET": {
             console.log(`>> Fetching ${collectionName}... <<`)
-            const customerID = req.query.id as string
-            if (!customerID) throw new Error(`Invalid customer_id [id] parameter.`)
+            const customerID = req.query.customer_id as string
+            if (!customerID) throw new Error(`Invalid customer_id [customer_id] parameter.`)
 
             const subscriptionsSnapshot = await subsRef.where('customer', '==', +customerID).get()
             const sortRank: PaystackSubscription['status'][] = ['active', 'complete', 'cancelled']
