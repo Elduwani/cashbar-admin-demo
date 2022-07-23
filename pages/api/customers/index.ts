@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       switch (req.method) {
          case "GET": {
             console.log("Fetching customers...")
-            const snapshot = await customerRef.get()
+            const snapshot = await customerRef.orderBy('first_name', 'asc').get()
             const responseData = snapshot.docs.map(d => d.data())
             return res.send(responseData)
          }

@@ -97,6 +97,22 @@ interface Transaction {
    [key: string]: any
 }
 
+interface Subscription {
+   id: string,
+   customer: Customer,
+   plan: PaystackPlan
+   start: number
+   status: 'active' | 'complete' | 'cancelled'
+   quantity: number,
+   amount: number
+   subscription_code: string
+   next_payment_date?: string
+   cancelledAt: string
+   createdAt: string
+   updatedAt: string
+   // [key: string]: any
+}
+
 interface _TableColumn {
    key: string,
    label?: string,

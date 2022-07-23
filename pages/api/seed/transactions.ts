@@ -1,4 +1,4 @@
-import { batchLimit, firestore, mapDataId } from "@controllers/firebase.server";
+import { batchLimit, firestore } from "@controllers/firebase.server";
 import { getTransactions } from "@controllers/paystack.server";
 import { sub } from "date-fns";
 import { NextApiRequest, NextApiResponse } from "next/types";

@@ -38,29 +38,18 @@ interface PaystackPlan {
    [key: string]: any
 }
 
-interface PaystackSubscription {
-   id: string,
+interface PaystackSubscription extends Subscription {
    customer: string,
    plan: string
    integration: number
    domain: string
-   start: number
-   status: string
-   quantity: number,
-   amount: number
-   subscription_code: string
    email_token: string
    authorization: number
    easy_cron_id: string
    cron_expression: string
-   next_payment_date?: string
    open_invoice?: string
    invoice_limit: number
    split_code?: string
-   cancelledAt: string
-   createdAt: string
-   updatedAt: string
-   [key: string]: any
 }
 
 interface PaystackTransaction extends Transaction {

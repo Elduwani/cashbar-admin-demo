@@ -2,19 +2,94 @@
 @tailwind components;
 @tailwind utilities;
 
+@mixin borderRadius($size: 0.5rem) {
+   border-radius: $size;
+}
+
+@mixin customScrollBar() {
+   scroll-behavior: smooth;
+
+   &::-webkit-scrollbar {
+      @include borderRadius();
+      width: 6px;
+      height: 6px;
+   }
+
+   &::-webkit-scrollbar-track {
+      @include borderRadius();
+      // background-color: rgb(35, 35, 39);
+   }
+
+   &::-webkit-scrollbar-thumb {
+      @include borderRadius();
+      // background-color: rgb(121, 121, 123);
+
+      &:hover {
+         // @apply bg-gray-500;
+      }
+   }
+
+   scrollbar-width: thin;
+   // scrollbar-color: rgb(121, 121, 123) rgb(35, 35, 39);
+}
+
 html,
 body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+   padding: 0;
+   margin: 0;
+   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+      Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+   color: inherit;
+   text-decoration: none;
 }
 
 * {
-  box-sizing: border-box;
+   box-sizing: border-box;
+}
+
+.indicator {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   text-align: center;
+   position: absolute;
+   top: 0;
+   width: 100%;
+   height: 100%;
+   margin: 0 auto;
+   font-size: 2.2em;
+   font-weight: 100;
+   color: #555;
+   user-select: none;
+}
+
+/** **/
+.resizer {
+   position: absolute;
+   right: 0;
+   top: 0;
+   height: 100%;
+   width: 5px;
+   background: rgba(0, 0, 0, 0.5);
+   cursor: col-resize;
+   user-select: none;
+   touch-action: none;
+}
+
+.resizer.isResizing {
+   background: blue;
+   opacity: 1;
+}
+
+@media (hover: hover) {
+   .resizer {
+      opacity: 0;
+   }
+
+   *:hover>.resizer {
+      opacity: 1;
+   }
 }

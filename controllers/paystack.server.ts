@@ -27,9 +27,9 @@ export const updateCustomer = async (data: Partial<PaystackCustomer>, id: number
 }
 
 /** Plans **/
-export const getPlans = async () => {
-   const response = await axios.get(`https://api.paystack.co/plan`, { headers });
-   return response.data as PaystackResponse<PaystackPlan[]>;
+export async function getPlans<T = PaystackPlan>() {
+   const response = await axios.get(`https://api.paystack.co/plan`, { headers })
+   return response.data as PaystackResponse<T[]>;
 }
 
 type PlanPayload = Pick<PaystackPlan, 'name' | 'amount' | 'description' | 'send_invoices' | 'interval' | 'send_sms'>

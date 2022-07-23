@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       switch (req.method) {
          case "GET": {
-            console.log(`** Fetching ${collectionName}... **`)
+            console.log(`>> Fetching ${collectionName}... <<`)
             const customerID = req.query.id as string
             if (!customerID) {
                const message = `Invalid customer_id [id] parameter.`

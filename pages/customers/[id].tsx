@@ -5,14 +5,18 @@ import { queryKeys } from '@configs/reactQueryConfigs'
 import { useModal } from '@contexts/Modal.context'
 import { CustomersLayout } from '@layouts/customers/Customers.layout'
 import Overview from '@layouts/customers/Customers.overview'
+import Subscriptions from '@layouts/customers/Customers.subscriptions'
 import { useFetch } from '@utils/fetch'
-import { getDynamicPath } from '@utils/index'
 import { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next/types'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
 
 export default function CustomerID() {
+   /**
+    * The parent layout already prefetched customer data for this page,
+    * with the required id present in the URL, so no need for a loading UI
+    */
    const router = useRouter()
    const { openModal } = useModal()
    const [tabIndex, setTabIndex] = useState(0)
@@ -25,30 +29,11 @@ export default function CustomerID() {
 
    const tabs: _Tab[] = [
       { name: "overview", element: Overview },
-      { name: "subscriptions" },
+      { name: "subscriptions", element: Subscriptions },
       { name: "settings" }
    ]
 
    const TabbedLayout = tabs[tabIndex].element
-
-   useEffect(() => {
-      if (router.query.id) {
-         const pathname = getDynamicPath(router.route, '[id]', router.query.id as string)
-         // console.log(pathname + "?tab=");
-         router.replace(
-            {
-               pathname,
-               query: {
-                  ...router.query,
-                  tab: tabs[tabIndex].name // override the tab property
-               },
-            },
-            undefined,
-            { shallow: true }
-         )
-      }
-   }, [tabIndex])
-
    const activeCustomer = (customers as Customer[])?.find(c => String(c.id) === router.query.id)
 
    if (activeCustomer?.id) {

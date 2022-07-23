@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case "POST": {
          try {
             console.log(`** Fetching Paystack ${collectionName} **`)
-            const plans = await getPlans()
+            const plans = await getPlans<Partial<PaystackPlan>>()
             console.log(`** Fetched ${plans.data.length} ${collectionName} **`)
 
             //Firebase batch only allows 500 writes per request
@@ -31,9 +31,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                console.log({ start, end })
 
                for (const plan of chunk) {
-                  plan['updatedAt'] = new Date().toISOString()
-                  console.log(`Adding ${plan.id}...`)
-                  batch.set(ref.doc(String(plan.id)), plan);
+                  if (!plan.is_deleted) {
+                     plan['updatedAt'] = new Date().toISOString()
+                     delete plan.total_subscriptions
+                     delete plan.active_subscriptions
+                     delete plan.total_subscriptions_revenue
+                     delete plan.subscriptions
+                     console.log(`Adding ${plan.id}...`)
+                     batch.set(ref.doc(String(plan.id)), plan);
+                  }
                }
 
                //Commit chunk
