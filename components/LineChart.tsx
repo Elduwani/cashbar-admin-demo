@@ -1,7 +1,7 @@
+import { dateFilterOptions, getChartData, getPastDate, niceNumbers } from "@utils/chart.utils"
 import { metricPrefix } from "@utils/index"
-import { getChartData, niceNumbers, dateFilterOptions, getPastDate } from "@utils/chart.utils"
 import { transform } from "framer-motion"
-import { useRef, useState, useLayoutEffect } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { GiPlainCircle } from "react-icons/gi"
 import Spinner from "./Spinner"
 import { ChartProps } from "./TransactionsChart"
@@ -235,20 +235,34 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
                   {
                      //x-axis
                      //since the number of days is calculated by period prop any of the dataSet would suffice
-                     vectors[0].map((coord, i) => {
+                     vectors[0].map((coord, i, arr) => {
+                        const shouldSlant = viewBox.width < 700 || arr.length > 8
                         const { height } = canvasBox
                         const [x] = coord.split(",")
-                        const [date] = chartData[0].data[i] //any one is fine. They all have the same date range. Date-string expected to be formatted "Jan 02, 2021"
-                        // console.log(date)
-                        //skip year if it's current year
+                        //any index is fine. They all have the same date range.
+                        const [date] = chartData[0].data[i]
+                        const rotationDeg = shouldSlant ? -35 : 0
+                        const y = height + 15
+                        const textNode = (
+                           <g transform={`translate(${x}, ${y})`} key={i + '_' + date}>
+                              {/* <rect
+                                 fill="red"
+                                 width={40}
+                                 height={5}
+                                 transform={`rotate(${rotationDeg})`}
+                              /> */}
+                              <text
+                                 y={shouldSlant ? 0 : 10}
+                                 textAnchor={shouldSlant ? 'end' : 'middle'}
+                                 transform={`rotate(${rotationDeg})`}
+                                 className={`fill-current ${shouldSlant && date.length > 5 ? 'text-[10px]' : 'text-xs'} text-gray-400`}
+                              >{date}</text>
+                           </g>
+                        )
 
-                        const textNode = <text key={i} x={x} y={height + 30}
-                           textAnchor="middle"
-                           className="fill-current text-xs text-gray-400">{date}</text>
-
-                        if (vectors[0].length > 7) {
+                        if (shouldSlant) {
                            //render every third date, but include the last one
-                           return i % 3 === 0 ? textNode : null
+                           return i % 2 === 0 ? textNode : null
                         }
 
                         return textNode

@@ -50,12 +50,12 @@ export default function Subscriptions() {
 }
 
 const tabelColumns: _TableColumn[] = [
-   {
-      label: "",
-      key: "status",
-      cell: (cell) => tableRowStatus(cell.getValue() === 'active'),
-      headerStyle: { maxWidth: 20 }
-   },
+   // {
+   //    label: "",
+   //    key: "status",
+   //    cell: (cell) => tableRowStatus(cell.getValue() === 'active'),
+   //    headerStyle: { maxWidth: 20 }
+   // },
    {
       key: "amount",
       cell: (cell) => formatNumber(cell.getValue(), '', false)
@@ -83,5 +83,9 @@ const tabelColumns: _TableColumn[] = [
    },
    {
       key: "status",
+      cell: (cell) => {
+         const sub = cell.row.original as Subscription
+         return sub.status
+      }
    },
 ]

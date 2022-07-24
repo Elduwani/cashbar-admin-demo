@@ -1,4 +1,4 @@
-import { sub, eachDayOfInterval, startOfWeek, isFirstDayOfMonth } from "date-fns"
+import { sub, eachDayOfInterval, startOfWeek, isFirstDayOfMonth, format } from "date-fns"
 import { formatDate } from "./index"
 
 export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months", "1 year"] as const
@@ -16,21 +16,29 @@ export function getChartData(transactions: Trx[], endDate: string) {
    const map: MyMap = new Map()
    const intervalDays = eachDayOfInterval({ start: new Date(endDate), end: new Date() })
 
-   function setMap(arr: string[], interval?: Interval) {
-      //Use the last date in the array as key. If only one items exists then that is also the last item.
-      const date = arr[arr.length - 1]
-      const [d, month, year] = date.split(" ") //date is formatted above in formateDate 
-      const [, , thisYear] = formatDate(new Date(), false).split(" ")
-      let key = interval === "monthly" ? month : `${month} ${d}`
-
-      if (year !== thisYear) {
-         key = `${d} ${month} '${year}`
-      }
-
+   function setMap(datesRange: string[]) {
+      /**
+       * The keys for this map must be full unmodified dates that includes the year,
+       * otherwise transactions from a previous year will bleed into current year's calculations.
+       * Use the last date in the array as key. If only one items exists then that is also the last item.
+       */
+      const key = datesRange[datesRange.length - 1]
       map.set(key, {
          total: 0,
-         dates: arr, //Important. Transactions are aggregated based on this array of dates. 
+         dates: datesRange, //Transactions are aggregated based on this array of dates. 
       })
+   }
+
+   function formatKeys(map: MyMap, interval: Interval) {
+      const data = Array.from(map)
+      for (const datum of data) {
+         let [key] = datum, options = "MMM dd"
+         if (interval === 'monthly') {
+            options = "MMM"
+         }
+         datum[0] = format(new Date(key), options)
+      }
+      return data
    }
 
    let days = intervalDays.length,
@@ -43,18 +51,19 @@ export function getChartData(transactions: Trx[], endDate: string) {
 
    for (let i = 0; i < intervalDays.length; i++) {
       const currentDate = intervalDays[i]
-      const date = formatDate(currentDate, false)
+      const date = formatDate(currentDate)
 
       if (interval === "monthly") {
          /**
-          * Please note, on the 1st of every month the tempArr is empty. It's very important to check if it's not empty.
-          * Otherwise will send empty array on 1st of month and crash the app.
+          * Please note, on the 1st of every month the tempArr is empty. 
+          * It's very important to check if it's not empty.
+          * Otherwise will send empty array on 1st of month and cause an error.
           * ...
-          * Once we hit a new month save & reset <<tempArr>>
+          * Once we hit a new month save & reset [tempArr]
           * Initialise new arr with current date otherise it's lost by next loop
          */
          if (isFirstDayOfMonth(currentDate)) {
-            if (tempArr.length) setMap(tempArr, interval)
+            if (tempArr.length) setMap(tempArr)
             tempArr = [date]
             continue
          }
@@ -81,30 +90,30 @@ export function getChartData(transactions: Trx[], endDate: string) {
       else setMap([date])// Default to daily
    }
 
-   //Important: <<tempArr>> still holds values for most recent month from the final loop
+   //[tempArr] still holds values for most recent month from the final loop
    if (tempArr.length) {
       setMap(tempArr)
    }
 
    //Update the total transactions for each entry on the map. Map argument will be mutated
    const maxAmount = aggregateTotals(map, transactions)
-   return { data: Array.from(map), maxAmount }
+   const data = formatKeys(map, interval)
+   return { data, maxAmount }
 }
 
 function aggregateTotals(map: MyMap, transactions?: Trx[]) {
    let maxAmount = 0
    map.forEach((value, key) => {
       if (transactions?.length) {
-         transactions.forEach((trx) => {
+         transactions.forEach(trx => {
             let { paid_at, amount, status } = trx
-            let trxDate = formatDate(new Date(paid_at), false)
+            let trxDate = formatDate(new Date(paid_at))
             let { dates } = value
 
             if (status === "success") {
                /**
-                * <<dates>> is an array of all the dates between 
-                * and also the two dates that are the keys
-               */
+                * [dates] is an array of all the dates between interval
+                */
                if (dates?.includes(trxDate) || trxDate === key) {
                   // Must use map.get() bcos this inner loop references stale data
                   const { total } = map.get(key)!

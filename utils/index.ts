@@ -24,11 +24,11 @@ export function byteSize(number: number) {
    return String(number)
 }
 
-export function formatDate(date: string | Date, long = true, time = false) {
+export function formatDate(date: string | Date, year = true, time = false) {
    //so every function uses the same date format to avoid differences
    try {
       const d = new Date(date)
-      return format(d, `${!long ? "dd MMMM" : "MMM dd, yyyy"}${time ? " - hh:mm a" : ""}`)
+      return format(d, `${!year ? "dd MMMM" : "dd MMM, yyyy"}${time ? " - hh:mm a" : ""}`)
    } catch (error) {
       return date as string
    }

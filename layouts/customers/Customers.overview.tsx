@@ -61,9 +61,9 @@ export default function Overview() {
             title=""
             dataSet={dataSet}
             setPeriod={setPeriod}
+            loading={isFetching}
             period={period}
             height={250}
-            loading={isFetching}
          />
 
          {
