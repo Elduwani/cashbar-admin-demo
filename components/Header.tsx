@@ -4,25 +4,22 @@ import {
    FiSettings as SettingsIcon, FiTrendingDown as ExpensesIcon, FiUsers as UsersIcon
 } from "react-icons/fi";
 import BrandLogo from "./BrandLogo";
-import Dropdown, { Notifications } from "./Dropdown";
+import Dropdown, { Notifications, _MenuDropDown } from "./Dropdown";
 import { SwingIndicator } from "./Spinner";
 
-const url = "https://tinyfac.es/data/avatars/344CFC24-61FB-426C-B3D1-CAD5BCBD3209-200w.jpeg"
-
 export default function Header() {
-
-   const menuListAll = [
-      { label: "Dashboard", link: "dashboard", icon: <DashboardIcon /> },
-      { label: "Customers", link: "customer", icon: <UsersIcon /> },
-      { label: "Transactions", link: "transaction", icon: <TransactionsIcon /> },
-      { label: "Expenses", link: "expense", icon: <ExpensesIcon /> },
-      { label: "Plans", link: "plan", icon: <PlansIcon /> },
-      { label: "Approvals", link: "approval", icon: <ApprovalsIcon /> },
-      { label: "Settings", icon: <SettingsIcon />, borderTop: true },
-      { label: "Sign out", icon: <LogoutIcon />, callback: () => null }
+   const menuListAll: _MenuDropDown[] = [
+      { label: "Dashboard", link: "dashboard", icon: DashboardIcon },
+      { label: "Customers", link: "customer", icon: UsersIcon },
+      { label: "Transactions", link: "transaction", icon: TransactionsIcon },
+      { label: "Expenses", link: "expense", icon: ExpensesIcon },
+      { label: "Plans", link: "plan", icon: PlansIcon },
+      { label: "Approvals", link: "approval", icon: ApprovalsIcon },
+      { label: "Settings", icon: SettingsIcon, borderTop: true },
+      { label: "Sign out", icon: LogoutIcon }
    ]
    const menuList = [
-      { label: "Sign out", icon: <LogoutIcon />, callback: () => null }
+      { label: "Sign out", icon: LogoutIcon, callback: () => null }
    ]
 
    const emailDisplay = <div className="px-4 py-3">
@@ -46,7 +43,7 @@ export default function Header() {
                   <div
                      className="w-full h-full rounded-full"
                      style={{
-                        backgroundImage: `url(${url})`,
+                        // backgroundImage: `url(${''})`,
                         backgroundSize: "cover",
                         backgroundRepeat: "no-repeat",
                         backgroundPosition: "center center",

@@ -34,12 +34,12 @@ export default function SubscriptionHistory({ data }: Props) {
       <div className="pb-6 space-y-4">
          <div className="">
             <h2 className="text-2xl">Subscription payment history</h2>
-            <h2 className="capitalize ">{formatNumber(data.plan.amount, "N")} {data.plan.interval}, {data.subscription.status}</h2>
+            <h2 className="capitalize ">{formatNumber(data.plan.amount, "$")} {data.plan.interval}, {data.subscription.status}</h2>
             <h2 className="capitalize text-sm opacity-70">{data.plan.name}</h2>
             {
                transactions?.length ?
                   <h2 className="text-sm opacity-70">
-                     {transactions.length} payments ({formatNumber(transaction_volume, "N")})
+                     {transactions.length} payments ({formatNumber(transaction_volume, "$")})
                   </h2> : null
             }
          </div>

@@ -87,7 +87,7 @@ interface CardProps {
    loading?: boolean
 }
 function OverviewCard({ color = "gray", ...props }: CardProps) {
-   const displayAmount = props.amount ? formatNumber(props.amount, "N", false) : "0.00"
+   const displayAmount = props.amount ? formatNumber(props.amount, "$", false) : "0.00"
 
    return (
       <div

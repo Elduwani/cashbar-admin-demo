@@ -1,13 +1,12 @@
 import { differenceInDays, differenceInMonths, differenceInWeeks, format, formatRelative } from "date-fns";
-import { DocumentData, QueryDocumentSnapshot } from "firebase-admin/firestore";
 
 export function metricPrefix(number: number) {
    if (invalidNumbers([number])) return '0.00'
 
    const num = Math.abs(number)
    //Must start from largest number so it doesn't return lower true condition
-   if (num > 999999999) return (Math.sign(num) * (num / 1000000000)).toFixed(2) + 'B'
-   if (num > 999999) return (Math.sign(num) * (num / 1000000)).toFixed(2) + 'M'
+   if (num > 999999999) return (Math.sign(num) * (num / 1000000000)).toFixed(1) + 'B'
+   if (num > 999999) return (Math.sign(num) * (num / 1000000)).toFixed(1) + 'M'
    if (num > 999) return parseInt(String(Math.sign(num) * (num / 1000))) + 'K'
    return String(Math.sign(num) * num)
 }

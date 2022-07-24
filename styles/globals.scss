@@ -84,6 +84,10 @@ a {
    opacity: 1;
 }
 
+.scrollbar {
+   @include customScrollBar();
+}
+
 @media (hover: hover) {
    .resizer {
       opacity: 0;

@@ -96,7 +96,7 @@ export function getChartData(transactions: Trx[], endDate: string) {
       setMap(tempArr)
    }
 
-   //Update the total transactions for each entry on the map. Map argument will be mutated
+   //Update the total transactions for each entry on the map. Map will be mutated
    const maxAmount = aggregateTotals(map, transactions)
    const data = formatKeys(map, interval)
    return { data, maxAmount }
@@ -131,6 +131,7 @@ function aggregateTotals(map: MyMap, transactions?: Trx[]) {
       }
    })
 
+   console.log(maxAmount)
    return maxAmount
 }
 

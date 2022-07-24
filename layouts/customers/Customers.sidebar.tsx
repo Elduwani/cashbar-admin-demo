@@ -34,7 +34,7 @@ export default function CustomersSidebar() {
    )
 
    return (
-      <div className="w-full h-full flex flex-col border-r">
+      <div className="w-full h-full flex flex-col border-r bg-white">
          <div className="h-36 space-y-2 pt-6 px-4 border-b flex-shrink-0">
             <h3 className="text-gray-700">Search</h3>
             <Search

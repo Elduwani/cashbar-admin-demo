@@ -105,7 +105,11 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
                            uppercase text-xs md:text-sm px-4 py-1 tracking-wider cursor-pointer rounded 
                            ${selected ? "bg-indigo-600 text-white shadow-lg" : "bg-blue-50 text-indigo-600"}
                         `}
-                           onClick={() => props.setPeriod?.(getPastDate(dateRange))}
+                           onClick={() => {
+                              if (props.period.label !== dateRange) {
+                                 props.setPeriod?.(getPastDate(dateRange))
+                              }
+                           }}
                         >{dateRange.replace(/ /g, "").slice(0, 2)}</div>
                      )
                   })
@@ -152,7 +156,7 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
                         return (
                            <g id="y-axis" key={i}>
                               <text x={0} y={y + 5}
-                                 className="fill-current text-xs lg:text-xs text-gray-600"
+                                 className="fill-current text-xs text-gray-600"
                               >{metricPrefix(val)}</text>
                               <line
                                  x1={startX} y1={y}

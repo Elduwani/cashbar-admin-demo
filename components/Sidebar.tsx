@@ -23,7 +23,7 @@ export default function Sidebar() {
       <div
          className={`
                 transition-all h-full flex flex-col flex-shrink-0 pb-6
-                items-center overflow-x-hidden bg-indigo-800
+                items-center overflow-x-hidden bg-slate-700
                 ${isOpen ? 'w-[200px]' : isMobile ? 'w-14' : 'w-20'}
             `}
       >
@@ -58,8 +58,8 @@ export default function Sidebar() {
             <div
                onClick={() => setIsOpen(v => !v)}
                className={`
-                    h-12 w-full flex text-sm items-center cursor-pointer text-blue-300 space-x-2
-                    ${isOpen ? 'px-4' : 'justify-center'}
+                  h-12 w-full flex text-sm items-center cursor-pointer text-blue-300 space-x-2
+                  ${isOpen ? 'px-4' : 'justify-center'}
                 `}
             >
                {
@@ -106,7 +106,7 @@ function NavLink({ route, isOpen }: Props) {
             className={`
                     h-14 flex items-center px-6 space-x-4 cursor-pointer
                     outline-none relative capitalize border-opacity-25 text-sm 
-                    ${matched ? 'bg-white text-indigo-800 font-semibold' : 'text-white'}
+                    ${matched ? 'bg-slate-100 text-indigo-800 font-semibold' : 'text-white'}
                     ${!enabled && 'pointer-events-none opacity-50'}
                     ${matched && isOpen ? "shadow-lg" : ""}
                     ${!isOpen && "justify-center"} 
