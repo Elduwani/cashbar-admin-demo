@@ -13,7 +13,7 @@ export default function Overview() {
 
    const { data, isFetching } = useFetch({
       key: [queryKeys.investments, 'overview', id],
-      url: `/customers/aggregate?id=${id}`,
+      url: `/customers/aggregates?customer_id=${id}`,
       placeholderData: {}
    })
 

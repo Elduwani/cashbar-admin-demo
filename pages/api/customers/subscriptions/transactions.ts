@@ -1,4 +1,4 @@
-import { firestore, formatDocumentAmount } from "@controllers/firebase.server";
+import { getSubscriptionTransactions } from "@controllers/subscriptions.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -7,25 +7,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     * to avoid fetching all records.
     */
    try {
-      const collectionName: Collection = 'transactions'
-      const ref = firestore.collection(collectionName)
-
       switch (req.method) {
          case "GET": {
             const [planCode, customerID] = [req.query.plan_code as string, req.query.customer_id as string]
             if (!planCode) throw new Error(`Invalid planCode [plan_code] parameter.`)
             if (!customerID) throw new Error(`Invalid customerID [customer_id] parameter.`)
 
-            console.log(`>> Fetching ${collectionName} for ${planCode} <<`)
-
-            const transactionsRef = await ref
-               .orderBy('paid_at', 'asc')
-               .where('customer', '==', customerID)
-               .where("plan", "==", planCode)
-               .get()
-
-            const responseData = transactionsRef.docs.map(d => formatDocumentAmount(d))
-
+            const responseData = await getSubscriptionTransactions(planCode, customerID)
             return res.send(responseData)
          }
 

@@ -23,7 +23,7 @@ export default function Subscriptions() {
    const subscriptions = (data as Subscription[])
    const onClick = (sub: Subscription) => openModal(`subscriptionTransactions`, { plan: sub.plan, customerID })
    const rowStyles = (subscription: Subscription) => `
-      py-6 ${subscription.status === 'active' && `bg-teal-50`}
+      py-4 ${subscription.status === 'active' && `bg-teal-50`}
       ${subscription.status === 'cancelled' && `bg-slate-50/50 text-slate-500`}
    `
 
@@ -50,12 +50,6 @@ export default function Subscriptions() {
 }
 
 const tabelColumns: _TableColumn[] = [
-   // {
-   //    label: "",
-   //    key: "status",
-   //    cell: (cell) => tableRowStatus(cell.getValue() === 'active'),
-   //    headerStyle: { maxWidth: 20 }
-   // },
    {
       key: "amount",
       cell: (cell) => formatNumber(cell.getValue(), '', false)
@@ -64,7 +58,12 @@ const tabelColumns: _TableColumn[] = [
       key: "plan",
       cell: (cell) => {
          const sub = cell.row.original as Subscription
-         return sub.plan.name ?? ''
+         return (
+            <>
+               <p>{sub.plan.name}</p>
+               <p className="opacity-60">{sub.plan.interval}</p>
+            </>
+         )
       }
    },
    {

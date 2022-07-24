@@ -22,22 +22,26 @@ export default function SubscriptionTransactions({ data, ...props }: Props) {
    const transactions = (trx as PaystackTransaction[])
 
    if (isFetching) return (
-      <FullPageCenterItems height={500}>
+      <FullPageCenterItems height={600}>
          <Spinner />
       </FullPageCenterItems>
    )
 
    return (
-      <div className="">
+      <div className="pb-6">
+         <h2 className="text-sm">Add aggregate numbers | details</h2>
          <h2 className="text-2xl">Subscription payment history</h2>
-         <h2 className="uppercase text-sm tracking-wider opacity-70">{data.plan.name}</h2>
+         <h2 className="uppercase text-sm tracking-wider opacity-70">{data.plan.name} - {data.plan.interval}</h2>
          {
             transactions?.length ?
                <ReactTable
                   columns={tabelColumns}
                   data={transactions}
                />
-               : null
+               :
+               <FullPageCenterItems className="text-slate-500" height={600}>
+                  There are no payments for this subscription
+               </FullPageCenterItems>
          }
       </div>
    )

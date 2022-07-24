@@ -11,7 +11,8 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
    const [viewBox, setViewBox] = useState({ width: 960, height, padding: 20 })
 
    const chartData = props.dataSet.map(set => getChartData(set.data, props.period.value))
-   const { yAxisNumbers, maxNumber } = niceNumbers(Math.max(...chartData.map(set => set.maxAmount + 2000), 5000), 5) //10k is fallback value when there are no transactions, otherwise renders empty
+   //5k is fallback value when there are no transactions, otherwise renders empty
+   const { yAxisNumbers, maxNumber } = niceNumbers(Math.max(...chartData.map(set => set.maxAmount + 2000), 5000), 5)
    const [canvasBox, setCanvasBox] = useState({ startX: 0, startY: 0, width: 100, height: 100, yAxisWidth: 40, xAxisHeight: 25 })
    //Calculate relative [x,y] coordinates of entries
    const vectors = chartData.map(set => getVectors(set.data))
@@ -262,7 +263,7 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
 
                         if (shouldSlant) {
                            //render every third date, but include the last one
-                           return i % 2 === 0 ? textNode : null
+                           // return i % 2 === 0 ? textNode : null
                         }
 
                         return textNode

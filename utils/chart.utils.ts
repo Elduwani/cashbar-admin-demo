@@ -38,7 +38,8 @@ export function getChartData(transactions: Trx[], endDate: string) {
          }
          datum[0] = format(new Date(key), options)
       }
-      return data
+      //map has a +1 overflow because eachDayOfInterval is inclusive of start. Skip the first entry to fix
+      return data.slice(1, data.length)
    }
 
    let days = intervalDays.length,
@@ -49,7 +50,7 @@ export function getChartData(transactions: Trx[], endDate: string) {
    else if (days > 90) interval = "monthly"
    else interval = "daily"
 
-   for (let i = 0; i < intervalDays.length; i++) {
+   for (let i = 0; i < days; i++) {
       const currentDate = intervalDays[i]
       const date = formatDate(currentDate)
 

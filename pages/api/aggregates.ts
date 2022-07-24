@@ -1,4 +1,4 @@
-import getAggregate from "@controllers/aggregates";
+import { getAggregate } from "@controllers/aggregates.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

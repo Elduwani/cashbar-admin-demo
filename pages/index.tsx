@@ -1,7 +1,7 @@
 import Activities from "@components/Activities";
 import Button from "@components/Button";
 import TransactionsChart, { DataSet } from "@components/TransactionsChart";
-import getAggregate from "@controllers/aggregates";
+import { getAggregate } from "@controllers/aggregates.server";
 import { getPastDate } from "@utils/chart.utils";
 import { useFetch } from "@utils/fetch";
 import { metricPrefix } from "@utils/index";

@@ -16,7 +16,7 @@ export const batchLimit = 500
 
 type Doc = QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData>
 export function formatDocumentAmount(doc: Doc, key = 'amount') {
-   const data = doc.data()!
+   const data = doc.data() ?? doc
    data[key] = formatBaseCurrency(data[key])
    return data
 }
