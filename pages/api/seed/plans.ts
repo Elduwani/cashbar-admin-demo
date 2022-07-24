@@ -1,13 +1,9 @@
-import { batchLimit, firestore, removeDummyRecords } from "@controllers/firebase.server";
-import { getPlans } from "@controllers/paystack.server";
+import { seedPlans } from "@controllers/seed.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 
 //handle GET request
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-   const collectionName: Collection = 'plans'
-   const ref = firestore.collection(collectionName);
-
    if (req.headers["x-seed-records"] !== process.env.SEED_SECRET) {
       return res.status(400).send("Invalid request headers")
    }
@@ -15,50 +11,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    switch (req.method) {
       case "POST": {
          try {
-            console.log(`** Fetching Paystack ${collectionName} **`)
-            const plans = await getPlans<Partial<PaystackPlan>>()
-            console.log(`** Fetched ${plans.data.length} ${collectionName} **`)
-
-            //Firebase batch only allows 500 writes per request
-            //Split data into chunks
-            const batchCount = Math.ceil(plans.data.length / batchLimit)
-
-            for (let i = 0; i < batchCount; i++) {
-               const batch = firestore.batch()
-               const [start, end] = [i * batchLimit, batchLimit * (i + 1)]
-               const chunk = plans.data.slice(start, end)
-               console.log("*".repeat(30))
-               console.log({ start, end })
-
-               for (const plan of chunk) {
-                  if (!plan.is_deleted) {
-                     plan['updatedAt'] = new Date().toISOString()
-                     delete plan.total_subscriptions
-                     delete plan.active_subscriptions
-                     delete plan.total_subscriptions_revenue
-                     delete plan.subscriptions
-                     console.log(`Adding ${plan.id}...`)
-                     batch.set(ref.doc(String(plan.id)), plan);
-                  }
-               }
-
-               //Commit chunk
-               console.log("** Committing batch **")
-               await batch.commit()
-            }
-
-            await removeDummyRecords(ref, collectionName)
-
-            console.log("**** Success ****")
-
-            return res.json({
-               status: "success",
-               message: `${plans.data.length} ${collectionName} were seeded successfully`
-            });
+            const response = await seedPlans()
+            return res.json(response);
 
          } catch (error) {
             console.log(error)
-            return res.status(400).send(`Could not seed ${collectionName}`)
+            return res.status(400).send(`Could not seed plans`)
          }
       }
 

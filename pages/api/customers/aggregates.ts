@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                throw new Error(message)
             }
 
-            const aggregates = await getCustomerAggregate(customerID)
+            const aggregates = await getCustomerAggregate(+customerID)
             return res.send(aggregates)
          }
 

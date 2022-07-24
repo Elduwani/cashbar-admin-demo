@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (!planCode) throw new Error(`Invalid planCode [plan_code] parameter.`)
             if (!customerID) throw new Error(`Invalid customerID [customer_id] parameter.`)
 
-            const responseData = await getSubscriptionTransactions(planCode, customerID)
+            const responseData = await getSubscriptionTransactions(planCode, +customerID)
             return res.send(responseData)
          }
 

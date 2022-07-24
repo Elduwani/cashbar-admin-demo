@@ -1,6 +1,5 @@
-import { firestore, formatDocumentAmount } from "@controllers/firebase.server";
+import { getAllFirebaseTransactions, getFirebaseCustomers, getFirebaseCustomerTransactions } from "@controllers/firebase.server";
 import { formatBaseCurrency } from "@utils/index";
-import { DocumentData, QueryDocumentSnapshot } from "firebase-admin/firestore";
 
 interface Aggregate {
    expenseVolume: number
@@ -17,19 +16,22 @@ interface Aggregate {
 
 export async function getAggregate(): Promise<Aggregate> {
    console.log(`** Fetching records **`)
-   const revenueRef = await firestore.collection("transactions").get()
-   const liquidationsRef = await firestore.collection("liquidations").where('validated', '==', true).get()
-   const customerssRef = await firestore.collection("customers").get()
+   const customers = await getFirebaseCustomers()
+   const transactions = await getAllFirebaseTransactions()
+   // const liquidationsRef = await _firestore.collection("liquidations").where('validated', '==', true).get()
 
-   const invTotals = sumAmount(revenueRef.docs)
-   const liqTotals = sumAmount(liquidationsRef.docs)
+   const liqTotals = 0
+   const invTotals = transactions.reduce((acc, liq) => {
+      acc += liq.amount
+      return acc
+   }, 0)
 
    const responseData: Aggregate = {
-      transactionCount: revenueRef.size,
-      customerCount: customerssRef.size,
-      liquidationVolume: formatBaseCurrency(liqTotals),
-      investmentVolume: formatBaseCurrency(invTotals),
-      expenseVolume: formatBaseCurrency(0),
+      transactionCount: transactions.length,
+      customerCount: customers.length,
+      liquidationVolume: liqTotals,
+      investmentVolume: invTotals,
+      expenseVolume: 0,
       // data: {
       //    expenses: [],
       //    liquidations: liquidationsRef.docs.map(mapDataId) as Liquidation[],
@@ -40,33 +42,19 @@ export async function getAggregate(): Promise<Aggregate> {
    return responseData
 }
 
-export async function getCustomerAggregate(customerID: string) {
+export async function getCustomerAggregate(customerID: number) {
    console.log(`>> Fetching aggregates for ${customerID}... <<`)
-   const collectionName: Collection = 'transactions'
-   const ref = firestore.collection(collectionName)
-   const snapshot = await ref
-      .orderBy('paid_at', 'desc')
-      .where('customer', '==', +customerID)
-      .get()
-   const transactions = snapshot.docs.map(d => formatDocumentAmount(d))
-   const total_investment = snapshot.docs.reduce((acc, curr) => acc += curr.data().amount, 0)
+   const transactions = await getFirebaseCustomerTransactions(customerID)
+   const total_investment = transactions.reduce((acc, curr) => acc += curr.amount, 0)
    const total_liquidation = 0
 
    return {
-      total_investment: formatBaseCurrency(total_investment),
+      total_investment: total_investment,
       total_interest: formatBaseCurrency(0), //TODO
-      total_liquidation: formatBaseCurrency(total_liquidation),
+      total_liquidation: total_liquidation,
+      balance: total_investment - total_liquidation, //TODO minus liquidation
       startDate: new Date().toISOString(),
-      balance: formatBaseCurrency(total_investment - total_liquidation), //TODO minus liquidation
+      liquidations: [],
       transactions,
-      liquidations: []
    }
-}
-
-function sumAmount(docs: QueryDocumentSnapshot<DocumentData>[]) {
-   return docs.reduce((acc, liq) => {
-      //All amounts are in the lowest denomination [kobo, cents]
-      acc += liq.data().amount
-      return acc
-   }, 0)
 }

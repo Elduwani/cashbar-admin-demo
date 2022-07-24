@@ -11,23 +11,23 @@ const config = {
 }
 
 /** Customers **/
-export const getCustomers = async () => {
+export async function getPaystackCustomers() {
    const { data } = await axios.get('https://api.paystack.co/customer', { headers });
    return data as PaystackResponse<PaystackCustomer[]>
 }
 
-export const createCustomer = async (customer: Partial<PaystackCustomer>) => {
+export async function createPaystackCustomer(customer: Partial<PaystackCustomer>) {
    const { data } = await axios.post('https://api.paystack.co/customer', customer, config);
    return data as PaystackResponse<PaystackCustomer>;
 }
 
-export const updateCustomer = async (data: Partial<PaystackCustomer>, id: number) => {
+export async function updatePaystackCustomer(data: Partial<PaystackCustomer>, id: number) {
    const response = await axios.put(`https://api.paystack.co/customer/${id}`, data, config);
    return response.data as PaystackResponse<PaystackCustomer>;
 }
 
 /** Plans **/
-export async function getPlans<T = PaystackPlan>() {
+export async function getPaystackPlans<T = PaystackPlan>() {
    const response = await axios.get(`https://api.paystack.co/plan`, { headers })
    const filteredPlans = (response.data.data as PaystackPlan[]).filter(p => !p.is_deleted && !p.is_archived)
    response.data.data = filteredPlans
@@ -35,13 +35,13 @@ export async function getPlans<T = PaystackPlan>() {
 }
 
 type PlanPayload = Pick<PaystackPlan, 'name' | 'amount' | 'description' | 'send_invoices' | 'interval' | 'send_sms'>
-export const createPlan = async (plan: PlanPayload) => {
+export async function createPaystackPlan(plan: PlanPayload) {
    const { data } = await axios.post('https://api.paystack.co/plan', plan, config);
    return data as PaystackResponse<PaystackPlan>;
 }
 
 /** Transactions **/
-export const getTransactions = async () => {
+export async function getPaystackTransactions() {
    /**
     * Only fetch successful transactions
     * Limit of 10k, and only successful transactions
@@ -52,13 +52,18 @@ export const getTransactions = async () => {
    return response.data as PaystackResponse<PaystackTransaction[]>;
 }
 
-export const verifyTransaction = async (reference: string) => {
+export async function verifyPaystackTransaction(reference: string) {
    const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, { headers });
    return response.data as PaystackResponse<PaystackTransaction>;
 }
 
 /** Subscriptions **/
-export const getSubscriptions = async () => {
+export async function getPaystackSubscriptions() {
    const response = await axios.get(`https://api.paystack.co/subscription`, { headers });
    return response.data as PaystackResponse<PaystackSubscription[]>;
 }
+
+/**
+ * TODO:
+ * Write webhooks
+ */

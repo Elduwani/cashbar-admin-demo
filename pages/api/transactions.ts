@@ -1,4 +1,4 @@
-import { firestore } from "@controllers/firebase.server";
+import { _firestore } from "@controllers/firebase.server";
 import { dateFilterOptions, getPastDate } from "@utils/chart.utils";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
    try {
 
-      const transactionsRef = firestore.collection("transactions")
+      const transactionsRef = _firestore.collection("transactions")
 
       switch (req.method) {
          case "GET": {
@@ -18,14 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const date = getPastDate(time_period)
             const snapshot = await transactionsRef.where('paid_at', '>', date.value).get()
-            // const liquidationsRef = await firestore.collection("liquidations")
-            //    .where('paid_at', '>', date.value)
-            //    .where('validated', '==', true)
-            //    .get()
-            // const expensesRef = await firestore.collection("expenses")
-            //    .where('paid_at', '>', date.value)
-            //    .where('validated', '==', true)
-            //    .get()
             const responseData = {
                transactions: snapshot.docs.map(d => d.data()),
                // liquidations: liquidationsRef.docs.map(mapDataId),

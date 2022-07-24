@@ -1,16 +1,16 @@
-import { firestore, formatDocumentAmount } from "./firebase.server"
+import { _firestore, formatDocumentAmount } from "./firebase.server"
 
-const collectionName: Collection = 'subscriptions'
+const collectionName: CollectionName = 'subscriptions'
 
-export async function getCustomerSubscriptions(customerID: string) {
+export async function getCustomerSubscriptions(customerID: number) {
    console.log(`>> Fetching ${collectionName}... <<`)
-   const ref = firestore.collection(collectionName)
-   const subscriptionsSnapshot = await ref.where('customer', '==', +customerID).get()
+   const ref = _firestore.collection(collectionName)
+   const subscriptionsSnapshot = await ref.where('customer', '==', customerID).get()
    const sortRank: PaystackSubscription['status'][] = ['active', 'complete', 'cancelled']
 
    //Get an array of document refs of all related plans
-   const plansRefs = subscriptionsSnapshot.docs.map(d => firestore.doc('plans/' + d.data().plan))
-   const plansSnaphot = await firestore.getAll(...plansRefs)
+   const plansRefs = subscriptionsSnapshot.docs.map(d => _firestore.doc('plans/' + d.data().plan))
+   const plansSnaphot = await _firestore.getAll(...plansRefs)
    // Denormalize plans for easy reference
    const plansMap = plansSnaphot.map(d => formatDocumentAmount(d)).reduce((acc, plan) => {
       acc[plan.id] = plan
@@ -34,12 +34,12 @@ export async function getCustomerSubscriptions(customerID: string) {
    return responseData
 }
 
-export async function getSubscriptionTransactions(planCode: string, customerID: string) {
+export async function getSubscriptionTransactions(planCode: string, customerID: number) {
    console.log(`>> Fetching transactions for ${planCode} <<`)
-   const ref = firestore.collection('transactions')
+   const ref = _firestore.collection('transactions')
    const transactionsRef = await ref
       .orderBy('paid_at', 'desc')
-      .where('customer', '==', +customerID)
+      .where('customer', '==', customerID)
       .where("plan", "==", planCode)
       .get()
 

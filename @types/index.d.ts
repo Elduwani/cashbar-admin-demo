@@ -129,4 +129,4 @@ interface _TableColumn {
    headerStyle?: Record<string, string | number>
 }
 
-type Collection = "transactions" | "customers" | "expenses" | "liquidations" | "plans" | "subscriptions"
+type CollectionName = "transactions" | "customers" | "expenses" | "liquidations" | "plans" | "subscriptions"
