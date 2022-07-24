@@ -10,16 +10,15 @@ interface Props {
    data: {
       plan: PaystackPlan
       customerID: string
+      subscription: PaystackSubscription
    }
 }
-export default function SubscriptionTransactions({ data, ...props }: Props) {
-   const { data: trx, isFetching } = useFetch({
+export default function SubscriptionHistory({ data }: Props) {
+   const { data: _data, isFetching } = useFetch({
       key: [queryKeys.transactions, data.plan.plan_code],
-      url: `/customers/subscriptions/transactions?plan_code=${data.plan.plan_code}&customer_id=${data.customerID}`,
-      placeholderData: []
+      url: `/customers/subscriptions/history?plan_code=${data.plan.plan_code}&customer_id=${data.customerID}`,
+      placeholderData: {}
    })
-
-   const transactions = (trx as PaystackTransaction[])
 
    if (isFetching) return (
       <FullPageCenterItems height={600}>
@@ -27,11 +26,23 @@ export default function SubscriptionTransactions({ data, ...props }: Props) {
       </FullPageCenterItems>
    )
 
+   const {
+      transactions, transaction_volume,
+   } = _data as _SubscriptionHistory ?? {}
+
    return (
-      <div className="pb-6">
-         <h2 className="text-sm">Add aggregate numbers | details</h2>
-         <h2 className="text-2xl">Subscription payment history</h2>
-         <h2 className="uppercase text-sm tracking-wider opacity-70">{data.plan.name} - {data.plan.interval}</h2>
+      <div className="pb-6 space-y-4">
+         <div className="">
+            <h2 className="text-2xl">Subscription payment history</h2>
+            <h2 className="capitalize ">{formatNumber(data.plan.amount, "N")} {data.plan.interval}, {data.subscription.status}</h2>
+            <h2 className="capitalize text-sm opacity-70">{data.plan.name}</h2>
+            {
+               transactions?.length ?
+                  <h2 className="text-sm opacity-70">
+                     {transactions.length} payments ({formatNumber(transaction_volume, "N")})
+                  </h2> : null
+            }
+         </div>
          {
             transactions?.length ?
                <ReactTable

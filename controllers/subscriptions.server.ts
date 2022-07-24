@@ -43,6 +43,6 @@ export async function getSubscriptionTransactions(planCode: string, customerID: 
       .where("plan", "==", planCode)
       .get()
 
-   const responseData = transactionsRef.docs.map(d => formatDocumentAmount(d))
+   const responseData = transactionsRef.docs.map(d => formatDocumentAmount(d) as PaystackTransaction)
    return responseData
 }

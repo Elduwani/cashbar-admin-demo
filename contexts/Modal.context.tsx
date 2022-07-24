@@ -1,4 +1,4 @@
-import SubscriptionTransactions from '@layouts/customers/Customers.subscription.transactions';
+import SubscriptionHistory from '@layouts/customers/Customers.subscription.transactions';
 import { AnimatePresence } from 'framer-motion';
 import DrawerModal from 'modals/Drawer.modal';
 import React, { createContext, useContext, useState } from 'react';
@@ -25,13 +25,13 @@ export const ModalProvider = (props: { children: React.ReactNode }) => {
       const [name, data, title] = args
 
       switch (name) {
-         case "subscriptionTransactions":
+         case "subscriptionHistory":
             return (
                <DrawerModal
                   isOpen={modal.name === name}
                   close={closeModal}
                >
-                  <SubscriptionTransactions data={data} />
+                  <SubscriptionHistory data={data} />
                </DrawerModal>
             )
          default:

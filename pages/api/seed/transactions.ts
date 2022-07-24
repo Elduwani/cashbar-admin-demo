@@ -1,14 +1,12 @@
-import { linkTransactionsToPlans, seedTransactions } from "@controllers/seed.server";
+import { linkTransactionsToPlans, seedTransactions, verifyHeaders } from "@controllers/seed.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 
 //handle GET request
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-   if (req.headers["x-seed-records"] !== process.env.SEED_SECRET) {
-      return res.status(400).send("Invalid request headers")
-   }
-
    try {
+      verifyHeaders(req)
+
       switch (req.method) {
          case "POST": {
             const response = await seedTransactions()
@@ -27,6 +25,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
    } catch (error: any) {
       console.log(error.message)
-      return res.status(400).send(`error.message`)
+      return res.status(400).send(`error.message. \n ${error.message}`)
    }
 }

@@ -43,8 +43,8 @@ export async function createPaystackPlan(plan: PlanPayload) {
 /** Transactions **/
 export async function getPaystackTransactions() {
    /**
-    * Only fetch successful transactions
-    * Limit of 10k, and only successful transactions
+    * Only fetch successful transactions, 
+    * with limit of 10k (Paystack response uncertain)
     **/
    const query = `perPage=10000&status=success`
    const response = await axios.get(`https://api.paystack.co/transaction?${query}`, { headers });

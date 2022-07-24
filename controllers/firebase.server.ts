@@ -1,4 +1,3 @@
-// Import the functions you need from the SDKs you need
 import { formatBaseCurrency } from "@utils/index";
 import { ServiceAccount } from "firebase-admin";
 import * as admin from "firebase-admin/app";
@@ -56,12 +55,12 @@ export async function removeDummyRecords(ref: CollectionReference<DocumentData>,
     * Delete incomplete dummy data entered during collection creation
     */
    console.log(`** Grabbing dummy records **`)
-   const dummy = await ref.where('dummy', '==', true).get()
+   const records = await ref.where('dummy', '==', true).get()
 
-   if (dummy.size) {
-      const dummyBatch = _firestore.batch()
-      dummy.forEach(d => dummyBatch.delete(d.ref))
-      await dummyBatch.commit()
-      console.log(`** Deleted ${dummy.size} ${collectionName} dummy data **`)
+   if (records.size) {
+      const batch = _firestore.batch()
+      records.forEach(d => batch.delete(d.ref))
+      await batch.commit()
+      console.log(`** Deleted ${records.size} ${collectionName} dummy data **`)
    }
 }

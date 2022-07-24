@@ -13,8 +13,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (!planCode) throw new Error(`Invalid planCode [plan_code] parameter.`)
             if (!customerID) throw new Error(`Invalid customerID [customer_id] parameter.`)
 
-            const responseData = await getSubscriptionTransactions(planCode, +customerID)
-            return res.send(responseData)
+            const transactions = await getSubscriptionTransactions(planCode, +customerID)
+            const transaction_volume = transactions.reduce((acc, trx) => {
+               if (trx.status === 'success') {
+                  acc += trx.amount
+               }
+               return acc
+            }, 0)
+
+            const startDate = transactions.at(-1)?.paid_at
+            const lastPaymentDate = transactions.at(0)?.paid_at
+
+            const response: _SubscriptionHistory = {
+               transactions,
+               transaction_volume,
+               lastPaymentDate,
+               startDate,
+            }
+
+            return res.send(response)
          }
 
          default: {
@@ -23,6 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
    } catch (error: any) {
+      console.log(error.message)
       return res.status(400).send(error.message)
    }
 }

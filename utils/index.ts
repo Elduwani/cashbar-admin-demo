@@ -90,7 +90,7 @@ export function formatRelativeDate(dateString: string) {
    return formatRelative(new Date(dateString), new Date())
 }
 
-export function formatNumber(num: number | string, currencySign = "", decimals?: boolean) {
+export function formatNumber(num: number | string, currencySign?: string, decimals = false) {
    if (invalidNumbers([num]) || isNaN(+num)) return 0
    else {
       const parsed = toFixedDecimal(num)
@@ -100,16 +100,6 @@ export function formatNumber(num: number | string, currencySign = "", decimals?:
 
 export function formatBaseCurrency(n: number) {
    return n / 100
-}
-
-export function mapDataAmount(doc: QueryDocumentSnapshot<DocumentData>) {
-   const data = doc.data()
-   data.amount = formatBaseCurrency(data.amount)
-   return data
-}
-
-export function p(n: number | string) {
-   return parseInt(String(n))
 }
 
 export function toFixedDecimal(num: number | string, decimal = 2) {
@@ -175,7 +165,6 @@ export function getNestedValue(str: string, obj: _Object) {
          value = obj[str]
       }
    }
-   // console.log(str, obj);
    return value
 }
 
@@ -188,17 +177,6 @@ export function getNestedKey(str: string) {
       if (key?.length) nestedKey = key
    }
    return nestedKey
-}
-
-export function isModified(values: _Object, data: _Object) {
-   let modified
-   for (const key in values) {
-      if (String(values[key]) !== String(data[key])) {
-         modified = true
-         break
-      }
-   }
-   return modified
 }
 
 export function formatDataToCSV(data: any[], headers: _TableColumn[]) {

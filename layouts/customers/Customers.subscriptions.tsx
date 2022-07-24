@@ -3,7 +3,6 @@ import ReactTable from "@components/ReactTable"
 import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
 import { useModal } from "@contexts/Modal.context"
-import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
 import { useRouter } from "next/router"
@@ -21,7 +20,11 @@ export default function Subscriptions() {
    })
 
    const subscriptions = (data as Subscription[])
-   const onClick = (sub: Subscription) => openModal(`subscriptionTransactions`, { plan: sub.plan, customerID })
+   const onClick = (sub: Subscription) => openModal(`subscriptionHistory`, {
+      plan: sub.plan,
+      subscription: sub,
+      customerID,
+   })
    const rowStyles = (subscription: Subscription) => `
       py-4 ${subscription.status === 'active' && `bg-teal-50`}
       ${subscription.status === 'cancelled' && `bg-slate-50/50 text-slate-500`}

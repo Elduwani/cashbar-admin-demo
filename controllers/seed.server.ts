@@ -3,6 +3,7 @@ import { sub } from "date-fns"
 import fs from "fs"
 import { batchLimit, getFirebaseCustomers, removeDummyRecords, _firestore } from "./firebase.server"
 import { getPaystackCustomers, getPaystackPlans, getPaystackSubscriptions, getPaystackTransactions, verifyPaystackTransaction } from "./paystack.server"
+import { NextApiRequest } from "next"
 
 export async function seedCustomers() {
    const collectionName: CollectionName = 'customers'
@@ -253,4 +254,13 @@ export async function linkTransactionsToPlans() {
 
    await removeDummyRecords(ref, collectionName)
    return "Done"
+}
+
+export function verifyHeaders(req: NextApiRequest) {
+   if (process.env.NODE_ENV !== 'development') {
+      throw new Error("Please seed documents in development only")
+   }
+   if (req.headers["x-seed-records"] !== process.env.SEED_SECRET) {
+      throw new Error("Invalid request headers")
+   }
 }
