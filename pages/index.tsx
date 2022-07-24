@@ -17,7 +17,7 @@ export default function Index() {
 
    const { data, isFetching } = useFetch({
       key: ["chart_data", period.label],
-      url: `/transactions?time_period=${period.label}`,
+      url: `/transactions/periodic?time_period=${period.label}`,
       placeholderData: {}
    })
 

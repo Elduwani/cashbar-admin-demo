@@ -3,6 +3,7 @@ import { ServiceAccount } from "firebase-admin";
 import * as admin from "firebase-admin/app";
 import { CollectionReference, DocumentData, DocumentSnapshot, getFirestore, QueryDocumentSnapshot } from "firebase-admin/firestore";
 import serviceAccount from '@configs/firebase-admin-service-key.json';
+import { getPastDate, dateFilterOptions } from "@utils/chart.utils";
 
 if (admin.getApps().length === 0) {
    admin.initializeApp({
@@ -13,7 +14,7 @@ if (admin.getApps().length === 0) {
 export const _firestore = getFirestore()
 export const batchLimit = 500
 
-export async function getFirebaseCustomers() {
+export async function getCustomers() {
    console.log("Fetching customers...")
    const collectionName: CollectionName = 'customers'
    const ref = _firestore.collection(collectionName)
@@ -22,7 +23,7 @@ export async function getFirebaseCustomers() {
    return responseData
 }
 
-export async function getAllFirebaseTransactions() {
+export async function getAllTransactions() {
    console.log(">> Fetching Firebase transactions <<")
    const collectionName: CollectionName = 'transactions'
    const ref = _firestore.collection(collectionName)
@@ -31,7 +32,17 @@ export async function getAllFirebaseTransactions() {
    return responseData
 }
 
-export async function getFirebaseCustomerTransactions(customerID: number) {
+export async function getTransactionsPeriodic(time_period: typeof dateFilterOptions[number]) {
+   console.log(`>> Fetching periodic transactions from  ${time_period} <<`)
+   const collectionName: CollectionName = 'transactions'
+   const ref = _firestore.collection(collectionName)
+   const date = getPastDate(time_period)
+   const snapshot = await ref.where('paid_at', '>', date.value).get()
+   const responseData = snapshot.docs.map(d => formatDocumentAmount(d) as Transaction | PaystackTransaction)
+   return responseData
+}
+
+export async function getCustomerTransactions(customerID: number) {
    console.log(">> Fetching Firebase transactions <<")
    const collectionName: CollectionName = 'transactions'
    const ref = _firestore.collection(collectionName)

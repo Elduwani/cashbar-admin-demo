@@ -1,5 +1,5 @@
-import { _firestore } from "@controllers/firebase.server";
-import { dateFilterOptions, getPastDate } from "@utils/chart.utils";
+import { getTransactionsPeriodic, _firestore } from "@controllers/firebase.server";
+import { dateFilterOptions } from "@utils/chart.utils";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -16,10 +16,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                throw new Error(message)
             }
 
-            const date = getPastDate(time_period)
-            const snapshot = await transactionsRef.where('paid_at', '>', date.value).get()
+            const transactions = await getTransactionsPeriodic(time_period)
+
             const responseData = {
-               transactions: snapshot.docs.map(d => d.data()),
+               transactions,
                // liquidations: liquidationsRef.docs.map(mapDataId),
                // expenses: expensesRef.docs.map(mapDataId)
             }
@@ -34,5 +34,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    } catch (error: any) {
       return res.status(400).send(error.message)
    }
-
 }

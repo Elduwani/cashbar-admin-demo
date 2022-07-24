@@ -1,17 +1,23 @@
-import { getCustomers } from "@controllers/firebase.server";
+import { getAllTransactions } from "@controllers/firebase.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
    try {
+
       switch (req.method) {
          case "GET": {
-            const responseData = await getCustomers()
+            const transactions = await getAllTransactions()
+            const responseData = {
+               transactions,
+               liquidations: [],
+               expenses: []
+            }
             return res.send(responseData)
          }
 
          default: {
-            return res.status(500).json("Invalid request method")
+            return res.status(404).json("Invalid request method")
          }
       }
 

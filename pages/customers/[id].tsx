@@ -41,7 +41,7 @@ export default function CustomerID() {
       last_name = last_name.length > 15 ? last_name.split(" ")[0] : last_name
 
       return (
-         <div className="w-full flex-1 overflow-y-auto scrollbar min-w[800px]">
+         <section className="w-full flex-1 overflow-y-auto scrollbar min-w[800px]">
             <div className="h-40 px-6 pt-6 flex flex-col border-b bg-white">
                <div className="flex flex-1 flex-shrink-0">
                   <Avatar name={first_name} />
@@ -82,19 +82,19 @@ export default function CustomerID() {
                </div>
             }
 
-         </div>
+         </section>
       )
    }
 
    if (isFetching) return null
 
    return (
-      <div className="w-full flex-1 bg-slate-100 grid place-content-center text-center">
+      <section className="w-full flex-1 bg-slate-100 grid place-content-center text-center">
          <div className="w-full max-w-xs space-y-4">
             <p className="text-xl">Booooooooot!</p>
             <p className="opacity-70">We could not find this customer. Please select a customer on the left.</p>
          </div>
-      </div>
+      </section>
    )
 }
 

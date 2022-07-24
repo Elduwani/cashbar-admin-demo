@@ -3,10 +3,10 @@ import { ReactElement } from "react";
 
 export default function CustomerPage() {
    return (
-      <div className="bg-slate-100 w-full grid place-content-center text-center">
+      <section className="bg-slate-100 w-full grid place-content-center text-center">
          <p className="opacity-50">Illustration</p>
          <p>Select a customer to preview</p>
-      </div>
+      </section>
    );
 }
 
