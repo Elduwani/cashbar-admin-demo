@@ -4,21 +4,24 @@ import { getAllTransactions, getCustomerTransactions } from "./transactions";
 
 export async function getAggregate(): Promise<AllAggregates> {
    console.log(`** Fetching records **`)
-   const customers = await getCustomers()
-   const transactions = await getAllTransactions()
+   // const customers = await getCustomers()
+   // const transactions = await getAllTransactions()
    // const liquidationsRef = await _firestore.collection("liquidations").where('validated', '==', true).get()
 
    const liqTotals = 0
-   const invTotals = transactions.reduce((acc, liq) => {
-      acc += liq.amount
-      return acc
-   }, 0)
+   // const invTotals = transactions.reduce((acc, liq) => {
+   //    acc += liq.amount
+   //    return acc
+   // }, 0)
+
+   const random = (n: number) => Math.floor(Math.random() * n)
 
    const responseData: AllAggregates = {
-      transactionCount: transactions.length,
-      customerCount: customers.length,
+      // transactionCount: transactions.length,
+      transactionCount: random(2000),
+      customerCount: random(250),
       liquidationVolume: liqTotals,
-      investmentVolume: invTotals,
+      investmentVolume: random(4000000),
       expenseVolume: 0
    }
 

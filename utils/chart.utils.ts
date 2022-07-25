@@ -1,7 +1,8 @@
 import { sub, eachDayOfInterval, startOfWeek, isFirstDayOfMonth, format } from "date-fns"
 import { formatDate } from "./index"
 
-export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months", "1 year"] as const
+export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months"] as const
+// export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months", "1 year"] as const
 
 type Trx = Transaction | Expense | Liquidation
 type Interval = 'weekly' | 'monthly' | 'daily'
@@ -131,7 +132,6 @@ function aggregateTotals(map: MyMap, transactions?: Trx[]) {
       }
    })
 
-   console.log(maxAmount)
    return maxAmount
 }
 

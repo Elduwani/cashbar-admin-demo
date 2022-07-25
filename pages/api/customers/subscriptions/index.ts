@@ -12,7 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const customerID = req.query.customer_id as string
             if (!customerID) throw new Error(`Invalid customer_id [customer_id] parameter.`)
 
-            const responseData = await getCustomerSubscriptions(+customerID)
+            const responseData = await getCustomerSubscriptions(customerID)
             return res.send(responseData)
          }
 

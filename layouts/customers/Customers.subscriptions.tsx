@@ -3,6 +3,7 @@ import ReactTable from "@components/ReactTable"
 import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
 import { useModal } from "@contexts/Modal.context"
+import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
 import { useRouter } from "next/router"
@@ -53,6 +54,12 @@ export default function Subscriptions() {
 }
 
 const tabelColumns: _TableColumn[] = [
+   {
+      label: "",
+      key: "_",
+      modifier: (cell: Subscription) => tableRowStatus(cell.status === 'active'),
+      headerStyle: { maxWidth: 20 }
+   },
    {
       key: "amount",
       cell: (cell) => formatNumber(cell.getValue(), '', false)

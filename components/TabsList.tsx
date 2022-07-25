@@ -12,17 +12,17 @@ export default function TabsList(props: Props) {
    const router = useRouter()
 
    useEffect(() => {
-      // const basePath = router.pathname.split('/').filter(r => !!r)[0]
+      const basePath = router.pathname.split('/').filter(r => !!r)[0]
 
-      // for (let i = 0; i < props.tabs.length; i++) {
-      //    const route = props.tabs[i].route;
-      //    const fullPath = route?.startsWith('/') ? route : `${basePath}/${route}`
-      //    const isMatch = fullPath === router.pathname
-      //    if (!!route && isMatch) {
-      //       setIndex?.(i)
-      //       break
-      //    }
-      // }
+      for (let i = 0; i < props.tabs.length; i++) {
+         const route = props.tabs[i].route;
+         const fullPath = route?.startsWith('/') ? route : `${basePath}/${route}`
+         const isMatch = fullPath === router.pathname
+         if (!!route && isMatch) {
+            props.setIndex?.(i)
+            break
+         }
+      }
    }, [router.pathname])
 
    return (
@@ -38,7 +38,7 @@ export default function TabsList(props: Props) {
                      `}
                      onClick={() => {
                         props.setIndex?.(i)
-                        tab.route && router.replace(tab.route, undefined, { shallow: true })
+                        tab.route && router.replace(tab.route, undefined)
                      }}
                   >{tab.name}</li>
                )

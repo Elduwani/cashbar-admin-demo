@@ -3,29 +3,23 @@ import ReactTable from "@components/ReactTable"
 import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
 import { useModal } from "@contexts/Modal.context"
+import TransactionsLayout from "@layouts/transactions/transactions.layout"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
+import { ReactElement } from "react"
 import { FiCheck, FiX } from "react-icons/fi"
 
-export default function Transactions() {
+export default function Liquidations() {
    const { openModal } = useModal()
 
    const { data, isFetching } = useFetch({
+      enabled: false,
       key: [queryKeys.transactions, 'all'],
       url: `/transactions`,
       placeholderData: {}
    })
 
    const { transactions } = data as { transactions: PaystackTransaction[] } ?? {}
-   // const onClick = (sub: Subscription) => openModal(`subscriptionHistory`, {
-   //    plan: sub.plan,
-   //    subscription: sub,
-   //    customerID,
-   // })
-   // const rowStyles = (subscription: Subscription) => `
-   //    py-4 ${subscription.status === 'active' && `bg-teal-50`}
-   //    ${subscription.status === 'cancelled' && `bg-slate-50/50 text-slate-500`}
-   // `
 
    if (isFetching) return (
       <FullPageCenterItems height={500}>
@@ -34,18 +28,25 @@ export default function Transactions() {
    )
 
    return (
-      <div className="">
+      <>
+         Liquidations
          {
             transactions?.length ?
                <ReactTable
                   columns={tabelColumns}
                   data={transactions}
-               // rowStyles={rowStyles}
-               // onClick={onClick}
                />
                : null
          }
-      </div>
+      </>
+   )
+}
+
+Liquidations.getLayout = function getLayout(page: ReactElement) {
+   return (
+      <TransactionsLayout>
+         {page}
+      </TransactionsLayout>
    )
 }
 

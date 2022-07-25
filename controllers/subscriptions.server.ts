@@ -2,7 +2,7 @@ import { _firestore, formatDocumentAmount } from "./firebase.server"
 
 const collectionName: CollectionName = 'subscriptions'
 
-export async function getCustomerSubscriptions(customerID: number) {
+export async function getCustomerSubscriptions(customerID: string) {
    console.log(`>> Fetching ${collectionName}... <<`)
    const ref = _firestore.collection(collectionName)
    const subscriptionsSnapshot = await ref.where('customer', '==', customerID).get()
@@ -34,15 +34,16 @@ export async function getCustomerSubscriptions(customerID: number) {
    return responseData
 }
 
-export async function getSubscriptionTransactions(planCode: string, customerID: number) {
+export async function getSubscriptionTransactions(planCode: string, customerID: string) {
    console.log(`>> Fetching transactions for ${planCode} <<`)
    const ref = _firestore.collection('transactions')
    const transactionsRef = await ref
       .orderBy('paid_at', 'desc')
       .where('customer', '==', customerID)
-      .where("plan", "==", planCode)
+      .where("plan_code", "==", planCode)
       .get()
 
+   console.log(transactionsRef.size)
    const responseData = transactionsRef.docs.map(d => formatDocumentAmount(d) as PaystackTransaction)
    return responseData
 }

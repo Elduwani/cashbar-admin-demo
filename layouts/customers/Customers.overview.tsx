@@ -1,6 +1,7 @@
 import ReactTable from "@components/ReactTable"
 import TransactionsChart, { DataSet } from "@components/TransactionsChart"
 import { queryKeys } from "@configs/reactQueryConfigs"
+import { tableRowStatus } from "@hooks/index"
 import { getPastDate } from "@utils/chart.utils"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
@@ -14,7 +15,7 @@ export default function Overview() {
    const { data, isFetching } = useFetch({
       key: [queryKeys.investments, 'overview', id],
       url: `/customers/aggregates?customer_id=${id}`,
-      placeholderData: {}
+      placeholderData: {} as _Object
    })
 
    const {
@@ -115,12 +116,12 @@ function OverviewCard({ color = "gray", ...props }: CardProps) {
 }
 
 const tabelColumns: _TableColumn[] = [
-   // {
-   //    label: "",
-   //    key: "status",
-   //    modifier: (_, index) => typeof index === 'number' ? index + 1 : "*",
-   //    headerStyle: { maxWidth: 20 }
-   // },
+   {
+      label: "",
+      key: "status",
+      modifier: (cell: Transaction) => tableRowStatus(cell.status === 'success'),
+      headerStyle: { maxWidth: 20 }
+   },
    {
       key: "amount",
       cell: (cell) => formatNumber(cell.getValue(), '', false)
@@ -131,11 +132,6 @@ const tabelColumns: _TableColumn[] = [
       cell: (cell) => formatDate(cell.getValue(), true, true)
    },
    {
-      key: "reference",
-      cell: (cell) => (cell.getValue() as string).substring(0, 20)
-   },
-   {
       key: "channel",
-      // cell: (cell) => `${cell.row.original.customer?.surname} ${cell.row.original.customer?.forenames}`
    },
 ]

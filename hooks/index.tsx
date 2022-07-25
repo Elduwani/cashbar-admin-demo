@@ -48,6 +48,8 @@ export function useScreenSize() {
 export function tableRowStatus(status?: boolean) {
    const color = status ? "bg-green-500" : "bg-gray-200"
    return (
-      <span className={`block w-2.5 h-2.5 rounded-full ${color}`}></span>
+      <div className={`block w-4 h-4 rounded-full bg-opacity-20 ${color} grid place-items-center`}>
+         <span className={`rounded-full h-2/4 w-2/4 ${color}`}></span>
+      </div>
    )
 }
