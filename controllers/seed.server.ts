@@ -1,9 +1,11 @@
-import path from "path"
 import { sub } from "date-fns"
 import fs from "fs"
-import { batchLimit, getFirebaseCustomers, removeDummyRecords, _firestore } from "./firebase.server"
-import { getPaystackCustomers, getPaystackPlans, getPaystackSubscriptions, getPaystackTransactions, verifyPaystackTransaction } from "./paystack.server"
 import { NextApiRequest } from "next"
+import path from "path"
+import { batchLimit, removeDummyRecords, _firestore } from "./firebase.server"
+import { getPaystackCustomers, getPaystackPlans, getPaystackSubscriptions, getPaystackTransactions, verifyPaystackTransaction } from "./paystack.server"
+
+export const verifiedFileLocation = path.join(process.cwd(), 'verified_transactions_log.json')
 
 export async function seedCustomers() {
    const collectionName: CollectionName = 'customers'
@@ -15,8 +17,9 @@ export async function seedCustomers() {
 
    for (const customer of customers.data) {
       customer['updatedAt'] = new Date().toISOString()
+      customer['id'] = String(customer.id)
       console.log(`Adding ${customer.email}...`)
-      batch.set(ref.doc(String(customer.id)), customer)
+      batch.set(ref.doc(customer.id), customer)
    }
 
    console.log("** Committing batch **")
@@ -51,12 +54,13 @@ export async function seedPlans() {
       for (const plan of chunk) {
          if (!plan.is_deleted) {
             plan['updatedAt'] = new Date().toISOString()
+            plan['id'] = String(plan.id)
             delete plan.total_subscriptions
             delete plan.active_subscriptions
             delete plan.total_subscriptions_revenue
             delete plan.subscriptions
             console.log(`Adding ${plan.id}...`)
-            batch.set(ref.doc(String(plan.id)), plan);
+            batch.set(ref.doc(plan.id), plan);
          }
       }
 
@@ -93,13 +97,14 @@ export async function seedSubscriptions() {
 
       for (const sub of chunk) {
          sub['updatedAt'] = new Date().toISOString()
-         sub['customer'] = (sub.customer as any).id
-         sub['plan'] = (sub.plan as any).id
+         sub['customer'] = String((sub.customer as any).id)
+         sub['plan'] = String((sub.plan as any).id)
+         sub['id'] = String(sub.id)
          delete sub['most_recent_invoice']
          delete sub['payments_count']
 
          console.log(`Adding ${sub.id}...`)
-         batch.set(ref.doc(String(sub.id)), sub);
+         batch.set(ref.doc(sub.id), sub);
       }
 
       //Commit chunk
@@ -125,24 +130,12 @@ export async function seedTransactions() {
       throw new Error("No Paystack transactions found")
    }
 
+   const ref = _firestore.collection(collectionName)
+
    //Only seed transactions that are within the last 12 months
    const timestamp = sub(new Date(), { months: 12 })
    const transactions = paystackTransactions.data
       .filter(trx => new Date(trx.paid_at).getTime() > timestamp.getTime())
-
-   //Fetch seeded customers
-   console.log("Fetching Firebase customers")
-   const ref = _firestore.collection(collectionName)
-   const firebaseCustomers = await getFirebaseCustomers()
-   if (!firebaseCustomers.length) {
-      throw new Error("Customers have not been seeded yet.")
-   }
-
-   //Bring user ID's forward for faster reference 
-   const firebaseCustomersData = firebaseCustomers.reduce((acc, curr) => {
-      acc[curr.id] = curr.id
-      return acc
-   }, {} as Record<string, string>)
 
    //Firebase batch only allows 500 writes per request, so split data into chunks
    let seededCount = 0
@@ -153,19 +146,15 @@ export async function seedTransactions() {
       const [start, end] = [i * batchLimit, batchLimit * (i + 1)]
       const chunk = transactions.slice(start, end)
       console.log("><".repeat(30))
-      console.log({ start, end })
+      console.log('Adding batch', i, { start, end })
 
       for (const trx of chunk) {
+         trx['id'] = String(trx.id)
          trx['updatedAt'] = new Date().toISOString()
-         const customer = firebaseCustomersData[trx.customer.id]
-
-         if (customer?.length) {
-            console.log(`Adding ${trx.customer.email}...`)
-            //@ts-ignore
-            trx['customer'] = +customer
-            batch.set(ref.doc(String(trx.id)), trx);
-            seededCount++
-         }
+         //@ts-ignore
+         trx['customer'] = String(trx.customer.id)
+         batch.set(ref.doc(trx.id), trx);
+         seededCount++
       }
 
       //Commit chunk
@@ -173,8 +162,9 @@ export async function seedTransactions() {
       await batch.commit()
    }
 
+   await linkTransactionsToPlans()
    await removeDummyRecords(ref, collectionName)
-   console.log("**** Done ****")
+   console.log("**** Transactions seeded ****")
 
    return {
       status: "success",
@@ -182,49 +172,62 @@ export async function seedTransactions() {
    }
 }
 
+/**
+ * This function will get the related plan information for all seeded transactions
+ * so they can be linked, as Paystack doesn't link transaction to plans unless the
+ * transaction is verified through their API.
+ */
 export async function linkTransactionsToPlans() {
-   /**
-    * This function will get the related plan information for all seeded transactions
-    * so they can be linked, as Paystack doesn't link transaction to plans unless
-    * when said transaction is verified.
-    */
+   console.log(">> Linking transactions to plans <<")
 
    const collectionName: CollectionName = 'transactions'
    const ref = _firestore.collection(collectionName)
 
-   const dir = path.join(process.cwd(), 'verified_transactions_log.json')
-   console.log(`>> Checking content from ${dir}`)
-   const verifiedTransactions = JSON.parse(fs.readFileSync(dir, 'utf8')) as PaystackTransaction[]
+   async function updateFirebase(transactions: _Object) {
+      console.log(">> Linking Firebase records")
+      let batch = _firestore.batch()
+      let index = 0
 
-   if (verifiedTransactions?.[0]?.plan?.length) {
-      //Use local content saved to file
-      console.log(`>> Using local content <<`)
-      const batchCount = Math.ceil(verifiedTransactions.length / batchLimit)
+      for (const key in transactions) {
+         const trx = transactions[key]
+         console.log(`Linking ${trx.id}...`)
+         batch.set(ref.doc(key), trx)
 
-      for (let i = 0; i < batchCount; i++) {
-         const batch = _firestore.batch()
-         const [start, end] = [i * batchLimit, batchLimit * (i + 1)]
-         const chunk = verifiedTransactions.slice(start, end)
-         console.log("><".repeat(30))
-         console.log({ start, end })
-
-         for (const trx of chunk) {
-            console.log(`Adding ${trx.id}...`)
-            //@ts-ignore
-            trx.customer = +trx.customer
-            batch.set(ref.doc(String(trx.id)), trx)
+         if (index > 0 && index % batchLimit === 0) {
+            //Commit chunk
+            console.log("** Committing batch **")
+            await batch.commit()
+            //Reset batch
+            batch = _firestore.batch()
+            console.log("><".repeat(30))
          }
 
-         //Commit chunk
-         console.log("** Committing batch **")
-         await batch.commit()
+         index++
       }
-      console.log("** Done **")
 
-   } else {
+      await batch.commit()
+      console.log("** Done **")
+   }
+
+   try {
+      //Use local content saved to file
+      console.log(`>> Checking content from ${verifiedFileLocation}`)
+      const verifiedTransactions = JSON.parse(fs.readFileSync(verifiedFileLocation, 'utf8')) as _Object
+
+      if (verifiedTransactions?.constructor === Object) {
+         console.log(`>> Using local content <<`)
+         await updateFirebase(verifiedTransactions)
+      }
+
+      else throw new Error("!! Saved file not an Object !!")
+
+   } catch (error: any) {
 
       //Use cloud content
-      const data = []
+      console.log(error.message)
+      console.log(`>> Using cloud content. This will take a while... <<`)
+
+      const data: _Object = {}
       const transactions = await ref.get()
       console.log(`>> Fetched ${transactions.size} Firebase transactions <<`)
 
@@ -232,28 +235,29 @@ export async function linkTransactionsToPlans() {
          throw new Error("Transactions have not been seeded")
       }
 
-      for (let i = 0; i < transactions.docs.length; i++) {
+      for (let i = 0; i < transactions.size; i++) {
          const trx = transactions.docs[i].data()
-         console.log(trx.paid_at)
          const verifiedTrx = await verifyPaystackTransaction(trx.reference)
-         //TODO: this is the plan code only, revise to link plan ID instead
-         trx.plan = verifiedTrx.data.plan
-         data.push(trx)
+         trx.id = String(trx.id)
+         trx.plan = String(verifiedTrx.data.plan_object.id)
+         trx.plan_code = verifiedTrx.data.plan_object.plan_code
+         data[trx.id] = trx
          console.log(`>> Verified ${i} of ${transactions.size} <<`)
       }
 
-      console.log(`>> Writing contents to ${dir} <<`)
-      fs.writeFileSync(
-         dir,
-         JSON.stringify(data, null, 2),
-         { flag: 'w+' }
-      )
-      console.log("** Done **")
+      console.log(`>> Writing contents to ${verifiedFileLocation} <<`)
 
+      fs.writeFileSync(
+         verifiedFileLocation,
+         JSON.stringify(data, null, 2),
+         { encoding: 'utf8', flag: 'w+' }
+      )
+
+      await updateFirebase(data)
+      console.log("** Done **")
    }
 
-   await removeDummyRecords(ref, collectionName)
-   return "Done"
+   return "Ok"
 }
 
 export function verifyHeaders(req: NextApiRequest) {

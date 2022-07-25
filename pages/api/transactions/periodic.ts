@@ -1,4 +1,5 @@
-import { getTransactionsPeriodic, _firestore } from "@controllers/firebase.server";
+import { _firestore } from "@controllers/firebase.server";
+import { getTransactionsPeriodic } from "@controllers/transactions";
 import { dateFilterOptions } from "@utils/chart.utils";
 import { NextApiRequest, NextApiResponse } from "next/types";
 

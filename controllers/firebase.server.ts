@@ -23,37 +23,6 @@ export async function getCustomers() {
    return responseData
 }
 
-export async function getAllTransactions() {
-   console.log(">> Fetching Firebase transactions <<")
-   const collectionName: CollectionName = 'transactions'
-   const ref = _firestore.collection(collectionName)
-   const snapshot = await ref.orderBy('paid_at', 'desc').get()
-   const responseData = snapshot.docs.map(d => formatDocumentAmount(d) as Transaction | PaystackTransaction)
-   return responseData
-}
-
-export async function getTransactionsPeriodic(time_period: typeof dateFilterOptions[number]) {
-   console.log(`>> Fetching periodic transactions from  ${time_period} <<`)
-   const collectionName: CollectionName = 'transactions'
-   const ref = _firestore.collection(collectionName)
-   const date = getPastDate(time_period)
-   const snapshot = await ref.where('paid_at', '>', date.value).get()
-   const responseData = snapshot.docs.map(d => formatDocumentAmount(d) as Transaction | PaystackTransaction)
-   return responseData
-}
-
-export async function getCustomerTransactions(customerID: number) {
-   console.log(">> Fetching Firebase transactions <<")
-   const collectionName: CollectionName = 'transactions'
-   const ref = _firestore.collection(collectionName)
-   const snapshot = await ref
-      .orderBy('paid_at', 'desc')
-      .where('customer', '==', customerID)
-      .get()
-   const transactions = snapshot.docs.map(d => formatDocumentAmount(d) as Transaction | PaystackTransaction)
-   return transactions
-}
-
 type Doc = QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData>
 export function formatDocumentAmount(doc: Doc, key = 'amount') {
    const data = doc.data() ?? doc

@@ -1,6 +1,6 @@
 declare module 'react-csv';
 
-type _Object = Record<string, any>
+type _Object<T = any> = Record<string, T>
 
 type _ModalName = 'subscriptionHistory'
 
@@ -18,6 +18,7 @@ interface _Tab {
 }
 
 interface User {
+   id: string
    username: string
    email: string
    password: string
@@ -49,7 +50,7 @@ interface Customer {
 }
 
 interface Expense {
-   id: number
+   id: string
    description: string
    amount: number
    paid_at: string
@@ -67,6 +68,7 @@ interface Expense {
 }
 
 interface Liquidation {
+   id: string
    status: 'success'
    reference: string
    amount: number
@@ -74,7 +76,7 @@ interface Liquidation {
    channel: 'bank' | 'cash'
    currency: 'NGN'
    fees: number
-   customer: Customer
+   customer: string | Customer
    paid_by: User
    narration: string
    customer_code: string
@@ -87,7 +89,7 @@ interface RecipientMeta {
    bank_name: string
 }
 
-interface Transaction {
+interface Transaction<T = string> {
    id: string
    status: 'success' | 'failed' | 'abandoned'
    reference: string
@@ -96,13 +98,13 @@ interface Transaction {
    created_at: string
    channel: string
    currency: string
-   customer: Customer | PaystackCustomer
+   customer: T
    [key: string]: any
 }
 
 interface Subscription {
    id: string,
-   customer: Customer,
+   customer: string | Customer,
    plan: PaystackPlan
    start: number
    status: 'active' | 'complete' | 'cancelled'
