@@ -60,7 +60,8 @@ export function useFetch<T>({ url, key, enabled = true, keepPreviousData = false
       }
    })
 
-   return queryResponse
+   const data = queryResponse.data as T
+   return { ...queryResponse, data }
 }
 
 export interface UseMutateProps {

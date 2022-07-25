@@ -1,23 +1,11 @@
-import { getAllFirebaseTransactions, getFirebaseCustomers, getFirebaseCustomerTransactions } from "@controllers/firebase.server";
 import { formatBaseCurrency } from "@utils/index";
+import { getCustomers } from "./firebase.server";
+import { getAllTransactions, getCustomerTransactions } from "./transactions";
 
-interface Aggregate {
-   expenseVolume: number
-   investmentVolume: number
-   liquidationVolume: number
-   transactionCount: number
-   customerCount: number
-   data?: {
-      revenue: Transaction[]
-      liquidations: Liquidation[]
-      expenses: Expense[]
-   }
-}
-
-export async function getAggregate(): Promise<Aggregate> {
+export async function getAggregate(): Promise<AllAggregates> {
    console.log(`** Fetching records **`)
-   const customers = await getFirebaseCustomers()
-   const transactions = await getAllFirebaseTransactions()
+   const customers = await getCustomers()
+   const transactions = await getAllTransactions()
    // const liquidationsRef = await _firestore.collection("liquidations").where('validated', '==', true).get()
 
    const liqTotals = 0
@@ -26,25 +14,20 @@ export async function getAggregate(): Promise<Aggregate> {
       return acc
    }, 0)
 
-   const responseData: Aggregate = {
+   const responseData: AllAggregates = {
       transactionCount: transactions.length,
       customerCount: customers.length,
       liquidationVolume: liqTotals,
       investmentVolume: invTotals,
-      expenseVolume: 0,
-      // data: {
-      //    expenses: [],
-      //    liquidations: liquidationsRef.docs.map(mapDataId) as Liquidation[],
-      //    revenue: revenueRef.docs.map(mapDataId) as Transaction[],
-      // }
+      expenseVolume: 0
    }
 
    return responseData
 }
 
-export async function getCustomerAggregate(customerID: number) {
+export async function getCustomerAggregate(customerID: string) {
    console.log(`>> Fetching aggregates for ${customerID}... <<`)
-   const transactions = await getFirebaseCustomerTransactions(customerID)
+   const transactions = await getCustomerTransactions(customerID)
    const total_investment = transactions.reduce((acc, curr) => acc += curr.amount, 0)
    const total_liquidation = 0
 

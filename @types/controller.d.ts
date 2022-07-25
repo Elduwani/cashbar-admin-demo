@@ -4,3 +4,11 @@ interface _SubscriptionHistory {
    startDate?: string
    lastPaymentDate?: string
 }
+
+interface AllAggregates {
+   expenseVolume: number
+   investmentVolume: number
+   liquidationVolume: number
+   transactionCount: number
+   customerCount: number
+}

@@ -20,7 +20,7 @@ export async function getTransactionsPeriodic(time_period: typeof dateFilterOpti
    return transactions
 }
 
-export async function getCustomerTransactions(customerID: number) {
+export async function getCustomerTransactions(customerID: string) {
    console.log(">> Fetching Firebase transactions <<")
    const collectionName: CollectionName = 'transactions'
    const ref = _firestore.collection(collectionName)

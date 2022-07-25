@@ -1,9 +1,8 @@
+import serviceAccount from '@configs/firebase-admin-service-key.json';
 import { formatBaseCurrency } from "@utils/index";
 import { ServiceAccount } from "firebase-admin";
 import * as admin from "firebase-admin/app";
 import { CollectionReference, DocumentData, DocumentSnapshot, getFirestore, QueryDocumentSnapshot } from "firebase-admin/firestore";
-import serviceAccount from '@configs/firebase-admin-service-key.json';
-import { getPastDate, dateFilterOptions } from "@utils/chart.utils";
 
 if (admin.getApps().length === 0) {
    admin.initializeApp({
