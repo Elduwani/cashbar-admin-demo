@@ -34,8 +34,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
              * Bummer!
              */
             let snapshot = await _firestore.collection('transactions')
+               .orderBy('paid_at', 'desc')
                .where('paid_at', '>', date.value)
                .get()
+
             const responseData = snapshot.docs
                .map(d => formatDocumentAmount(d))
                .filter(d => {
@@ -47,6 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   }
                   return true
                })
+
             return res.send(responseData)
          }
 
@@ -56,8 +59,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
    } catch (error: any) {
-      console.log(error.message)
-      return res.status(400).send(zodError(error.issues) ?? error.message)
+      const message = zodError(error.issues) ?? error.message
+      console.log(message)
+      return res.status(400).send(message)
    }
 
 }

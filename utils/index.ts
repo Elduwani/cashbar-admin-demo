@@ -222,7 +222,7 @@ export function zodError(issues?: z.ZodIssue[]) {
    if (Array.isArray(issues)) {
       for (const issue of issues) {
          if (issue.path && issue.message) {
-            errorString += `>> ${String(issue.path[0]).toUpperCase()}: ${issue.message} \n`
+            errorString += `>> ${issue.path[0]}: ${issue.message} \n`
          }
       }
    }

@@ -22,7 +22,7 @@ export default function Transactions() {
       placeholderData: {}
    })
 
-   const { transactions } = data as { transactions: PaystackTransaction[] } ?? {}
+   const transactions = data as PaystackTransaction[]
 
    return (
       <div className="h-full flex space-x-4">

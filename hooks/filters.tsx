@@ -23,12 +23,12 @@ export default function useFilters(setQueryString: (v: string) => void) {
       if (!!less_than && !!greater_than && (+less_than <= +greater_than)) {
          setError("greater_than", {
             type: "manual",
-            message: `Value too low`
+            message: `Too high`
          }, { shouldFocus: true })
          return
       }
 
-      const data = { ...values, time_period: timePeriod.value }
+      const data = { ...values, time_period: timePeriod.label }
       setQueryString(queryStringFromObject(data))
    }
 
