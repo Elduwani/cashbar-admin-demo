@@ -13,7 +13,7 @@ export interface SelectProps {
    label?: string
    required?: boolean
    initialValue?: string | number
-   initialOptions?: _SelectInputOption[]
+   options: _SelectInputOption[]
    type?: "dates" | "category" | "states" | "banks" | "channel" | "gender" | "facility_type" | "bank_account_type"
    register?: (name: string, options: _Object) => void
    control?: Control<FieldValues, object>
@@ -23,17 +23,16 @@ export interface SelectProps {
    align?: 'left' | 'right'
    zIndex?: string
    style?: _Object
-   roundedFull?: boolean
+   className?: string
 }
 export default function Select(props: SelectProps) {
    const { control: ctrl } = useForm()
    const errors = props.errors ?? {}
    const { direction = 'down', align = 'left' } = props
-   const options = props.initialOptions ?? optionsList(props.type)
 
    const [selectedOption, setSelectedOption] = useState<_SelectInputOption | undefined>(() => {
       if (!props.initialValue) return
-      return options.find(op => props.initialValue === op.value)
+      return props.options.find(op => props.initialValue === op.value)
    })
 
    useEffect(() => {
@@ -43,7 +42,7 @@ export default function Select(props: SelectProps) {
    }, [selectedOption])
 
    return (
-      <div className={`relative`} style={props.style}>
+      <div className={`relative ${props.className}`} style={props.style}>
          <Controller
             name={props.name}
             control={props.control ?? ctrl}
@@ -79,11 +78,13 @@ export default function Select(props: SelectProps) {
                         }
 
                         <span className={`inline-block shadow-sm rounded-lg w-full`}>
-                           <Listbox.Button className={`
-                                        w-full h-10 ${props.roundedFull ? 'rounded-full' : 'rounded-lg'} menu-button px-3 flex items-center justify-between 
-                                        cursor-default capitalize border text-left text-base focus:outline-none focus:shadow-outline-blue space-x-2
-                                        focus:ring-4 focus:ring-blue-600 focus:ring-opacity-80 border-gray-400 focus:border-transparent bg-white`
-                           }>
+                           <Listbox.Button
+                              className={`
+                                 w-full h-10 rounded-lg menu-button px-3 flex items-center justify-between 
+                                 cursor-default capitalize border text-left text-base focus:outline-none focus:shadow-outline-blue space-x-2
+                                 focus:ring-4 focus:ring-blue-600 focus:ring-opacity-80 border-gray-400 focus:border-transparent bg-white
+                              `}
+                           >
                               {
                                  //show name for empty selection
                                  !props.initialValue && !(selectedOption?.label || selectedOption?.value) ?
@@ -104,14 +105,16 @@ export default function Select(props: SelectProps) {
                            leaveTo="opacity-0"
                            className="absolute w-full rounded-md shadow-lg"
                         >
-                           <Listbox.Options className={`bg-white w-full min-w-fit max-h-60 border
-                                        oveflow-x-hidden focus:outline-none overflow-y-auto scrollbar 
-                                        rounded-md flex flex-col shadow-lg absolute right-0 z-[50]
-                                        ${direction === 'up' ? 'bottom-12' : 'top-2'}
-                                        ${align === 'left' ? 'left-0' : 'right-0'}
-                                    `}>
+                           <Listbox.Options
+                              className={`bg-white w-full min-w-fit max-h-60 border
+                                 oveflow-x-hidden focus:outline-none overflow-y-auto scrollbar 
+                                 rounded-md flex flex-col shadow-lg absolute right-0 z-[50]
+                                 ${direction === 'up' ? 'bottom-12' : 'top-2'}
+                                 ${align === 'left' ? 'left-0' : 'right-0'}
+                              `}
+                           >
                               {
-                                 options.map((option, i) => {
+                                 props.options.map((option, i) => {
                                     const isSelected = selectedOption?.value === option.value
                                     const value = option.label ?? option.value
                                     /* Use the `active` state to conditionally style the active option. */
@@ -143,7 +146,7 @@ export default function Select(props: SelectProps) {
    )
 }
 
-export function optionsList(type?: SelectProps["type"]): _SelectInputOption[] {
+export function selectOptionsList(type?: SelectProps["type"]): _SelectInputOption[] {
    switch (type) {
       case "dates": return [
          { value: 7, label: `Last 7 Days` },

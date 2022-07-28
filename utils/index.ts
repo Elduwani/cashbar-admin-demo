@@ -1,4 +1,5 @@
 import { differenceInDays, differenceInMonths, differenceInWeeks, format, formatRelative } from "date-fns";
+import { _SelectInputOption } from '@components/Select'
 
 export function metricPrefix(number: number) {
    if (invalidNumbers([number])) return '0.00'
@@ -119,12 +120,12 @@ export function slugify(string: string) {
       .join("-") //join items together into a string with hyphen
 }
 
-export function toSelectOptions(arr: any[], modifier?: (arg: any) => any) {
-   return arr?.reduce?.((acc, curr) => {
+export function toSelectOptions<T = any>(arr: T[], modifier?: (arg: any) => any): _SelectInputOption[] {
+   return arr.reduce((acc, curr) => {
       const value = modifier?.(curr) ?? curr
       !!curr && acc.push({ label: value, value })
       return acc
-   }, [])
+   }, [] as _SelectInputOption[])
 }
 
 export function sanitizePayload(payload: _Object, stringToNumber?: boolean) {

@@ -29,7 +29,7 @@ export default function usePagination(props: Props) {
             <Select
                name=''
                setValue={setPageSize}
-               initialOptions={toSelectOptions(options)}
+               options={toSelectOptions(options)}
                initialValue={options[0]}
                direction='up'
                align='left'
@@ -99,7 +99,7 @@ export function TablePagination(props: _Props) {
                <Select
                   name=''
                   setValue={props.instance.setPageSize}
-                  initialOptions={toSelectOptions(options)}
+                  options={toSelectOptions(options)}
                   initialValue={options[0]}
                   direction='up'
                   align='right'

@@ -12,3 +12,5 @@ interface AllAggregates {
    transactionCount: number
    customerCount: number
 }
+
+type TransactionFilterParams = 'period' | 'less_than' | 'greater_than' | 'status'

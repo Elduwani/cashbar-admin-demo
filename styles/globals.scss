@@ -33,22 +33,37 @@
    // scrollbar-color: rgb(121, 121, 123) rgb(35, 35, 39);
 }
 
-html,
-body {
-   padding: 0;
-   margin: 0;
-   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-      Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-}
-
-a {
-   color: inherit;
-   text-decoration: none;
-}
-
-* {
-   box-sizing: border-box;
-}
+@layer base{
+   [type='text'], [type='email'],
+   [type='url'], [type='password'],
+   [type='number'], [type='date'],
+   [type='datetime-local'], [type='month'],
+   [type='search'], [type='tel'],
+   [type='time'], [type='week'],
+   [multiple], textarea, select {
+     @apply h-10 block w-full rounded-md placeholder-gray-500 text-gray-700 bg-transparent;
+     &.error {
+       @apply focus:ring-red-500;
+     }
+   }
+ 
+   [type='checkbox'],
+   [type='radio'] {
+     @apply text-blue-600 focus:ring-blue-500 cursor-pointer;
+   }
+   [type='checkbox'] {
+     @apply rounded;
+   }
+   [type='radio'] {
+     @apply rounded-md;
+   }
+   textarea {
+     min-height: 120px !important;
+   }
+   button {
+     // @apply h-10;
+   }
+ }
 
 .indicator {
    display: flex;

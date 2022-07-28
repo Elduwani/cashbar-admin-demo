@@ -78,7 +78,7 @@ export default function ReactTable({ sort = true, ...props }: Props) {
                            <DownloadCSV
                               data={props.data}
                               filename={props.exportCSV}
-                              headers={props.columns}
+                              columns={props.columns}
                               text="Export CSV"
                            />
                            : null

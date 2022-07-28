@@ -56,11 +56,11 @@ export function tableRowStatus(status?: boolean) {
 }
 
 export function useTimePeriod(
-   callback?: Function, styles?: { default: string, selected: string, deselected: string }
+   styles?: { default: string, selected: string, deselected: string }
 ) {
    const [timePeriod, setState] = useState(getTimePeriodDate(timePeriodOptions[0]))
    styles = styles ?? {
-      default: `uppercase text-xs md:text-sm px-4 py-1 tracking-wider cursor-pointer rounded`,
+      default: `w-full uppercase text-xs md:text-sm px-4 py-1 tracking-wider cursor-pointer rounded text-center`,
       selected: `bg-indigo-600 text-white shadow-lg`,
       deselected: `bg-blue-50 text-indigo-600`
    }
@@ -73,11 +73,7 @@ export function useTimePeriod(
                className={`${styles?.default} ${selected ? styles?.selected : styles?.deselected}`}
                onClick={() => {
                   if (timePeriod.label !== dateRange) {
-                     if (callback) {
-                        callback(getTimePeriodDate(dateRange))
-                     } else {
-                        setState((getTimePeriodDate(dateRange)))
-                     }
+                     setState((getTimePeriodDate(dateRange)))
                   }
                }}
             >{dateRange.replace(/ /g, "").slice(0, 2)}</div>
