@@ -34,7 +34,7 @@ export default function TabsList(props: Props) {
                return (
                   <li key={i}
                      className={`text-sm px-5 h-12 grid place-items-center cursor-pointer capitalize select-none
-                        ${selected ? "border-b-4 border-red-500" : "opacity-60"}
+                        ${selected ? "border-b-4 border-teal-400 text-teal-800 font-medium" : "opacity-60"}
                      `}
                      onClick={() => {
                         props.setIndex?.(i)

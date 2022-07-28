@@ -1,7 +1,7 @@
 import { sub, eachDayOfInterval, startOfWeek, isFirstDayOfMonth, format } from "date-fns"
 import { formatDate } from "./index"
 
-export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months"] as const
+export const timePeriodOptions = ["1 week", "1 month", "3 months", "6 months"] as const
 // export const dateFilterOptions = ["1 week", "1 month", "3 months", "6 months", "1 year"] as const
 
 type Trx = Transaction | Expense | Liquidation
@@ -135,9 +135,8 @@ function aggregateTotals(map: MyMap, transactions?: Trx[]) {
    return maxAmount
 }
 
-export function getPastDate(dateLabel?: typeof dateFilterOptions[number]) {
-   dateLabel = dateLabel ?? dateFilterOptions[0]
-   let [count, period] = dateLabel.split(" ")
+export function getTimePeriodDate(periodOption: typeof timePeriodOptions[number]) {
+   let [count, period] = periodOption.split(" ")
    let date = new Date()
 
    if (period.match(/week/i,)) {
@@ -151,7 +150,7 @@ export function getPastDate(dateLabel?: typeof dateFilterOptions[number]) {
    }
 
    return {
-      label: dateLabel,
+      label: periodOption,
       value: date.toISOString()
    }
 }

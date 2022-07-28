@@ -4,7 +4,7 @@ import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
 import { useModal } from "@contexts/Modal.context"
 import { tableRowStatus } from "@hooks/index"
-import TransactionsLayout from "@layouts/transactions/transactions.layout"
+import TransactionsLayout from "@layouts/transactions/Transactions.layout"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
 import { ReactElement } from "react"
@@ -27,16 +27,22 @@ export default function Transactions() {
    )
 
    return (
-      <>
-         {
-            transactions?.length ?
-               <ReactTable
-                  columns={tabelColumns}
-                  data={transactions}
-               />
-               : null
-         }
-      </>
+      <div className="h-full flex space-x-4">
+         <div className="w-full max-w-md p-8 bg-teal-100">
+            Add filters here
+         </div>
+         <div className="w-full">
+            {
+               transactions?.length ?
+                  <ReactTable
+                     columns={tabelColumns}
+                     data={transactions}
+                     utilities
+                  />
+                  : null
+            }
+         </div>
+      </div>
    )
 }
 
@@ -63,5 +69,10 @@ const tabelColumns: _TableColumn[] = [
       label: "date",
       key: "paid_at",
       cell: (cell) => formatDate(cell.getValue(), true, true),
+   },
+   {
+      key: "reference",
+      cell: (cell) => (cell.getValue() as string).substring(0, 20),
+      capitalize: false
    }
 ]

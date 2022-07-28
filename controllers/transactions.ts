@@ -1,4 +1,4 @@
-import { dateFilterOptions, getPastDate } from "@utils/chart.utils"
+import { timePeriodOptions, getPastDate } from "@utils/chart.utils"
 import { _firestore, formatDocumentAmount } from "./firebase.server"
 
 export async function getAllTransactions() {
@@ -10,7 +10,7 @@ export async function getAllTransactions() {
    return transactions
 }
 
-export async function getTransactionsPeriodic(time_period: typeof dateFilterOptions[number]) {
+export async function getTransactionsPeriodic(time_period: typeof timePeriodOptions[number]) {
    console.log(`>> Fetching periodic transactions from  ${time_period} <<`)
    const collectionName: CollectionName = 'transactions'
    const ref = _firestore.collection(collectionName)

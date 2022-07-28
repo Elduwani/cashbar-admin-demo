@@ -1,6 +1,6 @@
 import { _firestore } from "@controllers/firebase.server";
 import { getTransactionsPeriodic } from "@controllers/transactions";
-import { dateFilterOptions } from "@utils/chart.utils";
+import { timePeriodOptions } from "@utils/chart.utils";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -11,9 +11,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       switch (req.method) {
          case "GET": {
-            const time_period = req.query.time_period as typeof dateFilterOptions[number]
-            if (!dateFilterOptions.includes(time_period)) {
-               const message = `Invalid [time_period] parameter. Options are <${dateFilterOptions.join(' : ')}>`
+            const time_period = req.query.time_period as typeof timePeriodOptions[number]
+            if (!timePeriodOptions.includes(time_period)) {
+               const message = `Invalid [time_period] parameter. Options are <${timePeriodOptions.join(' : ')}>`
                throw new Error(message)
             }
 

@@ -1,4 +1,4 @@
-import { dateFilterOptions, getChartData, getPastDate, niceNumbers } from "@utils/chart.utils"
+import { niceNumbers } from "@utils/chart.utils"
 import { metricPrefix } from "@utils/index"
 import { transform } from "framer-motion"
 import { useLayoutEffect, useRef, useState } from "react"
@@ -10,12 +10,11 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
    const containerRef = useRef<HTMLDivElement>(null)
    const [viewBox, setViewBox] = useState({ width: 960, height, padding: 20 })
 
-   const chartData = props.dataSet.map(set => getChartData(set.data, props.period.value))
    //5k is fallback value when there are no transactions, otherwise renders empty
-   const { yAxisNumbers, maxNumber } = niceNumbers(Math.max(...chartData.map(set => set.maxAmount + 2000), 5000), 5)
+   const { yAxisNumbers, maxNumber } = niceNumbers(Math.max(...props.data.map(set => set.maxAmount + 2000), 5000), 5)
    const [canvasBox, setCanvasBox] = useState({ startX: 0, startY: 0, width: 100, height: 100, yAxisWidth: 40, xAxisHeight: 25 })
    //Calculate relative [x,y] coordinates of entries
-   const vectors = chartData.map(set => getVectors(set.data))
+   const vectors = props.data.map(set => getVectors(set.data))
 
    function getVectors(arr: [string, { total: number }][]) {
       return arr.reduce((acc: string[], curr, i) => {
@@ -29,7 +28,7 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
       }, [])
    }
 
-   function modToolTip(y: number) {
+   function formatToolTip(y: number) {
       let ry = y - 20 //move tooltip position up
       if (ry <= 0) ry = 40 //if out of top view bring position down
       return ry
@@ -81,7 +80,7 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
                      }
                      <div className="_labels flex space-x-4">
                         {
-                           props.dataSet.slice().reverse().map(({ label, color = "text-gray-500" }, i) =>
+                           props.dataSet.map(({ label, color = "text-gray-500" }, i) =>
                               <div
                                  key={i}
                                  className="flex items-center space-x-2 h-8 capitalize text-xs md:text-base text-gray-600"
@@ -94,27 +93,12 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
                   </div>
                   : null
             }
-            <div className="flex space-x-2 md:space-x-8 justify-center">
-               {
-                  dateFilterOptions.map(dateRange => {
-                     const selected = props.period.label === dateRange
-                     return (
-                        <div
-                           key={dateRange}
-                           className={`
-                           uppercase text-xs md:text-sm px-4 py-1 tracking-wider cursor-pointer rounded 
-                           ${selected ? "bg-indigo-600 text-white shadow-lg" : "bg-blue-50 text-indigo-600"}
-                        `}
-                           onClick={() => {
-                              if (props.period.label !== dateRange) {
-                                 props.setPeriod?.(getPastDate(dateRange))
-                              }
-                           }}
-                        >{dateRange.replace(/ /g, "").slice(0, 2)}</div>
-                     )
-                  })
-               }
-            </div>
+            {
+               props.timePeriodPicker &&
+               <div className="flex space-x-2 md:space-x-8 justify-center">
+                  {props.timePeriodPicker}
+               </div>
+            }
             <div ref={containerRef}>
                <svg
                   viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
@@ -192,8 +176,8 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
                         return set.map((coord, j) => { //[vectors<"x,y">, vectors<"x,y">]
                            const { height } = canvasBox
                            const [x, y] = coord.split(",")
-                           const { total } = chartData[i].data[j][1]
-                           const tooltipY = modToolTip(+y)
+                           const { total } = props.data[i].data[j][1]
+                           const tooltipY = formatToolTip(+y)
 
                            return (
                               <g className={`point-group ${label}`} key={j}>
@@ -245,7 +229,7 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
                         const { height } = canvasBox
                         const [x] = coord.split(",")
                         //any index is fine. They all have the same date range.
-                        const [date] = chartData[0].data[i]
+                        const [date] = props.data[0].data[i]
                         const rotationDeg = shouldSlant ? -35 : 0
                         const y = height + 15
                         const textNode = (

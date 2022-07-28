@@ -1,16 +1,16 @@
 import ReactTable from "@components/ReactTable"
 import TransactionsChart, { DataSet } from "@components/TransactionsChart"
 import { queryKeys } from "@configs/reactQueryConfigs"
-import { tableRowStatus } from "@hooks/index"
-import { getPastDate } from "@utils/chart.utils"
+import { tableRowStatus, useTimePeriod } from "@hooks/index"
+import { getChartData } from "@utils/chart.utils"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
 import { useRouter } from "next/router"
-import { useState } from "react"
+import { useMemo } from "react"
 
 export default function Overview() {
    const { id } = useRouter().query
-   const [period, setPeriod] = useState(getPastDate())
+   const { timePeriod, element: timePeriodPicker } = useTimePeriod()
 
    const { data, isFetching } = useFetch({
       key: [queryKeys.investments, 'overview', id],
@@ -24,9 +24,14 @@ export default function Overview() {
    } = data
 
    const dataSet: DataSet[] = [
-      { label: "liquidation", color: "text-red-600", data: liquidations },
-      { label: "investment", color: "text-indigo-600", data: transactions, circle: true },
+      { label: "investments", color: "text-indigo-600", data: transactions, circle: true },
+      { label: "liquidations", color: "text-red-600", data: liquidations },
    ]
+
+   //Memoize this
+   const chartData = useMemo(() =>
+      dataSet.map(set => getChartData(set.data, timePeriod.value))
+      , [timePeriod.value, id])
 
    return (
       <div className="space-y-8">
@@ -61,9 +66,9 @@ export default function Overview() {
          <TransactionsChart
             title=""
             dataSet={dataSet}
-            setPeriod={setPeriod}
+            data={chartData}
             loading={isFetching}
-            period={period}
+            timePeriodPicker={timePeriodPicker}
             height={250}
          />
 

@@ -1,3 +1,4 @@
+import { getTimePeriodDate, timePeriodOptions } from "@utils/chart.utils";
 import { useEffect, useState } from "react";
 
 export default function useMedia(
@@ -52,4 +53,37 @@ export function tableRowStatus(status?: boolean) {
          <span className={`rounded-full h-2/4 w-2/4 ${color}`}></span>
       </div>
    )
+}
+
+export function useTimePeriod(
+   callback?: Function, styles?: { default: string, selected: string, deselected: string }
+) {
+   const [timePeriod, setState] = useState(getTimePeriodDate(timePeriodOptions[0]))
+   styles = styles ?? {
+      default: `uppercase text-xs md:text-sm px-4 py-1 tracking-wider cursor-pointer rounded`,
+      selected: `bg-indigo-600 text-white shadow-lg`,
+      deselected: `bg-blue-50 text-indigo-600`
+   }
+   const element = (
+      timePeriodOptions.map(dateRange => {
+         const selected = timePeriod.label === dateRange
+         return (
+            <div
+               key={dateRange}
+               className={`${styles?.default} ${selected ? styles?.selected : styles?.deselected}`}
+               onClick={() => {
+                  if (timePeriod.label !== dateRange) {
+                     if (callback) {
+                        callback(getTimePeriodDate(dateRange))
+                     } else {
+                        setState((getTimePeriodDate(dateRange)))
+                     }
+                  }
+               }}
+            >{dateRange.replace(/ /g, "").slice(0, 2)}</div>
+         )
+      })
+   )
+
+   return { timePeriod, element }
 }

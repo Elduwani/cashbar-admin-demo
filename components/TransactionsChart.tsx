@@ -1,4 +1,4 @@
-import { getPastDate } from '@utils/chart.utils'
+import { getChartData } from '@utils/chart.utils'
 import { useEffect, useState } from 'react'
 import ClientOnly from './ClientOnly'
 import LineChart from './LineChart'
@@ -12,8 +12,10 @@ export interface DataSet {
 }
 export interface ChartProps {
    dataSet: DataSet[]
-   setPeriod(t: ReturnType<typeof getPastDate>): void
-   period: ReturnType<typeof getPastDate>
+   data: ReturnType<typeof getChartData>[]
+   // setPeriod?(t: ReturnType<typeof getTimePeriodDate>): void
+   // timePeriod: ReturnType<typeof getTimePeriodDate>
+   timePeriodPicker?: React.ReactNode
    title?: string
    height?: number
    loading?: boolean
