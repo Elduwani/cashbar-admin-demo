@@ -1,5 +1,6 @@
 import { differenceInDays, differenceInMonths, differenceInWeeks, format, formatRelative } from "date-fns";
 import { _SelectInputOption } from '@components/Select'
+import { z } from 'zod'
 
 export function metricPrefix(number: number, units?: [string, string, string, string]) {
    if (invalidNumbers([number])) return '0.00'
@@ -214,4 +215,17 @@ export function queryStringFromObject(params: _Object) {
       }
    }
    return query.slice(0, -1) //remove the last '&' character
+}
+
+export function zodError(issues?: z.ZodIssue[]) {
+   let errorString = ''
+   if (Array.isArray(issues)) {
+      for (const issue of issues) {
+         if (issue.path && issue.message) {
+            errorString += `>> ${String(issue.path[0]).toUpperCase()}: ${issue.message} \n`
+         }
+      }
+   }
+
+   return !!errorString ? errorString : undefined
 }

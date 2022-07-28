@@ -7,8 +7,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
    try {
 
-      const transactionsRef = _firestore.collection("transactions")
-
       switch (req.method) {
          case "GET": {
             const time_period = req.query.time_period as typeof timePeriodOptions[number]
@@ -20,9 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const transactions = await getTransactionsPeriodic(time_period)
 
             const responseData = {
-               transactions,
-               // liquidations: liquidationsRef.docs.map(mapDataId),
-               // expenses: expensesRef.docs.map(mapDataId)
+               transactions
             }
             return res.send(responseData)
          }

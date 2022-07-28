@@ -7,7 +7,7 @@ import { queryStringFromObject, toSelectOptions } from "@utils/index"
 import React from "react"
 import { useForm } from "react-hook-form"
 
-interface FormInputs {
+export interface FilterFormInputs {
    time_period: typeof timePeriodOptions[number]
    status: Transaction['status']
    greater_than: string
@@ -18,9 +18,9 @@ export default function useFilters(setQueryString: (v: string) => void) {
    const { handleSubmit, register, setError, control, formState: { errors } } = useForm()
    const { timePeriod, element: timePeriodPicker } = useTimePeriod()
 
-   const onSubmit = (values: FormInputs) => {
+   const onSubmit = (values: FilterFormInputs) => {
       const { less_than, greater_than } = values
-      if (!!less_than && !!greater_than && (+less_than >= +greater_than)) {
+      if (!!less_than && !!greater_than && (+less_than <= +greater_than)) {
          setError("greater_than", {
             type: "manual",
             message: `Value too low`

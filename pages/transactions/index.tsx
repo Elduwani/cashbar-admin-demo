@@ -18,7 +18,7 @@ export default function Transactions() {
    const { data, isFetching } = useFetch({
       enabled: !!queryString?.length,
       key: [queryKeys.transactions, queryString, 'filtered'],
-      url: `/transactions`,
+      url: `/transactions?${queryString}`,
       placeholderData: {}
    })
 

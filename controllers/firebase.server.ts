@@ -1,5 +1,5 @@
 import serviceAccount from '@configs/firebase-admin-service-key.json';
-import { formatBaseCurrency } from "@utils/index";
+import { formatBaseCurrency, invalidNumbers } from "@utils/index";
 import { ServiceAccount } from "firebase-admin";
 import * as admin from "firebase-admin/app";
 import { CollectionReference, DocumentData, DocumentSnapshot, getFirestore, QueryDocumentSnapshot } from "firebase-admin/firestore";
@@ -23,9 +23,13 @@ export async function getCustomers() {
 }
 
 type Doc = QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData>
-export function formatDocumentAmount(doc: Doc, key = 'amount') {
+export function formatDocumentAmount(doc: Doc, keys = ['amount', 'fees', 'requested_amount']) {
    const data = doc.data() ?? doc
-   data[key] = formatBaseCurrency(data[key])
+   keys.forEach(key => {
+      if (data[key] && !invalidNumbers([data[key]])) {
+         data[key] = formatBaseCurrency(data[key])
+      }
+   })
    return data
 }
 

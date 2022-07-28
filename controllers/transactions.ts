@@ -1,4 +1,4 @@
-import { timePeriodOptions, getPastDate } from "@utils/chart.utils"
+import { timePeriodOptions, getTimePeriodDate } from "@utils/chart.utils"
 import { _firestore, formatDocumentAmount } from "./firebase.server"
 
 export async function getAllTransactions() {
@@ -14,7 +14,7 @@ export async function getTransactionsPeriodic(time_period: typeof timePeriodOpti
    console.log(`>> Fetching periodic transactions from  ${time_period} <<`)
    const collectionName: CollectionName = 'transactions'
    const ref = _firestore.collection(collectionName)
-   const date = getPastDate(time_period)
+   const date = getTimePeriodDate(time_period)
    const snapshot = await ref.where('paid_at', '>', date.value).get()
    const transactions = snapshot.docs.map(d => formatDocumentAmount(d) as Transaction | PaystackTransaction)
    return transactions
