@@ -17,7 +17,7 @@ export const validationPatterns = {
    },
 }
 
-export interface InputProps {
+export interface InputProps<T = _Object> {
    name: string
    defaultValue?: string | number | readonly string[] | undefined
    value?: string | number
@@ -28,7 +28,7 @@ export interface InputProps {
    maxLength?: number
    required?: boolean
    pattern?: keyof typeof validationPatterns
-   register?: UseFormRegister<_Object>
+   register?: UseFormRegister<T>
    errors?: _Object
    fontSize?: string
    textarea?: boolean

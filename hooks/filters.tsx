@@ -2,26 +2,34 @@ import Button from "@components/Button"
 import { InputWithLabel } from "@components/FormComponents"
 import Select from "@components/Select"
 import { useTimePeriod } from "@hooks/index"
-import { sanitizePayload, toSelectOptions } from "@utils/index"
+import { timePeriodOptions } from "@utils/chart.utils"
+import { queryStringFromObject, toSelectOptions } from "@utils/index"
 import React from "react"
 import { useForm } from "react-hook-form"
 
-export default function useFilters() {
+interface FormInputs {
+   time_period: typeof timePeriodOptions[number]
+   status: Transaction['status']
+   greater_than: string
+   less_than: string
+}
+
+export default function useFilters(setQueryString: (v: string) => void) {
    const { handleSubmit, register, setError, control, formState: { errors } } = useForm()
    const { timePeriod, element: timePeriodPicker } = useTimePeriod()
 
-   const onSubmit = (values: _Object) => {
+   const onSubmit = (values: FormInputs) => {
       const { less_than, greater_than } = values
       if (!!less_than && !!greater_than && (+less_than >= +greater_than)) {
          setError("greater_than", {
             type: "manual",
             message: `Value too low`
          }, { shouldFocus: true })
-         return false
+         return
       }
 
-      const data = { ...values, period: timePeriod.value }
-      console.log(sanitizePayload(data))
+      const data = { ...values, time_period: timePeriod.value }
+      setQueryString(queryStringFromObject(data))
    }
 
    const element = (

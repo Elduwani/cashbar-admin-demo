@@ -1,27 +1,15 @@
 import { differenceInDays, differenceInMonths, differenceInWeeks, format, formatRelative } from "date-fns";
 import { _SelectInputOption } from '@components/Select'
 
-export function metricPrefix(number: number) {
+export function metricPrefix(number: number, units?: [string, string, string, string]) {
    if (invalidNumbers([number])) return '0.00'
 
    const num = Math.abs(number)
    //Must start from largest number so it doesn't return lower true condition
-   if (num > 999999999) return (Math.sign(num) * (num / 1000000000)).toFixed(1) + 'B'
-   if (num > 999999) return (Math.sign(num) * (num / 1000000)).toFixed(1) + 'M'
-   if (num > 999) return parseInt(String(Math.sign(num) * (num / 1000))) + 'K'
-   return String(Math.sign(num) * num)
-}
-
-export function byteSize(number: number) {
-   if (!invalidNumbers([number])) {
-      const num = Math.abs(number)
-      //Must start from largest number so it doesn't return lower true condition
-      if (num > 999999999) return (Math.sign(num) * (num / 1000000000)).toFixed(2) + 'GB'
-      if (num > 999999) return (Math.sign(num) * (num / 1000000)).toFixed(1) + 'MB'
-      if (num > 999) return parseInt(String(Math.sign(num) * (num / 1000))) + 'KB'
-      return String(Math.sign(num) * num) + "B"
-   }
-   return String(number)
+   if (num > 999999999) return (Math.sign(num) * (num / 1000000000)).toFixed(1) + units?.[0] ?? 'B'
+   if (num > 999999) return (Math.sign(num) * (num / 1000000)).toFixed(1) + units?.[1] ?? 'M'
+   if (num > 999) return String(Math.sign(num) * (num / 1000)) + units?.[2] ?? 'K'
+   return String(Math.sign(num) * num) + units?.[0] ?? ""
 }
 
 export function formatDate(date: string | Date, year = true, time = false) {
@@ -216,4 +204,14 @@ function parseNumber(number: number | string) {
    if (Number.isNaN(number)) return new Error(number + " is not a number type")
    if (typeof number === "number" || isFinite(+number)) return number
    return new Error(number + " is not a number type")
+}
+
+export function queryStringFromObject(params: _Object) {
+   let query = ''
+   for (const key in params) {
+      if (params[key]) {
+         query += `${key}=${params[key]}&`
+      }
+   }
+   return query.slice(0, -1) //remove the last '&' character
 }

@@ -8,9 +8,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       switch (req.method) {
          case "GET": {
             //TODO: Paginate this endpoint
-            const transactions = await getAllTransactions()
+            // const transactions = await getAllTransactions()
             const responseData = {
-               transactions,
+               transactions: [],
                liquidations: [],
                expenses: []
             }

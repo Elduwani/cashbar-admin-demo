@@ -8,14 +8,16 @@ import { tableRowStatus } from "@hooks/index"
 import TransactionsLayout from "@layouts/transactions/Transactions.layout"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
-import { ReactElement } from "react"
+import { ReactElement, useState } from "react"
 
 export default function Transactions() {
    const { openModal } = useModal()
-   const { element: filters } = useFilters()
+   const [queryString, setQueryString] = useState<string>()
+   const { element: filters } = useFilters(setQueryString)
 
    const { data, isFetching } = useFetch({
-      key: [queryKeys.transactions, 'all'],
+      enabled: !!queryString?.length,
+      key: [queryKeys.transactions, queryString, 'filtered'],
       url: `/transactions`,
       placeholderData: {}
    })
@@ -40,7 +42,10 @@ export default function Transactions() {
                         data={transactions}
                         utilities
                      />
-                     : null
+                     :
+                     <FullPageCenterItems height={500}>
+                        <p className="text-gray-500">Search results will display here</p>
+                     </FullPageCenterItems>
             }
          </div>
       </div>
