@@ -1,4 +1,6 @@
 import SubscriptionHistory from '@layouts/customers/Customers.subscription.transactions';
+import AddLiquidation from '@modals/AddLiquidation.modal';
+import Modal from '@modals/Modal';
 import { AnimatePresence } from 'framer-motion';
 import DrawerModal from 'modals/Drawer.modal';
 import React, { createContext, useContext, useState } from 'react';
@@ -33,6 +35,16 @@ export const ModalProvider = (props: { children: React.ReactNode }) => {
                >
                   <SubscriptionHistory data={data} />
                </DrawerModal>
+            )
+         case "addLiquidation":
+            return (
+               <Modal
+                  title='Add Liquidation'
+                  isOpen={modal.name === name}
+                  close={closeModal}
+               >
+                  <AddLiquidation data={data} />
+               </Modal>
             )
          default:
             return null;

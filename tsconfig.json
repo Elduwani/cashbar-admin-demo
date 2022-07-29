@@ -36,6 +36,9 @@
          "@contexts/*": [
             "contexts/*"
          ],
+         "@modals/*": [
+            "modals/*"
+         ],
          "@styles/*": [
             "styles/*"
          ],

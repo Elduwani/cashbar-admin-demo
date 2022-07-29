@@ -1,18 +1,18 @@
 import Activities from "@components/Activities";
 import Button from "@components/Button";
 import TransactionsChart, { DataSet } from "@components/TransactionsChart";
-import { getAggregate } from "@controllers/aggregates.server";
+import { useTimePeriod } from "@hooks/index";
 import HomeAggregate from "@layouts/home/Home.aggregate";
-import { getPastDate } from "@utils/chart.utils";
+import { getChartData } from "@utils/chart.utils";
 import { useFetch } from "@utils/fetch";
-import { useState } from "react";
+import { useMemo } from "react";
 
 export default function Index() {
-   const [period, setPeriod] = useState(getPastDate())
+   const { timePeriod, element: timePeriodPicker } = useTimePeriod()
 
    const chartData = useFetch({
-      key: ["chart_data", period.label],
-      url: `/transactions/periodic?time_period=${period.label}`,
+      key: ["chart_data", timePeriod.label],
+      url: `/transactions/periodic?time_period=${timePeriod.label}`,
       placeholderData: {} as _Object
    })
 
@@ -23,6 +23,10 @@ export default function Index() {
       { label: "revenue", color: "text-indigo-600", data: chartData.data.transactions, circle: true },
    ]
 
+   const data = useMemo(() =>
+      dataSet.map(set => getChartData(set.data, timePeriod.value))
+      , [timePeriod.value])
+
    return (
       <div className="w-full h-full flex bg-slate-50">
          <div className={`h-full w-full max-w-md p-8 bg-slate-100`}>
@@ -32,8 +36,8 @@ export default function Index() {
             <TransactionsChart
                title="Overview"
                dataSet={dataSet}
-               setPeriod={setPeriod}
-               period={period}
+               data={data}
+               timePeriodPicker={timePeriodPicker}
                loading={chartData.isFetching}
                shadow
             />

@@ -7,11 +7,12 @@ import { useState } from 'react'
 import type { ReactElement, ReactNode } from 'react'
 import type { NextPage } from 'next'
 import type { AppProps } from 'next/app'
+import { ToastProvider } from '@contexts/Notification.context'
+import { ModalProvider } from '@contexts/Modal.context'
+import { DialogProvider } from '@contexts/Dialog.context'
 
 import "@styles/chart.css"
 import '@styles/globals.scss'
-import { ToastProvider } from '@contexts/Notification.context'
-import { ModalProvider } from '@contexts/Modal.context'
 
 export type NextPageWithLayout = NextPage & {
    getLayout?: (page: ReactElement) => ReactNode
@@ -35,20 +36,22 @@ export default function MyApp({ Component, pageProps: { session, ...pageProps } 
    return (
       <ToastProvider>
          <QueryClientProvider client={queryClient}>
-            <ModalProvider>
-               <HTMLHead />
-               <main className="flex flex-col h-screen">
-                  <Header />
-                  <div className="_wrapper flex flex-1 overflow-hidden">
-                     <Sidebar />
-                     <div className="_container w-full min-h-full overflow-y-auto scrollbar">
-                        {
-                           getLayout(<Component {...pageProps} />)
-                        }
+            <DialogProvider>
+               <ModalProvider>
+                  <HTMLHead />
+                  <main className="flex flex-col h-screen">
+                     <Header />
+                     <div className="_wrapper flex flex-1 overflow-hidden">
+                        <Sidebar />
+                        <div className="_container w-full min-h-full overflow-y-auto scrollbar">
+                           {
+                              getLayout(<Component {...pageProps} />)
+                           }
+                        </div>
                      </div>
-                  </div>
-               </main>
-            </ModalProvider>
+                  </main>
+               </ModalProvider>
+            </DialogProvider>
          </QueryClientProvider>
       </ToastProvider>
    )

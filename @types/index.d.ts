@@ -2,7 +2,7 @@ declare module 'react-csv';
 
 type _Object<T = any> = Record<string, T>
 
-type _ModalName = 'subscriptionHistory'
+type _ModalName = 'subscriptionHistory' | 'addLiquidation'
 
 interface _ModalState {
    name?: _ModalName

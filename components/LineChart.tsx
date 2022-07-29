@@ -95,7 +95,7 @@ export default function LineChart({ labels = true, height = 300, ...props }: Cha
             }
             {
                props.timePeriodPicker &&
-               <div className="flex space-x-2 md:space-x-8 justify-center">
+               <div className="w-full max-w-xs mx-auto flex space-x-2 md:space-x-4 justify-center">
                   {props.timePeriodPicker}
                </div>
             }

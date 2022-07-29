@@ -7,10 +7,10 @@ export function metricPrefix(number: number, units?: [string, string, string, st
 
    const num = Math.abs(number)
    //Must start from largest number so it doesn't return lower true condition
-   if (num > 999999999) return (Math.sign(num) * (num / 1000000000)).toFixed(1) + units?.[0] ?? 'B'
-   if (num > 999999) return (Math.sign(num) * (num / 1000000)).toFixed(1) + units?.[1] ?? 'M'
-   if (num > 999) return String(Math.sign(num) * (num / 1000)) + units?.[2] ?? 'K'
-   return String(Math.sign(num) * num) + units?.[0] ?? ""
+   if (num > 999999999) return (Math.sign(num) * (num / 1000000000)).toFixed(1) + (units?.[0] ?? 'B')
+   if (num > 999999) return (Math.sign(num) * (num / 1000000)).toFixed(1) + (units?.[1] ?? 'M')
+   if (num > 999) return String(Math.sign(num) * (num / 1000)) + (units?.[2] ?? 'K')
+   return String(Math.sign(num) * num) + (units?.[3] ?? "")
 }
 
 export function formatDate(date: string | Date, year = true, time = false) {

@@ -1,5 +1,9 @@
+import { _PopoverMenu } from "@components/PopOver";
+import { useModal } from "@contexts/Modal.context";
 import { getTimePeriodDate, timePeriodOptions } from "@utils/chart.utils";
 import { useEffect, useState } from "react";
+import { FiCheck, FiPlus, FiX } from "react-icons/fi";
+import { HiCheck, HiExclamationCircle, HiOutlineLightningBolt } from "react-icons/hi";
 
 export default function useMedia(
    queries: string[],
@@ -82,4 +86,45 @@ export function useTimePeriod(
    )
 
    return { timePeriod, element }
+}
+
+export function subscriptionStatusIndicator(status: Subscription['status']) {
+   const [color, Icon] =
+      status === 'active' ? ['bg-green-100 text-green-800', HiOutlineLightningBolt] :
+         status === 'cancelled' ? ['bg-red-50 text-red-800', HiExclamationCircle]
+            : ['bg-gray-100', HiCheck]
+
+   return (
+      <div className={`h-10 px-4 pr-5 flex items-center space-x-2 ${color} rounded-md capitalize`}>
+         <Icon /> <span>{status}</span>
+      </div>
+   )
+}
+
+export function useSubscriptiontMenu(subscription: PaystackSubscription) {
+   const { openModal } = useModal()
+
+   const menu: _PopoverMenu[] = [
+      {
+         label: 'add liquidation',
+         action: () => openModal('addLiquidation', subscription),
+         icon: FiPlus
+      },
+      {
+         label: 'mark as complete',
+         action: () => null,
+         icon: FiCheck,
+      },
+      {
+         label: 'cancel',
+         action: () => null,
+         icon: FiX,
+      },
+      //  {
+      //      label: 'top-up deposit',
+      //      action: () => openModal('topUpSubscription', subscription),
+      //      icon: HiChevronDoubleUp
+      //  },
+   ]
+   return menu
 }
