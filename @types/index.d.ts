@@ -2,14 +2,6 @@ declare module 'react-csv';
 
 type _Object<T = any> = Record<string, T>
 
-type _ModalName = 'subscriptionHistory' | 'addLiquidation'
-
-interface _ModalState {
-   name?: _ModalName
-   data?: any,
-   title?: string
-}
-
 interface _Tab {
    name: string
    route?: string
@@ -102,9 +94,9 @@ interface Transaction<T = string> {
    [key: string]: any
 }
 
-interface Subscription {
+interface Subscription<T = Customer> {
    id: string,
-   customer: string | Customer,
+   customer: T,
    plan: PaystackPlan
    start: number
    status: 'active' | 'complete' | 'cancelled'

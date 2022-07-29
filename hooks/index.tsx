@@ -1,5 +1,6 @@
 import { _PopoverMenu } from "@components/PopOver";
 import { useModal } from "@contexts/Modal.context";
+import AddLiquidation from "@modals/AddLiquidation.modal";
 import { getTimePeriodDate, timePeriodOptions } from "@utils/chart.utils";
 import { useEffect, useState } from "react";
 import { FiCheck, FiPlus, FiX } from "react-icons/fi";
@@ -101,14 +102,18 @@ export function subscriptionStatusIndicator(status: Subscription['status']) {
    )
 }
 
-export function useSubscriptiontMenu(subscription: PaystackSubscription) {
+export function useSubscriptiontMenu(subscription: Subscription, balance: number) {
    const { openModal } = useModal()
 
    const menu: _PopoverMenu[] = [
       {
          label: 'add liquidation',
-         action: () => openModal('addLiquidation', subscription),
-         icon: FiPlus
+         icon: FiPlus,
+         enabled: balance > 0,
+         action: () => openModal({
+            element: <AddLiquidation subscription={subscription} />,
+            type: 'drawer'
+         }),
       },
       {
          label: 'mark as complete',
@@ -119,12 +124,8 @@ export function useSubscriptiontMenu(subscription: PaystackSubscription) {
          label: 'cancel',
          action: () => null,
          icon: FiX,
-      },
-      //  {
-      //      label: 'top-up deposit',
-      //      action: () => openModal('topUpSubscription', subscription),
-      //      icon: HiChevronDoubleUp
-      //  },
+      }
    ]
+
    return menu
 }

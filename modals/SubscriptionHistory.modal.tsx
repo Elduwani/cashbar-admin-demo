@@ -8,36 +8,29 @@ import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
 
 interface Props {
-   data: {
-      plan: PaystackPlan
-      customerID: string
-      subscription: PaystackSubscription
-   }
+   plan: PaystackPlan
+   customerID: string
+   subscription: Subscription
 }
-export default function SubscriptionHistory({ data }: Props) {
-   const menu = useSubscriptiontMenu(data.subscription)
-
+export default function SubscriptionHistory(props: Props) {
    const { data: _data, isFetching } = useFetch({
-      key: [queryKeys.transactions, data.plan.plan_code],
-      url: `/customers/subscriptions/history?plan_code=${data.plan.plan_code}&customer_id=${data.customerID}`,
+      key: [queryKeys.transactions, props.plan.plan_code],
+      url: `/customers/subscriptions/history?plan_code=${props.plan.plan_code}&customer_id=${props.customerID}`,
       placeholderData: {}
    })
 
    const { transactions, transaction_volume } = _data as _SubscriptionHistory ?? {}
-
-   if (isFetching) return (
-      <FullPageCenterItems height={600}>
-         <Spinner />
-      </FullPageCenterItems>
-   )
+   const menu = useSubscriptiontMenu(props.subscription, transaction_volume)
 
    return (
       <div className="pb-6 space-y-4">
          <div className="flex">
             <div className="w-full">
-               <h2 className="text-2xl">Subscription payment history</h2>
-               <h2 className="capitalize ">{formatNumber(data.plan.amount, "$")} {data.plan.interval}, {data.subscription.status}</h2>
-               <h2 className="capitalize text-sm opacity-70">{data.plan.name}</h2>
+               <h2 className="text-2xl">Subscription history</h2>
+               <h2 className="capitalize ">
+                  {formatNumber(props.plan.amount, "$")} {props.plan.interval}, {props.subscription.status}
+               </h2>
+               <h2 className="capitalize text-sm opacity-70">{props.plan.name}</h2>
                {
                   transactions?.length ?
                      <h2 className="text-sm opacity-70">
@@ -46,20 +39,26 @@ export default function SubscriptionHistory({ data }: Props) {
                }
             </div>
             <div className="flex space-x-2">
-               {subscriptionStatusIndicator(data.subscription.status)}
+               {subscriptionStatusIndicator(props.subscription.status)}
                <ActionMenu menu={menu} className="border" />
             </div>
          </div>
+         {/* <pre>{JSON.stringify(props.subscription, null, 2)}</pre> */}
          {
-            transactions?.length ?
-               <ReactTable
-                  columns={tabelColumns}
-                  data={transactions}
-               />
-               :
-               <FullPageCenterItems className="text-slate-500" height={600}>
-                  There are no payments for this subscription
+            isFetching ?
+               <FullPageCenterItems height={600}>
+                  <Spinner />
                </FullPageCenterItems>
+               :
+               transactions?.length ?
+                  <ReactTable
+                     columns={tabelColumns}
+                     data={transactions}
+                  />
+                  :
+                  <FullPageCenterItems className="text-slate-500" height={600}>
+                     There are no payments for this subscription
+                  </FullPageCenterItems>
          }
       </div>
    )

@@ -8,30 +8,39 @@ import { useMutate } from '@utils/fetch';
 import { formatNumber, sanitizePayload } from '@utils/index';
 import { useForm } from "react-hook-form";
 
-interface _Subscription extends Omit<Subscription, 'customer'> {
+interface FormInput {
+   amount: string
+   paid_at: string
+   charges: string
+   interest_payout: string
+}
+interface _Subscription extends Omit<PaystackSubscription, 'customer'> {
    customer: Customer
 }
-export default function AddLiquidation({ data: subscription }: { data: _Subscription }) {
+interface Props {
+   subscription: _Subscription
+   cancel?(): void
+}
+export default function AddLiquidation(props: Props) {
    const { closeModal } = useModal()
    const { open: openDialog } = useDialog()
-   const { handleSubmit, register, formState: { errors } } = useForm<_Object>()
+   const { handleSubmit, register, formState: { errors } } = useForm<FormInput>()
 
    const { isLoading, mutate } = useMutate({
       url: "/liquidations",
       onSuccessCallback: () => closeModal(),
       refetchKeys: [
-         [queryKeys.liquidations, subscription.id],
+         [queryKeys.liquidations, props.subscription.id],
       ],
    })
 
-   const onSubmit = (values: Liquidation) => {
+   const onSubmit = (values: FormInput) => {
       function next() {
-         if (subscription.customer) {
+         if (props.subscription.customer) {
             const data: _Object = {
                ...values,
-               deposit: subscription.id,
-               customer: subscription.customer?.id,
-               reference: values.reference,
+               deposit: props.subscription.id,
+               customer: props.subscription.customer?.id,
             }
             sanitizePayload(data)
             if (!isLoading) mutate({ data } as any)
@@ -42,10 +51,10 @@ export default function AddLiquidation({ data: subscription }: { data: _Subscrip
          openDialog({
             accept: next,
             message: `
-                    Only ${formatNumber(values.amount)} of this investment can be liquidated.\n
-                    A liquidation of ${formatNumber(values.amount)} will lead to an overdraft.\n
-                    Do you want to continue?
-                `,
+               Only ${formatNumber(values.amount)} of this investment can be liquidated.\n
+               A liquidation of ${formatNumber(values.amount)} will lead to an overdraft.\n
+               Do you want to continue?
+            `,
             buttons: {
                accept: {
                   text: `Yes, Continue`
@@ -75,11 +84,11 @@ export default function AddLiquidation({ data: subscription }: { data: _Subscrip
             <div className="space-y-1 pb-4">
                <p className="text-xl">
                   Adding liquidation for <span className="capitalize font-medium">
-                     {subscription.customer?.surname} {subscription.customer?.forenames.split(" ")[0]}
+                     {/* {subscription.customer?.surname} {subscription.customer?.forenames.split(" ")[0]} */}
                   </span>
                </p>
-               <p>For Fixed Deposit of {formatNumber(subscription.amount, "N")}</p>
-               {/* <p className='opacity-60'>Available balance: {formatNumber(analysis.investmentBalance, "N")}</p> */}
+               <p>For {props.subscription.plan.interval} subscription of {formatNumber(props.subscription.amount, "N")}</p>
+               <p className='opacity-60'>Available balance: 0 balance</p>
             </div>
             <InputWithLabel
                name="amount"

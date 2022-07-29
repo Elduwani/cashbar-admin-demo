@@ -8,10 +8,11 @@ import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
 import { useRouter } from "next/router"
 import { FiCheck, FiX } from "react-icons/fi"
+import SubscriptionHistory from "@modals/SubscriptionHistory.modal"
 
 export default function Subscriptions() {
    const router = useRouter()
-   const customerID = router.query.id
+   const customerID = router.query.customer_id
    const { openModal } = useModal()
 
    const { data, isFetching } = useFetch({
@@ -21,10 +22,14 @@ export default function Subscriptions() {
    })
 
    const subscriptions = (data as Subscription[])
-   const onClick = (sub: Subscription) => openModal(`subscriptionHistory`, {
-      plan: sub.plan,
-      subscription: sub,
-      customerID,
+   const onClick = (sub: Subscription) => openModal({
+      type: "drawer",
+      element:
+         <SubscriptionHistory
+            plan={sub.plan}
+            subscription={sub}
+            customerID={customerID as string}
+         />,
    })
    const rowStyles = (subscription: Subscription) => `
       py-4 ${subscription.status === 'active' && `bg-teal-50`}

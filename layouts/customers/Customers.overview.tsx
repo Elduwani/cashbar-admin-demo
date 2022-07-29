@@ -9,12 +9,12 @@ import { useRouter } from "next/router"
 import { useMemo } from "react"
 
 export default function Overview() {
-   const { id } = useRouter().query
+   const { customer_id } = useRouter().query
    const { timePeriod, element: timePeriodPicker } = useTimePeriod()
 
    const { data, isFetching } = useFetch({
-      key: [queryKeys.investments, 'overview', id],
-      url: `/customers/aggregates?customer_id=${id}`,
+      key: [queryKeys.investments, 'overview', customer_id],
+      url: `/customers/aggregates?customer_id=${customer_id}`,
       placeholderData: {} as _Object
    })
 
@@ -31,7 +31,7 @@ export default function Overview() {
    //Memoize this
    const chartData = useMemo(() =>
       dataSet.map(set => getChartData(set.data, timePeriod.value))
-      , [timePeriod.value, id])
+      , [timePeriod.value, customer_id])
 
    return (
       <div className="space-y-8">

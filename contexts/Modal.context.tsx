@@ -1,61 +1,67 @@
-import SubscriptionHistory from '@layouts/customers/Customers.subscription.transactions';
-import AddLiquidation from '@modals/AddLiquidation.modal';
 import Modal from '@modals/Modal';
 import { AnimatePresence } from 'framer-motion';
 import DrawerModal from 'modals/Drawer.modal';
 import React, { createContext, useContext, useState } from 'react';
 
-type Args = Parameters<ContextProps["openModal"]>
+interface _State {
+   element: React.ReactNode,
+   title?: string,
+   type: 'drawer' | 'modal'
+}
 interface ContextProps {
-   openModal: (name: _ModalState["name"], data?: any, title?: string) => void,
+   openModal: (props: _State) => void,
    closeModal(): void,
 }
 
-const emptyModalState: _ModalState = { name: undefined, data: undefined, title: undefined }
+// const emptyState: Partial<_State> = { element: undefined, title: undefined, type: undefined }
 export const ModalContext = createContext({} as ContextProps)
 export const useModal = () => useContext(ModalContext)
 
 export const ModalProvider = (props: { children: React.ReactNode }) => {
-   const [modal, setModal] = useState<_ModalState>(emptyModalState)
+   const [modal, setModal] = useState<_State | undefined>()
 
-   const closeModal = () => setModal(emptyModalState)
-   const openModal = (...args: Args) => {
-      setModal({ name: args[0], data: args[1], title: args[2] })
+   const closeModal = () => setModal(undefined)
+   const openModal: ContextProps['openModal'] = (props) => {
+      setModal({ element: props.element, type: props.type, title: props.title })
    }
 
-   const open = (...args: Args) => {
-      const [name, data, title] = args
+   const open = () => {
+      if (modal?.element) {
+         const { element, type, title } = modal
 
-      switch (name) {
-         case "subscriptionHistory":
-            return (
-               <DrawerModal
-                  isOpen={modal.name === name}
-                  close={closeModal}
-               >
-                  <SubscriptionHistory data={data} />
-               </DrawerModal>
-            )
-         case "addLiquidation":
-            return (
-               <Modal
-                  title='Add Liquidation'
-                  isOpen={modal.name === name}
-                  close={closeModal}
-               >
-                  <AddLiquidation data={data} />
-               </Modal>
-            )
-         default:
-            return null;
+         switch (type) {
+            case "drawer":
+               return (
+                  <DrawerModal
+                     title={title}
+                     isOpen={!!element}
+                     close={closeModal}
+                  >
+                     {element}
+                  </DrawerModal>
+               )
+            case "modal":
+               return (
+                  <Modal
+                     title={title}
+                     isOpen={!!element}
+                     close={closeModal}
+                  >
+                     {element}
+                  </Modal>
+               )
+            default:
+               return null;
+         }
       }
+      return null
    }
 
    return (
       <ModalContext.Provider value={{ openModal, closeModal }}>
          {
             <AnimatePresence>
-               {modal.name && open(modal.name, modal.data, modal.title)}
+               {modal?.element && open()}
             </AnimatePresence>
          }
          {props.children}

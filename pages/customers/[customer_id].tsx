@@ -18,7 +18,6 @@ export default function CustomerID() {
     * with the required id present in the URL, so no need for a loading UI
     */
    const router = useRouter()
-   const { openModal } = useModal()
    const [tabIndex, setTabIndex] = useState(0)
 
    const { data: customers, isFetching } = useFetch({
@@ -34,7 +33,9 @@ export default function CustomerID() {
    ]
 
    const TabbedLayout = tabs[tabIndex].element
-   const activeCustomer = (customers as Customer[])?.find(c => String(c.id) === router.query.id)
+   const activeCustomer = (customers as Customer[])?.find(c => String(c.id) === router.query.customer_id)
+
+   if (isFetching) return null
 
    if (activeCustomer?.id) {
       let { first_name, last_name, phone, email, metadata } = activeCustomer
@@ -85,8 +86,6 @@ export default function CustomerID() {
          </section>
       )
    }
-
-   if (isFetching) return null
 
    return (
       <section className="w-full flex-1 bg-slate-100 grid place-content-center text-center">
