@@ -65,12 +65,6 @@ export default function CustomerID() {
                         </div>
                      </div>
                   </div>
-                  <div className="ml-auto">
-                     <Button
-                        variant="teal"
-                     // onClick={() => openModal({ name: "addTransaction", data: {} })}
-                     >Add Record</Button>
-                  </div>
                </div>
 
                <TabsList tabs={tabs} setIndex={setTabIndex} key={email} index={tabIndex} />

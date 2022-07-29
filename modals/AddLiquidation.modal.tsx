@@ -4,24 +4,21 @@ import Spinner from '@components/Spinner';
 import { queryKeys } from '@configs/reactQueryConfigs';
 import { useDialog } from '@contexts/Dialog.context';
 import { useModal } from '@contexts/Modal.context';
+import { PostLiquidationSchema } from '@controllers/schemas.server';
 import { useMutate } from '@utils/fetch';
 import { formatNumber, sanitizePayload } from '@utils/index';
+import { useRouter } from 'next/router';
 import { useForm } from "react-hook-form";
+import { z } from 'zod';
 
-interface FormInput {
-   amount: string
-   paid_at: string
-   charges: string
-   interest_payout: string
-}
-interface _Subscription extends Omit<PaystackSubscription, 'customer'> {
-   customer: Customer
-}
+type FormInput = z.infer<typeof PostLiquidationSchema>
+
 interface Props {
-   subscription: _Subscription
+   subscription: Subscription
    cancel?(): void
 }
 export default function AddLiquidation(props: Props) {
+   const router = useRouter()
    const { closeModal } = useModal()
    const { open: openDialog } = useDialog()
    const { handleSubmit, register, formState: { errors } } = useForm<FormInput>()
@@ -37,17 +34,20 @@ export default function AddLiquidation(props: Props) {
    const onSubmit = (values: FormInput) => {
       function next() {
          if (props.subscription.customer) {
-            const data: _Object = {
+            let data: FormInput = {
                ...values,
-               deposit: props.subscription.id,
-               customer: props.subscription.customer?.id,
+               amount: +values.amount,
+               fee: values.fee ? +values.fee : undefined,
+               interest_payout: values.interest_payout ? +values.interest_payout : undefined,
+               plan: props.subscription.plan.id,
+               customer: router.query.customer_id as string,
             }
             sanitizePayload(data)
-            if (!isLoading) mutate({ data } as any)
+            if (!isLoading) mutate(data as any)
          }
       }
 
-      if (true) {
+      if (false) {
          openDialog({
             accept: next,
             message: `
@@ -67,8 +67,6 @@ export default function AddLiquidation(props: Props) {
       } else {
          next()
       }
-
-      console.log("Customer is undefined");
    }
 
    return (
@@ -93,7 +91,7 @@ export default function AddLiquidation(props: Props) {
             <InputWithLabel
                name="amount"
                pattern="numeric"
-               placeholder="155000"
+               placeholder="Enter liquidation amount"
                register={register}
                errors={errors}
                required
@@ -107,21 +105,9 @@ export default function AddLiquidation(props: Props) {
                required
             />
             <InputWithLabel
-               name="liquidation_charges"
+               name="fee"
                pattern="numeric"
-               register={register}
-               errors={errors}
-               required
-            />
-            <InputWithLabel
-               name="wht_deduction"
-               pattern="numeric"
-               register={register}
-               errors={errors}
-            />
-            <InputWithLabel
-               name="charges"
-               pattern="numeric"
+               placeholder="Enter fee amount"
                register={register}
                errors={errors}
             />

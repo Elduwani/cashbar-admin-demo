@@ -3,7 +3,7 @@ import { ActionMenu } from "@components/PopOver"
 import ReactTable from "@components/ReactTable"
 import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
-import { subscriptionStatusIndicator, tableRowStatus, useSubscriptiontMenu } from "@hooks/index"
+import { subscriptionStatusIndicator, tableRowStatus, useSubscriptionMenu } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
 
@@ -20,7 +20,7 @@ export default function SubscriptionHistory(props: Props) {
    })
 
    const { transactions, transaction_volume } = _data as _SubscriptionHistory ?? {}
-   const menu = useSubscriptiontMenu(props.subscription, transaction_volume)
+   const menu = useSubscriptionMenu(props.subscription, transaction_volume)
 
    return (
       <div className="pb-6 space-y-4">

@@ -1,4 +1,6 @@
-import { getAllTransactions } from "@controllers/transactions";
+import { PostLiquidationSchema } from "@controllers/schemas.server";
+import { createLiquidation } from "@controllers/transactions";
+import { zodError } from "@utils/index";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -7,13 +9,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       switch (req.method) {
          case "GET": {
-            const transactions = await getAllTransactions()
-            const responseData = {
-               transactions,
-               liquidations: [],
-               expenses: []
-            }
-            return res.send(responseData)
+            return res.send([])
+         }
+
+         case "POST": {
+            PostLiquidationSchema.parse(req.body)
+            const liquidation = await createLiquidation(req.body)
+            return res.status(400).send(liquidation)
          }
 
          default: {
@@ -22,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
    } catch (error: any) {
-      return res.status(400).send(error.message)
+      return res.status(400).send(zodError(error.issues) ?? error.message)
    }
 
 }

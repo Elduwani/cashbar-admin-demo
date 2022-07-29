@@ -102,7 +102,7 @@ export function subscriptionStatusIndicator(status: Subscription['status']) {
    )
 }
 
-export function useSubscriptiontMenu(subscription: Subscription, balance: number) {
+export function useSubscriptionMenu(subscription: Subscription, balance: number) {
    const { openModal } = useModal()
 
    const menu: _PopoverMenu[] = [

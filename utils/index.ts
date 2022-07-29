@@ -87,8 +87,8 @@ export function formatNumber(num: number | string, currencySign?: string, decima
    }
 }
 
-export function formatBaseCurrency(n: number) {
-   return n / 100
+export function formatBaseCurrency(n: number, multiply = false) {
+   return multiply ? n * 100 : n / 100
 }
 
 export function toFixedDecimal(num: number | string, decimal = 2) {
@@ -119,7 +119,7 @@ export function toSelectOptions<T = any>(arr: T[], modifier?: (arg: any) => any)
 
 export function sanitizePayload(payload: _Object, stringToNumber?: boolean) {
    for (const key in payload) {
-      if (!payload[key]) delete payload[key]
+      if (payload[key] === undefined) delete payload[key]
       if (
          stringToNumber &&
          isFinite(payload[key]) &&

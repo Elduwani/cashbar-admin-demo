@@ -79,7 +79,7 @@ export function useMutate({ url, refetchKeys, onSuccessCallback, successMessage,
    const { notify } = useToast()
 
    const { data, isLoading, isSuccess, isError, error, mutate, reset } = useMutation(data =>
-      fetchClient[method ?? 'post'](url, data as any),
+      fetchClient[method ?? 'post'](BASE_API_URL + url, data as any),
       {
          onSuccess: (data) => {
             if (refetchKeys) {
@@ -135,7 +135,7 @@ function useHandleFetch() {
    const fetchClient = useFetchClient()
 
    return (url: string) => {
-      const address = BASE_API_URL + (url)
+      const address = BASE_API_URL + url
       // console.log("fetching " + url)
       return async function () {
          const response = await fetchClient.get(address)

@@ -1,25 +1,19 @@
 import { formatDocumentAmount, _firestore } from "@controllers/firebase.server";
+import { GetTrasactionsSchema } from "@controllers/schemas.server";
 import { getTimePeriodDate } from "@utils/chart.utils";
-import { invalidNumbers, zodError } from "@utils/index";
+import { zodError } from "@utils/index";
 import { NextApiRequest, NextApiResponse } from "next/types";
 import { z } from 'zod';
-
-const Schema = z.object({
-   less_than: z.string().refine((n) => !invalidNumbers([n]), "Invalid number").optional(),
-   greater_than: z.string().refine((n) => !invalidNumbers([n]), "Invalid number").optional(),
-   time_period: z.enum(['1 week', '1 month', '3 months', '6 months']),
-   status: z.enum(['success', 'abandoned', 'failed']).default('success'),
-})
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
    try {
 
-      Schema.parse(req.query)
+      GetTrasactionsSchema.parse(req.query)
 
       switch (req.method) {
          case "GET": {
-            const { less_than, greater_than, time_period } = req.query as z.infer<typeof Schema>
+            const { less_than, greater_than, time_period } = req.query as z.infer<typeof GetTrasactionsSchema>
             if (less_than && greater_than && (+less_than <= +greater_than)) {
                throw new Error("greater_than value cannot be same / higher than less_than value")
             }
