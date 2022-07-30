@@ -1,4 +1,5 @@
 import { _firestore } from "@controllers/firebase.server";
+import { getLiquidationsPeriodic } from "@controllers/subscriptions.server";
 import { getTransactionsPeriodic } from "@controllers/transactions";
 import { timePeriodOptions } from "@utils/chart.utils";
 import { NextApiRequest, NextApiResponse } from "next/types";
@@ -16,8 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             Schema.parse(req.query)
 
             const { time_period } = req.query as z.infer<typeof Schema>
-            const transactions = await getTransactionsPeriodic(time_period)
-            return res.send(transactions)
+            const liquidations = await getLiquidationsPeriodic(time_period)
+            return res.send(liquidations)
          }
 
          default: {

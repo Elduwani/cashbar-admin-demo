@@ -1,5 +1,6 @@
 import FullPageCenterItems from "@components/FullPageCenterItems"
 import { ActionMenu } from "@components/PopOver"
+import { CircularProgress } from "@components/ProgressBar"
 import ReactTable from "@components/ReactTable"
 import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
@@ -20,39 +21,26 @@ export default function SubscriptionHistory(props: Props) {
       placeholderData: {}
    })
 
-   const {
-      balance,
-      transaction_volume,
-      liquidation_volume,
-      transactions,
-      liquidations,
-      merged_data
-   } = _data as SubscriptionAnalysis ?? {}
+   const history = _data as SubscriptionAnalysis ?? {}
 
-   const menu = useSubscriptionMenu(props.subscription, balance)
-   const rowStyles = (trx: typeof merged_data[number]) => {
+   const menu = useSubscriptionMenu(props.subscription, history.balance)
+   const rowStyles = (trx: typeof history.merged_data[number]) => {
       return `${trx.is_liquidation && 'text-red-600'}`
    }
 
    return (
-      <div className="pb-6 space-y-4">
+      <div className="pb-6 space-y-8">
          <div className="flex">
             <div className="w-full">
                <h2 className="text-2xl">{props.plan.name}</h2>
                <div className="opacity-70 capitalize">
-                  {
-                     transaction_volume ?
-                        <h3 className="text-xl">
-                           {formatNumber(balance, "$")}
-                        </h3> : null
-                  }
                   <h2 className="">
                      {formatNumber(props.plan.amount, "$")} {props.plan.interval}
                   </h2>
                   {
-                     transaction_volume ?
+                     history.transaction_volume ?
                         <h2 className="text-sm">
-                           {transactions.length} payments, {liquidations.length} liquidations
+                           {history.transaction_count} payments, {history.liquidation_count} liquidations
                         </h2> : null
                   }
                </div>
@@ -62,22 +50,44 @@ export default function SubscriptionHistory(props: Props) {
                <ActionMenu menu={menu} className="border" />
             </div>
          </div>
-         {/* {props.subscription.id} */}
-         {/* <pre>{JSON.stringify(props.subscription, null, 2)}</pre> */}
+         <div className="flex flex-col items-center space-y-2">
+            <CircularProgress
+               radius={80}
+               progress={history.percentage_liquidated}
+               subtitle="liquidated"
+            // accentColor={isOverdraft ? 'rgb(239 68 68)' : undefined}
+            />
+            <h3 className="text-2xl">
+               Total Savings: {formatNumber(history.transaction_volume, "$")}
+            </h3>
+            <div className="flex space-x-5 text-gray-600">
+               <p className="flex items-center space-x-2">
+                  {tableRowStatus(true)}
+                  <span>Balance: {formatNumber(history.balance, "$")}</span>
+               </p>
+               <p className="flex items-center space-x-2">
+                  {tableRowStatus(true, 'bg-red-600')}
+                  <span>Liquidated: {formatNumber(history.liquidation_volume, "$")}</span>
+               </p>
+            </div>
+         </div>
          {
             isFetching ?
                <FullPageCenterItems height={600}>
                   <Spinner />
                </FullPageCenterItems>
                :
-               merged_data?.length ?
-                  <ReactTable
-                     columns={tabelColumns}
-                     data={merged_data}
-                     rowStyles={rowStyles}
-                  />
+               history.merged_data?.length ?
+                  <div className="">
+                     <p>Transaction history</p>
+                     <ReactTable
+                        columns={tabelColumns}
+                        data={history.merged_data}
+                        rowStyles={rowStyles}
+                     />
+                  </div>
                   :
-                  <FullPageCenterItems className="text-slate-500" height={600}>
+                  <FullPageCenterItems className="text-slate-500" height={300}>
                      There are no payments for this subscription
                   </FullPageCenterItems>
          }

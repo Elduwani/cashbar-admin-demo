@@ -19,10 +19,10 @@ export default function Transactions() {
       enabled: !!queryString?.length,
       key: [queryKeys.transactions, queryString, 'filtered'],
       url: `/transactions?${queryString}`,
-      placeholderData: {}
+      placeholderData: []
    })
 
-   const transactions = data as PaystackTransaction[]
+   const transactions = data as DBTransaction[]
 
    return (
       <div className="h-full flex space-x-4">

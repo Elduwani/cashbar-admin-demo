@@ -51,11 +51,11 @@ export function useScreenSize() {
    ) as ScreenSize
 }
 
-export function tableRowStatus(status?: boolean) {
-   const color = status ? "bg-green-500" : "bg-gray-200"
+export function tableRowStatus(status?: boolean, color?: string) {
+   const _color = color ?? (status ? "bg-green-500" : "bg-gray-200")
    return (
-      <div className={`block w-4 h-4 rounded-full bg-opacity-20 ${color} grid place-items-center`}>
-         <span className={`rounded-full h-2/4 w-2/4 ${color}`}></span>
+      <div className={`block w-4 h-4 rounded-full bg-opacity-20 ${_color} grid place-items-center`}>
+         <span className={`rounded-full h-2/4 w-2/4 ${_color}`}></span>
       </div>
    )
 }

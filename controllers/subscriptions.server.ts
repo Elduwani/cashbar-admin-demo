@@ -151,13 +151,18 @@ export async function getSubscriptionAnalysis(plan: string, customer: string): P
       })
    ].sort((a, b) => new Date(a.paid_at).getTime() < new Date(b.paid_at).getTime() ? 1 : -1)
 
+   const percentage_liquidated = transaction_volume ? liquidation_volume * 100 / transaction_volume : 0
+
    return {
-      transactions,
-      liquidations,
+      // transactions,
+      // liquidations,
+      transaction_count: transactions.length,
+      liquidation_count: liquidations.length,
       transaction_volume,
       liquidation_volume,
+      percentage_liquidated,
+      balance: transaction_volume - liquidation_volume,
       merged_data,
-      balance: transaction_volume - liquidation_volume
    }
 }
 

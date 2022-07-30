@@ -6,7 +6,7 @@ export async function getAggregate(): Promise<AllAggregates> {
    console.log(`** Fetching records **`)
    // const customers = await getCustomers()
    // const transactions = await getAllTransactions()
-   // const liquidationsRef = await _firestore.collection("liquidations").where('validated', '==', true).get()
+   // const liquidationsRef = await _firestore.collection("liquidations").get()
 
    const liqTotals = 0
    // const invTotals = transactions.reduce((acc, liq) => {
