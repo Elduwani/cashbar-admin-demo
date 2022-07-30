@@ -1,4 +1,5 @@
-import { getSubscriptionTransactions } from "@controllers/subscriptions.server";
+import { GetSubscriptionsHistorySchema } from "@controllers/schemas.server";
+import { getSubscriptionAnalysis } from "@controllers/subscriptions.server";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -9,28 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    try {
       switch (req.method) {
          case "GET": {
-            const [planCode, customerID] = [req.query.plan_code as string, req.query.customer_id as string]
-            if (!planCode) throw new Error(`Invalid planCode [plan_code] parameter.`)
-            if (!customerID) throw new Error(`Invalid customerID [customer_id] parameter.`)
 
-            const transactions = await getSubscriptionTransactions(planCode, customerID)
-            const transaction_volume = transactions.reduce((acc, trx) => {
-               if (trx.status === 'success') {
-                  acc += trx.amount
-               }
-               return acc
-            }, 0)
+            GetSubscriptionsHistorySchema.parse(req.query)
 
-            const startDate = transactions.at(-1)?.paid_at
-            const lastPaymentDate = transactions.at(0)?.paid_at
-
-            const response: _SubscriptionHistory = {
-               transactions,
-               transaction_volume,
-               lastPaymentDate,
-               startDate,
-            }
-
+            const [plan, customer] = [req.query.plan as string, req.query.customer as string]
+            const response = await getSubscriptionAnalysis(plan, customer)
             return res.send(response)
          }
 

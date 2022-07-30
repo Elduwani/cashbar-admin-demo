@@ -9,34 +9,38 @@ import { formatDate, formatNumber } from "@utils/index"
 
 interface Props {
    plan: PaystackPlan
-   customerID: string
+   customer_id: string
    subscription: Subscription
 }
 export default function SubscriptionHistory(props: Props) {
    const { data: _data, isFetching } = useFetch({
-      key: [queryKeys.transactions, props.plan.plan_code],
-      url: `/customers/subscriptions/history?plan_code=${props.plan.plan_code}&customer_id=${props.customerID}`,
+      key: [queryKeys.transactions, props.plan.id, props.customer_id],
+      url: `/customers/subscriptions/history?plan=${props.plan.id}&customer=${props.customer_id}`,
       placeholderData: {}
    })
 
-   const { transactions, transaction_volume } = _data as _SubscriptionHistory ?? {}
+   const { transaction_volume, balance, liquidation_volume, transactions, liquidations } = _data as SubscriptionAnalysis ?? {}
    const menu = useSubscriptionMenu(props.subscription, transaction_volume)
 
    return (
       <div className="pb-6 space-y-4">
          <div className="flex">
             <div className="w-full">
-               <h2 className="text-2xl">Subscription history</h2>
-               <h2 className="capitalize ">
-                  {formatNumber(props.plan.amount, "$")} {props.plan.interval}, {props.subscription.status}
-               </h2>
-               <h2 className="capitalize text-sm opacity-70">{props.plan.name}</h2>
-               {
-                  transactions?.length ?
-                     <h2 className="text-sm opacity-70">
-                        {transactions.length} payments ({formatNumber(transaction_volume, "$")})
-                     </h2> : null
-               }
+               <h2 className="text-2xl">{props.plan.name}</h2>
+               <div className="opacity-70 capitalize">
+                  <h3 className="text-xl">
+                     {formatNumber(balance, "$")}
+                  </h3>
+                  <h2 className="">
+                     {formatNumber(props.plan.amount, "$")} {props.plan.interval}
+                  </h2>
+                  {
+                     transactions?.length ?
+                        <h2 className="text-sm">
+                           {transactions.length} payments, {liquidations.length} liquidations
+                        </h2> : null
+                  }
+               </div>
             </div>
             <div className="flex space-x-2">
                {subscriptionStatusIndicator(props.subscription.status)}

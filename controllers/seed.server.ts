@@ -96,6 +96,9 @@ export async function seedSubscriptions() {
       console.log({ start, end })
 
       for (const sub of chunk) {
+         if ((sub as any).plan?.is_deleted) {
+            continue
+         }
          sub['updatedAt'] = new Date().toISOString()
          sub['customer'] = String((sub.customer as any).id)
          sub['plan'] = String((sub.plan as any).id)
@@ -238,6 +241,9 @@ export async function linkTransactionsToPlans() {
       for (let i = 0; i < transactions.size; i++) {
          const trx = transactions.docs[i].data()
          const verifiedTrx = await verifyPaystackTransaction(trx.reference)
+         if (verifiedTrx.data.plan_object.is_deleted) {
+            continue
+         }
          trx.id = String(trx.id)
          trx.plan = String(verifiedTrx.data.plan_object.id)
          trx.plan_code = verifiedTrx.data.plan_object.plan_code

@@ -9,10 +9,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    try {
       switch (req.method) {
          case "GET": {
-            const customerID = req.query.customer_id as string
-            if (!customerID) throw new Error(`Invalid customer_id [customer_id] parameter.`)
+            const customer = req.query.customer as string
+            if (!customer) throw new Error(`Invalid customer id parameter.`)
 
-            const responseData = await getCustomerSubscriptions(customerID)
+            const responseData = await getCustomerSubscriptions(customer)
             return res.send(responseData)
          }
 

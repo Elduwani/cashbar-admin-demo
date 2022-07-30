@@ -1,5 +1,5 @@
 import { PostLiquidationSchema } from "@controllers/schemas.server";
-import { createLiquidation } from "@controllers/transactions";
+import { createLiquidation } from "@controllers/subscriptions.server";
 import { zodError } from "@utils/index";
 import { NextApiRequest, NextApiResponse } from "next/types";
 

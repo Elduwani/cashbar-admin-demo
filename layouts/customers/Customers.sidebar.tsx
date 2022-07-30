@@ -65,7 +65,7 @@ function Customer({ customer }: { customer: Customer }) {
    const ref = useRef<HTMLDivElement>(null)
 
    let { first_name, last_name, id, email } = customer
-   const isSelected = router.query.id === String(id)
+   const isSelected = router.query.customer_id === String(id)
    last_name = last_name.length > 10 ? last_name.split(" ")[0] : last_name
 
    useEffect(() => {

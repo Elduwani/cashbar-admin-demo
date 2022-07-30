@@ -17,18 +17,20 @@ export default function Subscriptions() {
 
    const { data, isFetching } = useFetch({
       key: [queryKeys.subscriptions, customerID],
-      url: `/customers/subscriptions?customer_id=${customerID}`,
+      url: `/customers/subscriptions?customer=${customerID}`,
       placeholderData: []
    })
 
    const subscriptions = (data as Subscription[])
+   // console.log(subscriptions[0].plan)
+
    const onClick = (sub: Subscription) => openModal({
       type: "drawer",
       element:
          <SubscriptionHistory
             plan={sub.plan}
             subscription={sub}
-            customerID={customerID as string}
+            customer_id={customerID as string}
          />,
    })
    const rowStyles = (subscription: Subscription) => `
