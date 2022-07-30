@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
          case "POST": {
             PostLiquidationSchema.parse(req.body)
             const liquidation = await createLiquidation(req.body)
-            return res.status(400).send(liquidation)
+            return res.send(liquidation)
          }
 
          default: {

@@ -78,7 +78,8 @@ interface PaystackTransaction extends Transaction {
       reusable: boolean
       signature: string
       account_name?: string
-   },
+   }
    plan: string
-   requested_amount: number,
+   requested_amount: number
+   [key: string]: any
 }

@@ -41,6 +41,7 @@ export default function AddLiquidation(props: Props) {
                interest_payout: values.interest_payout ? +values.interest_payout : undefined,
                plan: props.subscription.plan.id,
                customer: router.query.customer_id as string,
+               subscription: props.subscription.id
             }
             sanitizePayload(data)
             if (!isLoading) mutate(data as any)

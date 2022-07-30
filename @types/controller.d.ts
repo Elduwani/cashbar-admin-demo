@@ -1,10 +1,3 @@
-interface _SubscriptionHistory {
-   transactions: PaystackTransaction[]
-   transaction_volume: number
-   startDate?: string
-   lastPaymentDate?: string
-}
-
 interface AllAggregates {
    expenseVolume: number
    investmentVolume: number
@@ -14,8 +7,9 @@ interface AllAggregates {
 }
 
 interface SubscriptionAnalysis {
-   transactions: PaystackTransaction[]
-   liquidations: Liquidation[]
+   transactions: Transaction[]
+   liquidations: Transaction[]
+   merged_data: Transaction[]
    transaction_volume: number
    liquidation_volume: number
    balance: number

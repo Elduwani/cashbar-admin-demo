@@ -77,7 +77,7 @@ export async function getSubscriptionTransactions(plan: string, customer: string
       .where("plan", "==", plan)
       .get()
 
-   const responseData = snapshot.docs.map(d => formatDocumentAmount(d) as PaystackTransaction)
+   const responseData = snapshot.docs.map(d => formatDocumentAmount(d) as Transaction)
    return responseData
 }
 
@@ -143,11 +143,20 @@ export async function getSubscriptionAnalysis(plan: string, customer: string): P
       return acc
    }, 0)
 
+   const merged_data = [
+      ...transactions,
+      ...liquidations.map(l => {
+         l.is_liquidation = true
+         return l
+      })
+   ].sort((a, b) => new Date(a.paid_at).getTime() < new Date(b.paid_at).getTime() ? 1 : -1)
+
    return {
       transactions,
       liquidations,
       transaction_volume,
       liquidation_volume,
+      merged_data,
       balance: transaction_volume - liquidation_volume
    }
 }

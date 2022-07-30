@@ -6,6 +6,7 @@ import { queryKeys } from "@configs/reactQueryConfigs"
 import { subscriptionStatusIndicator, tableRowStatus, useSubscriptionMenu } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
+import { FiArrowDownLeft } from "react-icons/fi"
 
 interface Props {
    plan: PaystackPlan
@@ -19,8 +20,19 @@ export default function SubscriptionHistory(props: Props) {
       placeholderData: {}
    })
 
-   const { transaction_volume, balance, liquidation_volume, transactions, liquidations } = _data as SubscriptionAnalysis ?? {}
-   const menu = useSubscriptionMenu(props.subscription, transaction_volume)
+   const {
+      balance,
+      transaction_volume,
+      liquidation_volume,
+      transactions,
+      liquidations,
+      merged_data
+   } = _data as SubscriptionAnalysis ?? {}
+
+   const menu = useSubscriptionMenu(props.subscription, balance)
+   const rowStyles = (trx: typeof merged_data[number]) => {
+      return `${trx.is_liquidation && 'text-red-600'}`
+   }
 
    return (
       <div className="pb-6 space-y-4">
@@ -28,14 +40,17 @@ export default function SubscriptionHistory(props: Props) {
             <div className="w-full">
                <h2 className="text-2xl">{props.plan.name}</h2>
                <div className="opacity-70 capitalize">
-                  <h3 className="text-xl">
-                     {formatNumber(balance, "$")}
-                  </h3>
+                  {
+                     transaction_volume ?
+                        <h3 className="text-xl">
+                           {formatNumber(balance, "$")}
+                        </h3> : null
+                  }
                   <h2 className="">
                      {formatNumber(props.plan.amount, "$")} {props.plan.interval}
                   </h2>
                   {
-                     transactions?.length ?
+                     transaction_volume ?
                         <h2 className="text-sm">
                            {transactions.length} payments, {liquidations.length} liquidations
                         </h2> : null
@@ -47,6 +62,7 @@ export default function SubscriptionHistory(props: Props) {
                <ActionMenu menu={menu} className="border" />
             </div>
          </div>
+         {/* {props.subscription.id} */}
          {/* <pre>{JSON.stringify(props.subscription, null, 2)}</pre> */}
          {
             isFetching ?
@@ -54,10 +70,11 @@ export default function SubscriptionHistory(props: Props) {
                   <Spinner />
                </FullPageCenterItems>
                :
-               transactions?.length ?
+               merged_data?.length ?
                   <ReactTable
                      columns={tabelColumns}
-                     data={transactions}
+                     data={merged_data}
+                     rowStyles={rowStyles}
                   />
                   :
                   <FullPageCenterItems className="text-slate-500" height={600}>
@@ -72,12 +89,24 @@ const tabelColumns: _TableColumn[] = [
    {
       label: "",
       key: "status",
-      cell: (cell) => tableRowStatus(cell.getValue() === 'success'),
+      cell: (cell) => {
+         const data = cell.row.original as Transaction
+         if (data.is_liquidation) return (
+            <span className="rounded-full bg-red-50 text-red-800 w-6 h-6 grid place-content-center">
+               <FiArrowDownLeft />
+            </span>
+         )
+         return tableRowStatus(cell.getValue() === 'success')
+      },
       headerStyle: { maxWidth: 20 }
    },
    {
       key: "amount",
-      cell: (cell) => formatNumber(cell.getValue(), '', false)
+      cell: (cell) => {
+         const data = cell.row.original as Transaction
+         const value = formatNumber(cell.getValue(), '', false)
+         return data.is_liquidation ? `-${value}` : value
+      }
    },
    {
       label: "date",

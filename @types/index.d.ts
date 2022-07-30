@@ -59,20 +59,24 @@ interface Expense {
    updated_at: string
 }
 
-interface Liquidation {
-   id: string
-   status: 'success'
-   reference: string
-   amount: number
-   paid_at: string
-   channel: 'bank' | 'cash'
-   currency: 'NGN'
+interface DBExpense {
+   paid_by: string
+   created_by: string
+   updated_by: string
+}
+
+interface Liquidation extends Transaction {
    fees: number
-   customer: string | Customer
+   plan: Plan
    paid_by: User
    narration: string
    customer_code: string
    recipient_meta: RecipientMeta
+}
+
+interface DBLiquidation extends Liquidation {
+   plan: string
+   paid_by: string
 }
 
 interface RecipientMeta {
@@ -81,7 +85,7 @@ interface RecipientMeta {
    bank_name: string
 }
 
-interface Transaction<T = string> {
+interface Transaction {
    id: string
    status: 'success' | 'failed' | 'abandoned'
    reference: string
@@ -90,13 +94,19 @@ interface Transaction<T = string> {
    created_at: string
    channel: string
    currency: string
-   customer: T
-   [key: string]: any
+   customer: Customer
+   plan?: PaystackPlan
+   is_liquidation?: boolean
+   // [key: string]: any
 }
 
-interface Subscription<T = Customer> {
+interface DBTransaction extends Transaction {
+   customer: string
+}
+
+interface Subscription {
    id: string,
-   customer: T,
+   customer: Customer,
    plan: PaystackPlan
    start: number
    status: 'active' | 'complete' | 'cancelled'
@@ -108,6 +118,11 @@ interface Subscription<T = Customer> {
    createdAt: string
    updatedAt: string
    // [key: string]: any
+}
+
+interface DBSubscription extends Subscription {
+   customer: string
+   plan: string
 }
 
 interface _TableColumn {
