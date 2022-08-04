@@ -16,7 +16,7 @@ interface Props {
 }
 export default function SubscriptionHistory(props: Props) {
    const { data: _data, isFetching } = useFetch({
-      key: [queryKeys.transactions, props.plan.id, props.customer_id],
+      key: [queryKeys.history, props.subscription.id, props.customer_id],
       url: `/customers/subscriptions/history?plan=${props.plan.id}&customer=${props.customer_id}`,
       placeholderData: {}
    })

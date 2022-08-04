@@ -1,7 +1,7 @@
 import Modal from '@modals/Modal';
 import { AnimatePresence } from 'framer-motion';
 import DrawerModal from 'modals/Drawer.modal';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useRef, useState } from 'react';
 
 interface _State {
    element: React.ReactNode,
@@ -10,7 +10,7 @@ interface _State {
 }
 interface ContextProps {
    openModal: (props: _State) => void,
-   closeModal(): void,
+   closeModal(showPreviousModal?: boolean): void,
 }
 
 // const emptyState: Partial<_State> = { element: undefined, title: undefined, type: undefined }
@@ -19,9 +19,19 @@ export const useModal = () => useContext(ModalContext)
 
 export const ModalProvider = (props: { children: React.ReactNode }) => {
    const [modal, setModal] = useState<_State | undefined>()
+   const previousModal = useRef<typeof modal>()
 
-   const closeModal = () => setModal(undefined)
+   const closeModal: ContextProps['closeModal'] = (showPreviousModal) => {
+      if (showPreviousModal && previousModal.current?.element) {
+         const { element, type, title } = previousModal.current
+         setModal({ element, type, title })
+         previousModal.current = undefined
+      } else {
+         setModal(undefined)
+      }
+   }
    const openModal: ContextProps['openModal'] = (props) => {
+      previousModal.current = modal
       setModal({ element: props.element, type: props.type, title: props.title })
    }
 

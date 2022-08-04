@@ -16,4 +16,5 @@ export const queryKeys = {
    subscriptions: 'subscriptions',
    transactions: 'transactions',
    aggregates: 'aggregates',
+   history: 'history',
 }

@@ -25,9 +25,9 @@ export default function AddLiquidation(props: Props) {
 
    const { isLoading, mutate } = useMutate({
       url: "/liquidations",
-      onSuccessCallback: () => closeModal(),
+      onSuccessCallback: () => closeModal(true),
       refetchKeys: [
-         [queryKeys.liquidations, props.subscription.id],
+         [queryKeys.history, props.subscription.id, router.query.customer_id],
       ],
    })
 
@@ -120,7 +120,7 @@ export default function AddLiquidation(props: Props) {
             />
             <div className="grid grid-cols-2 gap-4 pt-6">
                <Button disabled={isLoading} variant="blue" type="submit">Add liquidation</Button>
-               <Button onClick={closeModal} variant="outline" type="reset">Cancel</Button>
+               <Button onClick={() => closeModal(true)} variant="outline" type="reset">Go Back</Button>
             </div>
          </form>
       </>

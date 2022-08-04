@@ -84,12 +84,12 @@ export function useMutate({ url, refetchKeys, onSuccessCallback, successMessage,
          onSuccess: (data) => {
             if (refetchKeys) {
                refetchKeys.forEach(k => {
-                  queryClient.refetchQueries(k, {
+                  queryClient.invalidateQueries({
                      predicate: ({ queryKey }) => {
                         if (Array.isArray(queryKey)) {
                            return !queryKey.some(key => key === undefined)
                         }
-                        return true
+                        return queryKey !== undefined
                      }
                   })
                })

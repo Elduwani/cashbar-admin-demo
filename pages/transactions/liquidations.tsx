@@ -2,7 +2,6 @@ import FullPageCenterItems from "@components/FullPageCenterItems"
 import ReactTable from "@components/ReactTable"
 import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
-import { useModal } from "@contexts/Modal.context"
 import useFilters from "@hooks/filters"
 import { tableRowStatus } from "@hooks/index"
 import TransactionsLayout from "@layouts/transactions/Transactions.layout"
@@ -11,7 +10,6 @@ import { formatDate, formatNumber } from "@utils/index"
 import { ReactElement, useState } from "react"
 
 export default function Liquidations() {
-   const { openModal } = useModal()
    const [queryString, setQueryString] = useState<string>()
    const { element: filters } = useFilters(setQueryString)
 
@@ -19,10 +17,11 @@ export default function Liquidations() {
       enabled: !!queryString?.length,
       key: [queryKeys.liquidations, queryString, 'filtered'],
       url: `/liquidations?${queryString}`,
-      placeholderData: {}
+      placeholderData: []
    })
 
    const liquidations = data as DBLiquidation[]
+   console.log(queryString, data);
 
    return (
       <div className="h-full flex space-x-4">
