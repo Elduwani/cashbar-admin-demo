@@ -3,6 +3,7 @@ import { timePeriodOptions, getTimePeriodDate } from "@utils/chart.utils"
 import { _firestore, formatDocumentAmount } from "./firebase.server"
 import { PostLiquidationSchema } from "./schemas.server"
 import { z } from "zod"
+import { addDatesMetaTags } from "./transactions.server"
 
 const collectionName: CollectionName = 'subscriptions'
 
@@ -181,6 +182,7 @@ export async function createLiquidation(payload: z.infer<typeof PostLiquidationS
     * > If yes, post liquidation, else throw error
     */
 
+   const ref = _firestore.collection(collectionName).doc()
    await verifySubscription(payload.subscription, payload.plan, payload.customer)
    const analysis = await getSubscriptionAnalysis(payload.plan, payload.customer)
 
@@ -188,6 +190,7 @@ export async function createLiquidation(payload: z.infer<typeof PostLiquidationS
       throw new Error('Insufficient balance')
    }
 
+   payload.id = ref.id
    payload.amount = formatBaseCurrency(payload.amount, true)
    if (payload.fee) {
       payload.fee = formatBaseCurrency(payload.fee, true)
@@ -197,10 +200,9 @@ export async function createLiquidation(payload: z.infer<typeof PostLiquidationS
    }
    payload.validated = false
    payload.status = 'success'
+   payload.paid_at = new Date().toISOString()
+   addDatesMetaTags(payload)
 
-   const ref = _firestore.collection(collectionName).doc()
-
-   payload.id = ref.id
    await ref.set(payload)
    return payload
 }

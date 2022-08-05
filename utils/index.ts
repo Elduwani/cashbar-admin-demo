@@ -81,10 +81,7 @@ export function formatRelativeDate(dateString: string) {
 
 export function formatNumber(num: number | string, currencySign?: string, decimals = false) {
    if (invalidNumbers([num]) || isNaN(+num)) return 0
-   else {
-      const parsed = toFixedDecimal(num)
-      return `${currencySign}${intNumberFormat(decimals).format(+parsed)}`
-   }
+   return `${currencySign ?? ''}${intNumberFormat(decimals).format(+num)}`
 }
 
 export function formatBaseCurrency(n: number, multiply = false) {

@@ -13,7 +13,7 @@ export interface SelectProps {
    label?: string
    required?: boolean
    initialValue?: string | number
-   options: _SelectInputOption[]
+   options?: _SelectInputOption[]
    type?: "dates" | "category" | "states" | "banks" | "channel" | "gender" | "facility_type" | "bank_account_type"
    register?: (name: string, options: _Object) => void
    control?: Control<FieldValues, object>
@@ -29,10 +29,11 @@ export default function Select(props: SelectProps) {
    const { control: ctrl } = useForm()
    const errors = props.errors ?? {}
    const { direction = 'down', align = 'left' } = props
+   const options = props.options ?? selectOptionsList(props.type)
 
    const [selectedOption, setSelectedOption] = useState<_SelectInputOption | undefined>(() => {
       if (!props.initialValue) return
-      return props.options.find(op => props.initialValue === op.value)
+      return options.find(op => props.initialValue === op.value)
    })
 
    useEffect(() => {
@@ -114,7 +115,7 @@ export default function Select(props: SelectProps) {
                               `}
                            >
                               {
-                                 props.options.map((option, i) => {
+                                 options.map((option, i) => {
                                     const isSelected = selectedOption?.value === option.value
                                     const value = option.label ?? option.value
                                     /* Use the `active` state to conditionally style the active option. */

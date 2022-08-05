@@ -6,16 +6,23 @@ import ReactTable from '@components/ReactTable';
 import Spinner from '@components/Spinner';
 import { queryKeys } from '@configs/reactQueryConfigs';
 import { useModal } from '@contexts/Modal.context';
+import useFilters from '@hooks/filters';
 import { tableRowStatus } from '@hooks/index';
+import AddExpense from '@modals/AddExpense.modal';
 import { useFetch } from '@utils/fetch';
 import { formatDate, formatNumber } from '@utils/index';
+import { useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
 
 export default function Expenses() {
    const { openModal } = useModal()
+   const [queryString, setQueryString] = useState<string>()
+   const { element: filters } = useFilters(setQueryString)
+
    const { data, isFetching, error, refetch } = useFetch({
-      url: `/expenses?`,
-      key: [queryKeys.expenses, '*'],
+      url: `/expenses?${queryString}`,
+      enabled: !!queryString?.length,
+      key: [queryKeys.expenses, '*', queryString],
       placeholderData: []
    })
 
@@ -25,43 +32,51 @@ export default function Expenses() {
       <Button
          key={1}
          icon={FiPlus}
+         variant="blue"
          onClick={() => openModal({
-            element: '',
+            element: <AddExpense />,
             title: '',
             type: 'modal'
          })}
-         variant="blue"
-         secondary
-         shrink
-      >Add record</Button>
+      >Add Expense</Button>
    ]
 
    return (
       <div className="p-8 pt-0 space-y-6">
-         <PageTitle title="Expenses" />
-         {
-            isFetching ?
-               <FullPageCenterItems>
-                  <Spinner />
-               </FullPageCenterItems>
-               : error ?
-                  <FullPageCenterItems>
-                     <FetchError refetch={refetch} error={error} />
-                  </FullPageCenterItems>
-                  : expenses?.length ?
-                     <ReactTable
-                        key={expenses?.length}
-                        columns={columns}
-                        data={expenses}
-                        exportCSV={"expenses"}
-                        utilities={utilities}
-                        search={[
-                           ['amount', 'paid_at', 'narration', 'category', 'channel', 'addedBy.name'],
-                        ]}
-                     />
-                     :
-                     <FullPageCenterItems>There are no expenses yet</FullPageCenterItems>
-         }
+         <PageTitle title="Expenses" utilities={utilities} />
+         <div className="h-full flex space-x-8 pt-6">
+            <div className="w-full max-w-md">
+               {filters}
+            </div>
+            <div className="w-full">
+               {
+                  isFetching ?
+                     <FullPageCenterItems height={500}>
+                        <Spinner />
+                     </FullPageCenterItems>
+                     : error ?
+                        <FullPageCenterItems height={500}>
+                           <FetchError refetch={refetch} error={error} />
+                        </FullPageCenterItems>
+                        : expenses?.length ?
+                           <ReactTable
+                              key={expenses?.length}
+                              columns={columns}
+                              data={expenses}
+                              exportCSV={"expenses"}
+                              utilities
+                              search={[
+                                 ['amount', 'paid_at', 'narration', 'category', 'channel', 'addedBy.name'],
+                              ]}
+                           />
+                           :
+                           <FullPageCenterItems height={500} className="text-gray-500">
+                              Search results will display here
+                           </FullPageCenterItems>
+               }
+            </div>
+         </div>
+
       </div>
    );
 }
@@ -90,7 +105,8 @@ const columns: _TableColumn[] = [
    { key: "channel" },
    {
       label: "added by",
-      key: "addedBy",
-      cell: (cell) => cell.getValue()?.name ?? null
+      key: "created_by",
+      cell: (cell) => cell.getValue()?.email,
+      capitalize: false
    },
 ]

@@ -1,5 +1,9 @@
 import { getTimePeriodDate, timePeriodOptions } from "@utils/chart.utils"
+import { formatBaseCurrency } from "@utils/index"
+import { PostExpenseSchema } from "./schemas.server"
 import { formatDocumentAmount, _firestore } from "./firebase.server"
+import { v4 as uuid } from 'uuid'
+import { z } from 'zod'
 
 export async function getAllTransactions() {
    console.log(">> Fetching Firebase transactions <<")
@@ -30,4 +34,35 @@ export async function getCustomerTransactions(customerID: string) {
       .get()
    const transactions = snapshot.docs.map(d => formatDocumentAmount(d) as Transaction | PaystackTransaction)
    return transactions
+}
+
+
+/**
+ * This function converts the amount to the base currency (amount * 100).
+ * Only pass the actual amount without conversion.
+ */
+export async function createExpense(payload: z.infer<typeof PostExpenseSchema>) {
+   const collectionName: CollectionName = 'expenses'
+   const ref = _firestore.collection(collectionName).doc()
+
+   console.log(`>> Creating ${collectionName} <<`)
+
+   payload.id = ref.id
+   payload.validated = false
+   payload.reference = uuid()
+   payload.status = 'success'
+   payload.paid_at = new Date().toISOString()
+   payload.amount = formatBaseCurrency(payload.amount, true)
+   addDatesMetaTags(payload)
+
+   await ref.set(payload)
+   return payload
+}
+
+export function addDatesMetaTags(payload: _Object) {
+   const date = new Date().toISOString()
+   payload.created_at = date
+   if (!payload.updated_at) {
+      payload.updated_at = date
+   }
 }

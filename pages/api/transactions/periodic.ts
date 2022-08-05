@@ -1,5 +1,5 @@
 import { _firestore } from "@controllers/firebase.server";
-import { getTransactionsPeriodic } from "@controllers/transactions";
+import { getTransactionsPeriodic } from "@controllers/transactions.server";
 import { timePeriodOptions } from "@utils/chart.utils";
 import { NextApiRequest, NextApiResponse } from "next/types";
 import { z } from 'zod'

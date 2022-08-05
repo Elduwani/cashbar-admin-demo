@@ -21,7 +21,6 @@ export default function Liquidations() {
    })
 
    const liquidations = data as DBLiquidation[]
-   console.log(queryString, data);
 
    return (
       <div className="h-full flex space-x-4">
@@ -42,8 +41,8 @@ export default function Liquidations() {
                         utilities
                      />
                      :
-                     <FullPageCenterItems height={500}>
-                        <p className="text-gray-500">Search results will display here</p>
+                     <FullPageCenterItems height={500} className="text-gray-500">
+                        Search results will display here
                      </FullPageCenterItems>
             }
          </div>

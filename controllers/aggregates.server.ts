@@ -1,6 +1,6 @@
 import { formatBaseCurrency } from "@utils/index";
 import { getCustomers } from "./firebase.server";
-import { getAllTransactions, getCustomerTransactions } from "./transactions";
+import { getAllTransactions, getCustomerTransactions } from "./transactions.server";
 
 export async function getAggregate(): Promise<AllAggregates> {
    console.log(`** Fetching records **`)

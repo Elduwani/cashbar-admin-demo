@@ -4,12 +4,11 @@ import { FiX } from 'react-icons/fi'
 
 interface Props {
    isOpen: boolean,
-   maxWidth?: string,
    title?: string,
    close(): void,
    children: React.ReactNode
 }
-export default function Modal({ children, title, isOpen, maxWidth = "max-w-2xl", close }: Props) {
+export default function Modal({ children, title, isOpen, close }: Props) {
    return (
       <Transition appear show={isOpen} as={Fragment}>
          <Dialog
@@ -17,10 +16,7 @@ export default function Modal({ children, title, isOpen, maxWidth = "max-w-2xl",
             className="fixed inset-0 grid items-center z-[999]"
             onClose={close}
          >
-            <div
-               // style={{ maxHeight: "90%" }}
-               className=" text-center h-full overflow-y-auto scrollbar py-14"
-            >
+            <div className="text-center h-full overflow-y-auto scrollbar py-14">
                <Transition.Child
                   as={Fragment}
                   enter="ease-out duration-300"
@@ -43,7 +39,7 @@ export default function Modal({ children, title, isOpen, maxWidth = "max-w-2xl",
                   leaveTo="opacity-0 scale-95"
                >
                   <div className={`
-                            inline-block w-full ${maxWidth} text-left shadow-2xl
+                            inline-block w-full max-w-min text-left shadow-2xl
                             bg-white transition-all transform rounded-xl
                         `}>
                      <div className="border-b px-6 py-3 flex justify-between items-center">

@@ -1,4 +1,5 @@
 declare module 'react-csv';
+declare module 'uuid';
 
 type _Object<T = any> = Record<string, T>
 
@@ -21,7 +22,7 @@ interface User {
 
 interface Role {
    name: string
-   description: string
+   description?: string
 }
 
 interface Customer {
@@ -59,7 +60,7 @@ interface Expense {
    updated_at: string
 }
 
-interface DBExpense {
+interface DBExpense extends Expense {
    paid_by: string
    created_by: string
    updated_by: string
@@ -139,3 +140,7 @@ interface _TableColumn {
 }
 
 type CollectionName = "transactions" | "customers" | "expenses" | "liquidations" | "plans" | "subscriptions"
+
+type _AddedByMetaTag = Pick<User, 'email' | 'id' | 'role'> & {
+   timestamp: string
+} 

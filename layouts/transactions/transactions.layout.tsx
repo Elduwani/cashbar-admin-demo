@@ -1,3 +1,4 @@
+import PageTitle from "@components/PageTitle"
 import TabsList from "@components/TabsList"
 import { useState } from "react"
 
@@ -10,8 +11,8 @@ export default function TransationsLayout({ children }: { children: React.ReactE
    ]
 
    return (
-      <div className="p-8 flex flex-col h-full">
-         <h2 className="text-2xl font-bold text-slate-600 mb-4">Transactions</h2>
+      <div className="p-8 pt-0 flex flex-col h-full space-y-4">
+         <PageTitle title="Transactions" />
          <TabsList tabs={tabs} setIndex={setTabIndex} index={tabIndex} />
          <div className="flex-1 mt-4">
             {children}

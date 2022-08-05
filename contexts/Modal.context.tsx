@@ -4,7 +4,7 @@ import DrawerModal from 'modals/Drawer.modal';
 import React, { createContext, useContext, useRef, useState } from 'react';
 
 interface _State {
-   element: React.ReactNode,
+   element: JSX.Element,
    title?: string,
    type: 'drawer' | 'modal'
 }
