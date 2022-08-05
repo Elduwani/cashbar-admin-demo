@@ -22,6 +22,7 @@ interface Props<T = Record<string, any>> {
    search?: [string[], string?]
    paginate?: boolean
    sort?: boolean
+   className?: string
 }
 
 const table = createTable()
@@ -52,7 +53,7 @@ export default function ReactTable({ sort = true, ...props }: Props) {
    })
 
    return (
-      <div className="space-y-3">
+      <div className={`space-y-3 ${props.className}`}>
          {/* <pre>{JSON.stringify(instance.getState().globalFilter, null, 2)}</pre> */}
          {
             //Utility buttons

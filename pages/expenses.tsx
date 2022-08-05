@@ -32,7 +32,7 @@ export default function Expenses() {
       <Button
          key={1}
          icon={FiPlus}
-         variant="blue"
+         variant="teal"
          onClick={() => openModal({
             element: <AddExpense />,
             title: '',
@@ -50,29 +50,26 @@ export default function Expenses() {
             </div>
             <div className="w-full">
                {
-                  isFetching ?
+                  error ?
                      <FullPageCenterItems height={500}>
-                        <Spinner />
+                        <FetchError refetch={refetch} error={error} />
                      </FullPageCenterItems>
-                     : error ?
-                        <FullPageCenterItems height={500}>
-                           <FetchError refetch={refetch} error={error} />
+                     : expenses?.length ?
+                        <ReactTable
+                           key={expenses?.length}
+                           columns={columns}
+                           data={expenses}
+                           exportCSV={"expenses"}
+                           className={isFetching ? 'pointer-events-none opacity-50' : ''}
+                           utilities
+                           search={[
+                              ['amount', 'paid_at', 'narration', 'category', 'channel', 'addedBy.name'],
+                           ]}
+                        />
+                        :
+                        <FullPageCenterItems height={500} className="text-gray-500">
+                           Search results will display here
                         </FullPageCenterItems>
-                        : expenses?.length ?
-                           <ReactTable
-                              key={expenses?.length}
-                              columns={columns}
-                              data={expenses}
-                              exportCSV={"expenses"}
-                              utilities
-                              search={[
-                                 ['amount', 'paid_at', 'narration', 'category', 'channel', 'addedBy.name'],
-                              ]}
-                           />
-                           :
-                           <FullPageCenterItems height={500} className="text-gray-500">
-                              Search results will display here
-                           </FullPageCenterItems>
                }
             </div>
          </div>

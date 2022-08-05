@@ -51,7 +51,6 @@ export async function createExpense(payload: z.infer<typeof PostExpenseSchema>) 
    payload.validated = false
    payload.reference = uuid()
    payload.status = 'success'
-   payload.paid_at = new Date().toISOString()
    payload.amount = formatBaseCurrency(payload.amount, true)
    addDatesMetaTags(payload)
 

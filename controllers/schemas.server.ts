@@ -23,7 +23,7 @@ export const PostLiquidationSchema = z.object({
    plan: z.string(),
    subscription: z.string(),
    amount: z.number().positive(),
-   paid_at: z.string().optional(), //will be overwritten by server time
+   paid_at: z.string().refine((d) => !!new Date(d).getTime(), "Invalid date"),
    interest_payout: z.number().nonnegative().optional(),
    fee: z.number().nonnegative().optional(),
    id: z.string().optional(),
@@ -34,7 +34,7 @@ export const PostLiquidationSchema = z.object({
 export const PostExpenseSchema = z.object({
    id: z.string().optional(),
    amount: z.number().positive(),
-   paid_at: z.string().optional(), //will be overwritten by server time
+   paid_at: z.string().refine((d) => !!new Date(d).getTime(), "Invalid date"),
    description: z.string().optional(),
    reference: z.string().optional(),
    category: z.string().optional(),

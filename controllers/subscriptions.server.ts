@@ -200,7 +200,6 @@ export async function createLiquidation(payload: z.infer<typeof PostLiquidationS
    }
    payload.validated = false
    payload.status = 'success'
-   payload.paid_at = new Date().toISOString()
    addDatesMetaTags(payload)
 
    await ref.set(payload)
