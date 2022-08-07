@@ -82,6 +82,55 @@ export async function getSubscriptionTransactions(plan: string, customer: string
    return responseData
 }
 
+
+export async function getAllSubscriptions() {
+   console.log(`>> Fetching all subscriptions <<`)
+   const snapshot = await _firestore.collection(collectionName).get()
+   const data = snapshot.docs.map(d => formatDocumentAmount(d) as Subscription)
+   return data
+}
+
+export async function getSubscriptionAnalysis(plan: string, customer: string): Promise<SubscriptionAnalysis> {
+   const transactions = await getSubscriptionTransactions(plan, customer)
+   const liquidations = await getSubscriptionLiquidations(plan, customer)
+
+   const transaction_volume = transactions.reduce((acc, trx) => {
+      if (trx.status === 'success') {
+         acc += trx.amount
+      }
+      return acc
+   }, 0)
+
+   const liquidation_volume = liquidations.reduce((acc, liq) => {
+      if (liq.status === 'success') {
+         acc += liq.amount
+      }
+      return acc
+   }, 0)
+
+   const merged_data = [
+      ...transactions,
+      ...liquidations.map(l => {
+         l.is_liquidation = true
+         return l
+      })
+   ].sort((a, b) => new Date(a.paid_at).getTime() < new Date(b.paid_at).getTime() ? 1 : -1)
+
+   const percentage_liquidated = transaction_volume ? liquidation_volume * 100 / transaction_volume : 0
+
+   return {
+      // transactions,
+      // liquidations,
+      transaction_count: transactions.length,
+      liquidation_count: liquidations.length,
+      transaction_volume,
+      liquidation_volume,
+      percentage_liquidated,
+      balance: transaction_volume - liquidation_volume,
+      merged_data,
+   }
+}
+
 export async function getAllLiquidations() {
    const collectionName: CollectionName = 'liquidations'
    console.log(`>> Fetching ${collectionName} <<`)
@@ -126,46 +175,6 @@ export async function getLiquidationsPeriodic(time_period: typeof timePeriodOpti
    return liquidations
 }
 
-export async function getSubscriptionAnalysis(plan: string, customer: string): Promise<SubscriptionAnalysis> {
-   const transactions = await getSubscriptionTransactions(plan, customer)
-   const liquidations = await getSubscriptionLiquidations(plan, customer)
-
-   const transaction_volume = transactions.reduce((acc, trx) => {
-      if (trx.status === 'success') {
-         acc += trx.amount
-      }
-      return acc
-   }, 0)
-
-   const liquidation_volume = liquidations.reduce((acc, liq) => {
-      if (liq.status === 'success') {
-         acc += liq.amount
-      }
-      return acc
-   }, 0)
-
-   const merged_data = [
-      ...transactions,
-      ...liquidations.map(l => {
-         l.is_liquidation = true
-         return l
-      })
-   ].sort((a, b) => new Date(a.paid_at).getTime() < new Date(b.paid_at).getTime() ? 1 : -1)
-
-   const percentage_liquidated = transaction_volume ? liquidation_volume * 100 / transaction_volume : 0
-
-   return {
-      // transactions,
-      // liquidations,
-      transaction_count: transactions.length,
-      liquidation_count: liquidations.length,
-      transaction_volume,
-      liquidation_volume,
-      percentage_liquidated,
-      balance: transaction_volume - liquidation_volume,
-      merged_data,
-   }
-}
 
 /**
  * This function converts the amount to the base currency (amount * 100).
@@ -204,4 +213,15 @@ export async function createLiquidation(payload: z.infer<typeof PostLiquidationS
 
    await ref.set(payload)
    return payload
+}
+
+export async function getAllPlans() {
+   console.log(`>> Fetching plans <<`)
+   const collectionName: CollectionName = 'plans'
+   const ref = _firestore.collection(collectionName)
+   const snapshot = await ref.orderBy('created_at', 'desc').get()
+
+   const subs = await getAllSubscriptions()
+   const plans = snapshot.docs.map(d => formatDocumentAmount(d) as Plan)
+   return plans
 }

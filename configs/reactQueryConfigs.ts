@@ -17,4 +17,5 @@ export const queryKeys = {
    transactions: 'transactions',
    aggregates: 'aggregates',
    history: 'history',
+   plans: 'plans',
 }

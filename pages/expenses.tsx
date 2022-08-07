@@ -63,7 +63,7 @@ export default function Expenses() {
                            className={isFetching ? 'pointer-events-none opacity-50' : ''}
                            utilities
                            search={[
-                              ['amount', 'paid_at', 'narration', 'category', 'channel', 'addedBy.name'],
+                              ['amount', 'paid_at', 'narration', 'category', 'channel', 'created_by.email'],
                            ]}
                         />
                         :
@@ -78,10 +78,10 @@ export default function Expenses() {
    );
 }
 
-const columns: _TableColumn[] = [
+const columns: _TableColumn<Expense>[] = [
    {
       label: "",
-      key: "is_validated",
+      key: "validated",
       cell: (cell) => tableRowStatus(cell.getValue()),
       headerStyle: { maxWidth: 20 }
    },

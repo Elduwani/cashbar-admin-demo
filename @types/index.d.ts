@@ -44,7 +44,7 @@ interface Customer {
 
 interface Expense {
    id: string
-   description: string
+   narration: string
    amount: number
    paid_at: string
    channel: string
@@ -126,8 +126,12 @@ interface DBSubscription extends Subscription {
    plan: string
 }
 
-interface _TableColumn {
-   key: string,
+interface Plan extends PaystackPlan {
+
+}
+
+interface _TableColumn<T> {
+   key: keyof T,
    label?: string,
    sticky?: boolean,
    modifier?: (element?: any, index?: number) => string | number | JSX.Element | null,

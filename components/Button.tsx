@@ -94,6 +94,6 @@ function getClasses({ variant, border, defaultClasses }: ButtonProps): string {
       // case "teal":
       // return `${defaultClasses} bg-teal-400 hover:bg-teal-300`
       default:
-         return `${defaultClasses} bg-teal-400 hover:bg-teal-300`
+         return `${defaultClasses} bg-teal-300 hover:bg-teal-300`
    }
 }

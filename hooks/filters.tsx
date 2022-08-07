@@ -66,7 +66,7 @@ export default function useFilters(setQueryString: (v: string) => void) {
             />
          </Container>
 
-         <Button type="submit">Apply</Button>
+         <Button type="submit">Search</Button>
       </form>
    )
    return { element }
