@@ -12,7 +12,6 @@ interface PaystackCustomer extends Customer {
 
 interface PaystackPlan {
    id: string
-   pages: any[]
    name: string
    plan_code: string
    description?: string
@@ -21,9 +20,6 @@ interface PaystackPlan {
    invoice_limit: number
    send_invoices: boolean
    send_sms: boolean
-   hosted_page: boolean
-   hosted_page_url?: string
-   hosted_page_summary: any
    currency: string
    migrate: boolean
    is_deleted: boolean
@@ -35,7 +31,7 @@ interface PaystackPlan {
    active_subscriptions: number
    total_subscriptions_revenue: number
    subscriptions: PaystackSubscription[]
-   [key: string]: any
+   // [key: string]: any
 }
 
 interface PaystackSubscription extends Subscription {

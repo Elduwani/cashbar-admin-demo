@@ -3,10 +3,12 @@ import FetchError from '@components/FetchError';
 import FullPageCenterItems from '@components/FullPageCenterItems';
 import PageTitle from '@components/PageTitle';
 import ReactTable from '@components/ReactTable';
+import Spinner from '@components/Spinner';
 import { queryKeys } from '@configs/reactQueryConfigs';
 import { useModal } from '@contexts/Modal.context';
 import { tableRowStatus } from '@hooks/index';
 import AddExpense from '@modals/AddExpense.modal';
+import PlanDetails from '@modals/Plan.modal';
 import { useFetch } from '@utils/fetch';
 import { formatDate, formatNumber } from '@utils/index';
 import { FiPlus } from 'react-icons/fi';
@@ -35,31 +37,41 @@ export default function Plans() {
       >New Plan</Button>
    ]
 
+   const onClick = (plan: Plan) => openModal({
+      type: 'drawer',
+      element: <PlanDetails plan={plan} />,
+   })
+
    return (
       <div className="p-8 pt-0 space-y-6">
-         <PageTitle title="Expenses" utilities={utilities} />
+         <PageTitle title="Plans" utilities={utilities} />
          <div className="w-full">
             {
                error ?
                   <FullPageCenterItems height={500}>
                      <FetchError refetch={refetch} error={error} />
                   </FullPageCenterItems>
-                  : plans?.length ?
-                     <ReactTable
-                        key={plans?.length}
-                        columns={columns}
-                        data={plans}
-                        exportCSV={"expenses"}
-                        className={isFetching ? 'pointer-events-none opacity-50' : ''}
-                        utilities
-                        search={[
-                           ['amount', 'paid_at', 'narration', 'category', 'channel', 'created_by.email'],
-                        ]}
-                     />
-                     :
-                     <FullPageCenterItems height={500} className="text-gray-500">
-                        Search results will display here
+                  : isFetching ?
+                     <FullPageCenterItems height={500}>
+                        <Spinner />
                      </FullPageCenterItems>
+                     : plans?.length ?
+                        <ReactTable
+                           key={plans?.length}
+                           columns={columns}
+                           data={plans}
+                           exportCSV={"expenses"}
+                           onClick={onClick}
+                           // className={isFetching ? 'pointer-events-none opacity-50' : ''}
+                           utilities
+                           search={[
+                              ['amount', 'name', 'narration', 'interval', 'createdAt'],
+                           ]}
+                        />
+                        :
+                        <FullPageCenterItems height={500} className="text-gray-500">
+                           Search results will display here
+                        </FullPageCenterItems>
             }
          </div>
       </div>
@@ -69,29 +81,28 @@ export default function Plans() {
 const columns: _TableColumn<Plan>[] = [
    {
       label: "",
-      key: "is_validated",
+      key: "active_subscriptions",
       cell: (cell) => tableRowStatus(cell.getValue()),
       headerStyle: { maxWidth: 20 }
+   },
+   {
+      key: "name",
    },
    {
       key: "amount",
       cell: (n) => formatNumber(n.getValue())
    },
    {
-      key: "paid_at",
-      label: "date",
-      cell: (d) => formatDate(d.getValue())
+      key: 'subscriptions',
+      cell: (cell) => {
+         const data = cell.row.original as PaystackPlan
+         return `${data.total_subscriptions} / ${data.active_subscriptions} active`
+      }
    },
-   { key: 'narration' },
+   { key: "interval" },
    {
-      key: "category",
-      cellStyle: () => 'bg-green-50'
-   },
-   { key: "channel" },
-   {
-      label: "added by",
-      key: "created_by",
-      cell: (cell) => cell.getValue()?.email,
-      capitalize: false
+      key: "createdAt",
+      label: "created on",
+      cell: (d) => formatDate(d.getValue(), true, true)
    },
 ]

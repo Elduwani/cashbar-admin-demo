@@ -60,10 +60,10 @@ export default function Subscriptions() {
    )
 }
 
-const tabelColumns: _TableColumn[] = [
+const tabelColumns: _TableColumn<Subscription>[] = [
    {
       label: "",
-      key: "_",
+      key: "id",
       modifier: (cell: Subscription) => tableRowStatus(cell.status === 'active'),
       headerStyle: { maxWidth: 20 }
    },

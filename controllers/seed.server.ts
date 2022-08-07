@@ -38,7 +38,7 @@ export async function seedPlans() {
    const ref = _firestore.collection(collectionName);
 
    console.log(`** Fetching Paystack ${collectionName} **`)
-   const plans = await getPaystackPlans<Partial<PaystackPlan>>()
+   const plans = await getPaystackPlans() as PaystackResponse<Partial<PaystackPlan>[]>
    console.log(`** Fetched ${plans.data.length} ${collectionName} **`)
    //Firebase batch only allows 500 writes per request
    //Split data into chunks

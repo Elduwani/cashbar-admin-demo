@@ -4,6 +4,7 @@ import { _firestore, formatDocumentAmount } from "./firebase.server"
 import { PostLiquidationSchema } from "./schemas.server"
 import { z } from "zod"
 import { addDatesMetaTags } from "./transactions.server"
+import { getPaystackPlans } from "./paystack.server"
 
 const collectionName: CollectionName = 'subscriptions'
 
@@ -86,7 +87,7 @@ export async function getSubscriptionTransactions(plan: string, customer: string
 export async function getAllSubscriptions() {
    console.log(`>> Fetching all subscriptions <<`)
    const snapshot = await _firestore.collection(collectionName).get()
-   const data = snapshot.docs.map(d => formatDocumentAmount(d) as Subscription)
+   const data = snapshot.docs.map(d => formatDocumentAmount(d) as PaystackSubscription)
    return data
 }
 
@@ -215,13 +216,43 @@ export async function createLiquidation(payload: z.infer<typeof PostLiquidationS
    return payload
 }
 
+/**
+ * To save Firebase read quota, fetch plans from Paystack which already
+ * has related metadata information. Map that to database plans, so no need to aggreagate 
+ * subscriptions etc. 
+ */
 export async function getAllPlans() {
    console.log(`>> Fetching plans <<`)
-   const collectionName: CollectionName = 'plans'
-   const ref = _firestore.collection(collectionName)
-   const snapshot = await ref.orderBy('created_at', 'desc').get()
 
-   const subs = await getAllSubscriptions()
-   const plans = snapshot.docs.map(d => formatDocumentAmount(d) as Plan)
+   const map: Record<string, PaystackPlan> = {}
+   const collectionName: CollectionName = 'plans'
+   const snapshot = await _firestore
+      .collection(collectionName)
+      .orderBy('createdAt', 'desc')
+      .get()
+
+   const paystackPlans = await getPaystackPlans()
+   paystackPlans.data.forEach(plan => {
+      plan.amount = formatBaseCurrency(plan.amount)
+      plan.total_subscriptions_revenue = formatBaseCurrency(plan.total_subscriptions_revenue)
+      map[plan.id] = plan
+   })
+
+   const plans = snapshot.docs.map(d => {
+      const plan = d.data() as Plan
+      const keys: (keyof Plan)[] = [
+         'amount',
+         'total_subscriptions',
+         'active_subscriptions',
+         'total_subscriptions_revenue'
+      ]
+      keys.forEach(k => {
+         //@ts-ignore
+         plan[k] = map[plan.id][k]
+      })
+      return plan
+   })
+   // .sort((a, b) => a.active_subscriptions < b.active_subscriptions ? 1 : -1)
+
    return plans
 }

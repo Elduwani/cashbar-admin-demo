@@ -27,11 +27,11 @@ export async function updatePaystackCustomer(data: Partial<PaystackCustomer>, id
 }
 
 /** Plans **/
-export async function getPaystackPlans<T = PaystackPlan>() {
+export async function getPaystackPlans() {
    const response = await axios.get(`https://api.paystack.co/plan`, { headers })
    const filteredPlans = (response.data.data as PaystackPlan[]).filter(p => !p.is_deleted && !p.is_archived)
    response.data.data = filteredPlans
-   return response.data as PaystackResponse<T[]>;
+   return response.data as PaystackResponse<PaystackPlan[]>;
 }
 
 type PlanPayload = Pick<PaystackPlan, 'name' | 'amount' | 'description' | 'send_invoices' | 'interval' | 'send_sms'>

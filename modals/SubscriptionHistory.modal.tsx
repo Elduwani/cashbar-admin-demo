@@ -21,10 +21,10 @@ export default function SubscriptionHistory(props: Props) {
       placeholderData: {}
    })
 
-   const history = _data as SubscriptionAnalysis ?? {}
+   const analysis = _data as SubscriptionAnalysis ?? {}
 
-   const menu = useSubscriptionMenu(props.subscription, history.balance)
-   const rowStyles = (trx: typeof history.merged_data[number]) => {
+   const menu = useSubscriptionMenu(props.subscription, analysis.balance)
+   const rowStyles = (trx: typeof analysis.merged_data[number]) => {
       return `${trx.is_liquidation && 'text-red-600'}`
    }
 
@@ -38,9 +38,9 @@ export default function SubscriptionHistory(props: Props) {
                      {formatNumber(props.plan.amount, "$")} {props.plan.interval}
                   </h2>
                   {
-                     history.transaction_volume ?
+                     analysis.transaction_volume ?
                         <h2 className="text-sm">
-                           {history.transaction_count} payments, {history.liquidation_count} liquidations
+                           {analysis.transaction_count} payments, {analysis.liquidation_count} liquidations
                         </h2> : null
                   }
                </div>
@@ -53,21 +53,21 @@ export default function SubscriptionHistory(props: Props) {
          <div className="flex flex-col items-center space-y-2">
             <CircularProgress
                radius={80}
-               progress={history.percentage_liquidated}
+               progress={analysis.percentage_liquidated}
                subtitle="liquidated"
             // accentColor={isOverdraft ? 'rgb(239 68 68)' : undefined}
             />
             <h3 className="text-2xl">
-               Total Savings: {formatNumber(history.transaction_volume, "$")}
+               Total Savings: {formatNumber(analysis.transaction_volume, "$")}
             </h3>
             <div className="flex space-x-5 text-gray-600">
                <p className="flex items-center space-x-2">
                   {tableRowStatus(true)}
-                  <span>Balance: {formatNumber(history.balance, "$")}</span>
+                  <span>Balance: {formatNumber(analysis.balance, "$")}</span>
                </p>
                <p className="flex items-center space-x-2">
                   {tableRowStatus(true, 'bg-red-600')}
-                  <span>Liquidated: {formatNumber(history.liquidation_volume, "$")}</span>
+                  <span>Liquidated: {formatNumber(analysis.liquidation_volume, "$")}</span>
                </p>
             </div>
          </div>
@@ -77,12 +77,12 @@ export default function SubscriptionHistory(props: Props) {
                   <Spinner />
                </FullPageCenterItems>
                :
-               history.merged_data?.length ?
+               analysis.merged_data?.length ?
                   <div className="">
                      <p>Transaction history</p>
                      <ReactTable
                         columns={tabelColumns}
-                        data={history.merged_data}
+                        data={analysis.merged_data}
                         rowStyles={rowStyles}
                      />
                   </div>
@@ -95,7 +95,7 @@ export default function SubscriptionHistory(props: Props) {
    )
 }
 
-const tabelColumns: _TableColumn[] = [
+const tabelColumns: _TableColumn<Transaction>[] = [
    {
       label: "",
       key: "status",

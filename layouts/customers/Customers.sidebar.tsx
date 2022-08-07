@@ -6,6 +6,7 @@ import { queryKeys } from '@configs/reactQueryConfigs';
 import Button from '@components/Button';
 import FullPageCenterItems from '@components/FullPageCenterItems';
 import Spinner from '@components/Spinner';
+import Avatar from '@components/Avatar';
 
 export default function CustomersSidebar() {
    const [filteredData, setFilteredData] = useState<Customer[]>([])
@@ -78,12 +79,15 @@ function Customer({ customer }: { customer: Customer }) {
       <div
          ref={isSelected ? ref : null}
          onClick={() => router.push(`/customers/${customer.id}`)}
-         className={`cursor-pointer p-4 text-sm ${isSelected ? "bg-teal-100 text-teal-900" : "bg-white text-gray-600"}`}
+         className={`flex items-center space-x-3 cursor-pointer p-4 text-sm ${isSelected ? "bg-teal-100 text-teal-900" : "bg-white text-gray-600"}`}
       >
-         <p className={`truncate capitalize ${isSelected && 'font-semibold'}`}>
-            {`${first_name} ${last_name}`}
-         </p>
-         <p className={isSelected ? "opacity-70" : undefined}>{email}</p>
+         <Avatar name={customer.first_name} textSize="text-base" />
+         <div className="co">
+            <p className={`truncate capitalize ${isSelected && 'font-semibold'}`}>
+               {`${first_name} ${last_name}`}
+            </p>
+            <p className={isSelected ? "opacity-70" : undefined}>{email}</p>
+         </div>
       </div>
    );
 }

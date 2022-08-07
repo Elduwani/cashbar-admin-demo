@@ -127,7 +127,7 @@ interface DBSubscription extends Subscription {
 }
 
 interface Plan extends PaystackPlan {
-
+   // plan: string
 }
 
 interface _TableColumn<T> {
