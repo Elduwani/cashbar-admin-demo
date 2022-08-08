@@ -17,3 +17,9 @@ interface SubscriptionAnalysis {
    percentage_liquidated: number
    balance: number
 }
+
+interface PlanDetails {
+   subscriptions: Subscription[]
+   total_liquidation: number
+   liquidations: Liquidation[]
+}

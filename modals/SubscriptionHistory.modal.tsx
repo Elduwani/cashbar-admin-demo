@@ -102,7 +102,7 @@ const tabelColumns: _TableColumn<Transaction>[] = [
       cell: (cell) => {
          const data = cell.row.original as Transaction
          if (data.is_liquidation) return (
-            <span className="rounded-full bg-red-50 text-red-800 w-6 h-6 grid place-content-center">
+            <span className="rounded-full bg-red-50 text-red-600 w-6 h-6 grid place-content-center">
                <FiArrowDownLeft />
             </span>
          )

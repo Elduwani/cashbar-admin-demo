@@ -1,6 +1,6 @@
 import { formatBaseCurrency } from "@utils/index"
 import { timePeriodOptions, getTimePeriodDate } from "@utils/chart.utils"
-import { _firestore, formatDocumentAmount } from "./firebase.server"
+import { _firestore, formatDocumentAmount, getCustomers } from "./firebase.server"
 import { PostLiquidationSchema } from "./schemas.server"
 import { z } from "zod"
 import { addDatesMetaTags } from "./transactions.server"
@@ -83,12 +83,28 @@ export async function getSubscriptionTransactions(plan: string, customer: string
    return responseData
 }
 
-
 export async function getAllSubscriptions() {
    console.log(`>> Fetching all subscriptions <<`)
    const snapshot = await _firestore.collection(collectionName).get()
    const data = snapshot.docs.map(d => formatDocumentAmount(d) as PaystackSubscription)
    return data
+}
+
+export async function getPlanSubscriptions(planID: string) {
+   console.log(`>> Fetching plan subscriptions for ${planID} <<`)
+   const customers = await getCustomers()
+   const snapshot = await _firestore.collection(collectionName)
+      .where('plan', '==', planID)
+      .get()
+   const subscriptions = snapshot.docs.map(d => {
+      const data = formatDocumentAmount(d)
+      const customer = customers.find(c => c.id === data.customer)
+      if (customer) {
+         data.customer = customer
+      }
+      return data as Subscription
+   })
+   return subscriptions
 }
 
 export async function getSubscriptionAnalysis(plan: string, customer: string): Promise<SubscriptionAnalysis> {
@@ -163,6 +179,26 @@ export async function getSubscriptionLiquidations(plan: string, customer: string
       .get()
 
    const responseData = snapshot.docs.map(d => formatDocumentAmount(d) as Liquidation)
+   return responseData
+}
+
+export async function getPlanLiquidations(plan: string) {
+   console.log(`>> Fetching liquidations for ${plan} <<`)
+   const customers = await getCustomers()
+   const ref = _firestore.collection('liquidations')
+   const snapshot = await ref
+      .orderBy('paid_at', 'desc')
+      .where("plan", "==", plan)
+      .get()
+
+   const responseData = snapshot.docs.map(d => {
+      const data = formatDocumentAmount(d)
+      const customer = customers.find(c => c.id === data.customer)
+      if (customer) {
+         data.customer = customer
+      }
+      return data as Liquidation
+   })
    return responseData
 }
 

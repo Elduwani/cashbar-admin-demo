@@ -98,6 +98,7 @@ interface Transaction {
    customer: Customer
    plan?: PaystackPlan
    is_liquidation?: boolean
+   is_validated: boolean
    // [key: string]: any
 }
 
@@ -118,6 +119,7 @@ interface Subscription {
    cancelledAt: string
    createdAt: string
    updatedAt: string
+   limit: number
    // [key: string]: any
 }
 

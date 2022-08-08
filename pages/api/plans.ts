@@ -1,4 +1,4 @@
-import { getAllPlans } from "@controllers/subscriptions.server";
+import { getAllPlans, getPlanLiquidations, getPlanSubscriptions } from "@controllers/subscriptions.server";
 import { zodError } from "@utils/index";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
@@ -8,8 +8,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       switch (req.method) {
          case "GET": {
-            const plans = await getAllPlans()
-            return res.send(plans)
+            const { id } = req.query
+
+            if (id) {
+               const subscriptions = await getPlanSubscriptions(id as string)
+               const liquidations = await getPlanLiquidations(id as string)
+               const total_liquidation = liquidations.reduce((acc, curr) => acc += curr.amount, 0)
+               const responseData: PlanDetails = {
+                  subscriptions,
+                  liquidations,
+                  total_liquidation
+               }
+               return res.send(responseData)
+
+            } else {
+               const plans = await getAllPlans()
+               return res.send(plans)
+            }
          }
 
          default: {
