@@ -104,13 +104,13 @@ function NavLink({ route, isOpen }: Props) {
          <div
             onClick={handleClick}
             className={`
-                    h-14 flex items-center px-6 space-x-4 cursor-pointer
-                    outline-none relative capitalize border-opacity-25 text-sm 
-                    ${matched ? 'bg-slate-100 text-indigo-800 font-semibold' : 'text-white'}
-                    ${!enabled && 'pointer-events-none opacity-50'}
-                    ${matched && isOpen ? "shadow-lg" : ""}
-                    ${!isOpen && "justify-center"} 
-                `}
+               h-14 flex items-center px-6 space-x-4 cursor-pointer
+               outline-none relative capitalize border-opacity-25 text-sm 
+               ${matched ? 'bg-slate-100 text-indigo-800 font-semibold' : 'text-white'}
+               ${!enabled && 'pointer-events-none opacity-50'}
+               ${matched && isOpen ? "shadow-lg" : ""}
+               ${!isOpen && "justify-center"} 
+            `}
          >
             {
                // Icons

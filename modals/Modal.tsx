@@ -42,7 +42,7 @@ export default function Modal({ children, title, isOpen, close }: Props) {
                             inline-block w-full max-w-min text-left shadow-2xl
                             bg-white transition-all transform rounded-xl
                         `}>
-                     <div className="border-b px-6 py-3 flex justify-between items-center">
+                     <div className="px-6 py-3 flex justify-between items-center">
                         <h3 className="capitalize w-full text-sm text-center">{title}</h3>
                         <span
                            className="border border-gray-600 flex-shrink-0 w-6 h-6 grid place-items-center rounded-full cursor-pointer"

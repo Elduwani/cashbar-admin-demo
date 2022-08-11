@@ -22,4 +22,7 @@ interface PlanDetails {
    subscriptions: Subscription[]
    total_liquidation: number
    liquidations: Liquidation[]
+   //num_of_payments
+   //num_of_liquidations
+   //no need to fetch liquidations, just subscriptions
 }

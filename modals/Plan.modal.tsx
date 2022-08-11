@@ -6,7 +6,7 @@ import { queryKeys } from "@configs/reactQueryConfigs"
 import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
-import { FiArrowDownLeft, FiCheck, FiX } from "react-icons/fi"
+import { FiArrowDownLeft } from "react-icons/fi"
 
 interface Props {
    plan: PaystackPlan

@@ -1,6 +1,4 @@
-import {
-   HiOutlineGift as LoansIcon, HiShoppingCart as ExpensesIcon, HiTrendingUp as DepositsIcon, HiUsers as CustomersIcon, HiViewGridAdd as DashbaordIcon
-} from "react-icons/hi"
+import { FiActivity, FiBarChart2, FiCheckCircle, FiDatabase, FiTrendingDown, FiUsers } from "react-icons/fi"
 import { IconType } from "react-icons/lib"
 
 export type _Route = {
@@ -14,27 +12,32 @@ export const protectedRoutes: _Route[] = [
    {
       name: "home",
       path: `/`,
-      icon: DashbaordIcon
+      icon: FiBarChart2
    },
    {
       name: "customers",
       path: `/customers`,
-      icon: CustomersIcon
+      icon: FiUsers
    },
    {
       name: "transactions",
       path: `/transactions`,
-      icon: LoansIcon
+      icon: FiActivity
    },
    {
       name: "expenses",
       path: `/expenses`,
-      icon: DepositsIcon
+      icon: FiTrendingDown
    },
    {
       name: "plans",
       path: `/plans`,
-      icon: ExpensesIcon,
+      icon: FiDatabase,
+   },
+   {
+      name: "approvals",
+      path: `/approvals`,
+      icon: FiCheckCircle,
    }
 ]
 
