@@ -11,7 +11,7 @@ import Search from './Search'
 import { TableFilter } from './ReactTableFilter'
 
 interface Props<T = Record<string, any>> {
-   columns: _TableColumn[]
+   columns: _TableColumn<T>[]
    data: T[]
    exportCSV?: string //filename
    headerStyles?: string
@@ -53,48 +53,52 @@ export default function ReactTable({ sort = true, ...props }: Props) {
    })
 
    return (
-      <div className={`space-y-3 ${props.className}`}>
+      <div className={`${props.className}`}>
          {/* <pre>{JSON.stringify(instance.getState().globalFilter, null, 2)}</pre> */}
          {
-            //Utility buttons
-            <div className="flex items-end space-x-2 justify-between">
-               {
-                  props.search ?
-                     <div className="w-full max-w-xs">
-                        <Search
-                           matchList={props.search[0]}
-                           placeholder={props.search[1]}
-                           callback={setSearchResults}
-                           data={props.data}
-                        />
-                     </div>
-                     : <span></span>
-               }
-               {
-                  props.utilities &&
-                  <div className='flex items-center space-x-2'>
-                     {props.utilities}
-                     {
-                        props.exportCSV?.length && props.data?.length ?
-                           <DownloadCSV
+            props.search || props.utilities ?
+               //Utility buttons
+               <div className="flex items-end space-x-2 justify-between mb-3">
+                  {
+                     props.search ?
+                        <div className="w-full max-w-xs">
+                           <Search
+                              matchList={props.search[0]}
+                              placeholder={props.search[1]}
+                              callback={setSearchResults}
                               data={props.data}
-                              filename={props.exportCSV}
-                              columns={props.columns}
-                              text="Export CSV"
                            />
-                           : null
-                     }
-                     <TableFilter
-                        columns={props.columns}
-                        table={instance as any}
-                     >
-                        <Button variant='outline' icon={FiSettings} secondary shrink />
-                     </TableFilter>
-                  </div>
-               }
-            </div>
+                        </div>
+                        : <span></span>
+                  }
+                  {
+                     props.utilities &&
+                     <div className='flex items-center space-x-2'>
+                        {props.utilities}
+                        {
+                           props.exportCSV?.length && props.data?.length ?
+                              <DownloadCSV
+                                 data={props.data}
+                                 filename={props.exportCSV}
+                                 columns={props.columns}
+                                 text="Export CSV"
+                              />
+                              : null
+                        }
+                        {
+                           // <TableFilter
+                           //    columns={props.columns}
+                           //    table={instance as any}
+                           // >
+                           //    <Button variant='outline' icon={FiSettings} secondary shrink />
+                           // </TableFilter>
+                        }
+                     </div>
+                  }
+               </div>
+               : null
          }
-         <div className="overflow-x-auto scrollbar rounded-xl bg-white border">
+         <div className="overflow-x-auto scrollbar rounded-xl bg-white border mb-3">
             <table
                className="border-collapse min-w-full"
                style={{
@@ -197,11 +201,11 @@ export default function ReactTable({ sort = true, ...props }: Props) {
    )
 }
 
-function makeColumns(headers: _TableColumn[]) {
+function makeColumns(headers: _TableColumn<any>[]) {
    return headers.map((h) => {
       const options: Parameters<typeof table.createDataColumn>[1] = {
-         header: h.label ?? h.key,
-         id: h.key, //must be the key attribute,
+         header: h.label ?? h.key as string,
+         id: h.key as string, //must be the key attribute,
       }
       if (h.cell) options['cell'] = h.cell
       //@ts-expect-error

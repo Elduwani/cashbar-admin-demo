@@ -87,9 +87,9 @@ export function useMutate({ url, refetchKeys, onSuccessCallback, successMessage,
                   queryClient.invalidateQueries({
                      predicate: ({ queryKey }) => {
                         if (Array.isArray(queryKey)) {
-                           return !queryKey.some(key => key === undefined)
+                           return queryKey.some(key => key !== undefined && queryKey === k)
                         }
-                        return queryKey !== undefined
+                        return queryKey === k
                      }
                   })
                })

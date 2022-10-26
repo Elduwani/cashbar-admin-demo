@@ -24,11 +24,11 @@ export const protectedRoutes: _Route[] = [
       path: `/transactions`,
       icon: FiActivity
    },
-   {
-      name: "expenses",
-      path: `/expenses`,
-      icon: FiTrendingDown
-   },
+   // {
+   //    name: "expenses",
+   //    path: `/expenses`,
+   //    icon: FiTrendingDown
+   // },
    {
       name: "plans",
       path: `/plans`,
