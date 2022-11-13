@@ -1,4 +1,4 @@
-import { getNestedValue } from "@utils/index"
+import { cx, getNestedValue } from "@utils/index"
 import { createElement } from "react"
 import { UseFormRegister, ValidationRule } from "react-hook-form"
 
@@ -78,10 +78,14 @@ export function InputWithLabel(props: InputWithLabelProps) {
    return (
       <div className="space-y-2 w-full" key={label + props.name}>
          <label htmlFor={props.name} className={`flex items-center justify-between text-sm`}>
-            <span className={`text-gray-600 ${props.capitalize ? "uppercase" : "capitalize"}`}>{label}{props.required && '*'}</span>
+            <span className={`text-gray-600 ${props.capitalize ? "uppercase" : "capitalize"}`}>
+               {label}{props.required && ' *'}
+            </span>
             {
                error?.message &&
-               <span className="inline-block text-red-600 text-xs text-right">{error.message}</span>
+               <span className="inline-block text-red-600 text-xs text-right">
+                  {error.message}
+               </span>
             }
          </label>
          {
@@ -94,10 +98,11 @@ export function InputWithLabel(props: InputWithLabelProps) {
                value: props.value,
                readOnly: props.readOnly,
                onChange: props.onChange,
-               className: `
-                        focus:ring focus:ring-blue-600 focus:ring-opacity-80 focus:border-transparent 
-                        ${error?.message && "error"} border border-gray-400 ${props.className}
-                    `,
+               className: cx(
+                  "focus:ring focus:ring-blue-600 focus:ring-opacity-80 focus:border-transparent",
+                  `${error?.message && "error"} border border-gray-300 ${props.className}`,
+                  "placeholder:text-sm"
+               ),
                ...props.register?.(props.name, {
                   //@ts-ignore
                   pattern: props.pattern ? validationPatterns[props.pattern] : {} as ValidationRule<RegExp>,

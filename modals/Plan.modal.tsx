@@ -5,7 +5,7 @@ import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
 import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
-import { formatDate, formatNumber } from "@utils/index"
+import { formatDate, formatNumber, cx } from "@utils/index"
 import { FiArrowDownLeft } from "react-icons/fi"
 
 interface Props {
@@ -25,18 +25,17 @@ export default function PlanDetails(props: Props) {
          <PageTitle
             title={props.plan.name}
             subtitle={`${formatNumber(props.plan.amount, "$")} ${props.plan.interval}`}
-            utilities={'Menu'}
          />
-         <div className="flex flex-col items-center space-y-2 p-6 border shadow-sm bg-white rounded-xl">
+         <div className={cx(
+            "flex flex-col items-center space-y-2 p-6 border",
+            "shadow-sm bg-indigo-600 text-white rounded-xl"
+         )}>
             <p className="opacity-70 text-sm">Created {formatDate(props.plan.createdAt, true, true)}</p>
             <h3 className="text-2xl">
                Total Saved: {formatNumber(props.plan.total_subscriptions_revenue, "$")}
             </h3>
             <p className="flex items-center space-x-2">
-               {tableRowStatus(true, 'bg-red-600')}
-               <span>
-                  Total Liquidated: {formatNumber(details.total_liquidation, "$")}
-               </span>
+               Liquidations: {formatNumber(details.total_liquidation, "$")}
             </p>
          </div>
          {
@@ -49,8 +48,8 @@ export default function PlanDetails(props: Props) {
                   <>
                      {
                         details.subscriptions?.length ?
-                           <div className="">
-                              <p>Subscriptions</p>
+                           <div className="space-y-3">
+                              <p>Customer subscriptions</p>
                               <ReactTable
                                  columns={subscriptionColumns}
                                  data={details.subscriptions}
@@ -61,7 +60,7 @@ export default function PlanDetails(props: Props) {
                      }
                      {
                         details.liquidations?.length ?
-                           <div>
+                           <div className="space-y-3">
                               <p>Liquidations</p>
                               <ReactTable
                                  columns={liquidationColumns}

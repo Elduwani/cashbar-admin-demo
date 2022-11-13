@@ -1,5 +1,5 @@
 import { Listbox, Transition } from '@headlessui/react'
-import { toSelectOptions } from "@utils/index"
+import { cx, toSelectOptions } from "@utils/index"
 import { statesList } from "@utils/statesList"
 import { Fragment, useEffect, useState } from "react"
 import { Control, Controller, FieldValues, useForm } from "react-hook-form"
@@ -68,7 +68,7 @@ export default function Select(props: SelectProps) {
                         {
                            props.label &&
                            <Listbox.Label className="flex justify-between text-sm text-gray-600 mb-2 space-x-2">
-                              <span className='capitalize'>{props.label}{props.required ? '*' : ''}</span>
+                              <span className='capitalize'>{props.label}{props.required ? ' *' : ''}</span>
                               {
                                  errors[props.name] &&
                                  <span className="inline-block text-red-600 text-xs text-right truncate">
@@ -80,11 +80,11 @@ export default function Select(props: SelectProps) {
 
                         <span className={`inline-block shadow-sm rounded-lg w-full`}>
                            <Listbox.Button
-                              className={`
-                                 w-full h-10 rounded-lg menu-button px-3 flex items-center justify-between 
-                                 cursor-default capitalize border text-left text-base focus:outline-none focus:shadow-outline-blue space-x-2
-                                 focus:ring-4 focus:ring-blue-600 focus:ring-opacity-80 border-gray-400 focus:border-transparent bg-white
-                              `}
+                              className={cx(
+                                 "w-full h-11 rounded-lg menu-button px-3 flex items-center justify-between",
+                                 "cursor-default capitalize border text-left text-base focus:outline-none focus:shadow-outline-blue space-x-2",
+                                 "focus:ring-4 focus:ring-blue-600 focus:ring-opacity-80 border-gray-300 focus:border-transparent bg-white",
+                              )}
                            >
                               {
                                  //show name for empty selection
@@ -107,12 +107,13 @@ export default function Select(props: SelectProps) {
                            className="absolute w-full rounded-md shadow-lg"
                         >
                            <Listbox.Options
-                              className={`bg-white w-full min-w-fit max-h-60 border
-                                 oveflow-x-hidden focus:outline-none overflow-y-auto scrollbar 
-                                 rounded-md flex flex-col shadow-lg absolute right-0 z-[50]
-                                 ${direction === 'up' ? 'bottom-12' : 'top-2'}
-                                 ${align === 'left' ? 'left-0' : 'right-0'}
-                              `}
+                              className={cx(
+                                 "bg-white w-full min-w-fit max-h-60 border",
+                                 "oveflow-x-hidden focus:outline-none overflow-y-auto scrollbar",
+                                 "rounded-md flex flex-col shadow-lg absolute right-0 z-[50]",
+                                 `${direction === 'up' ? 'bottom-12' : 'top-2'}`,
+                                 `${align === 'left' ? 'left-0' : 'right-0'}`
+                              )}
                            >
                               {
                                  options.map((option, i) => {
@@ -122,9 +123,13 @@ export default function Select(props: SelectProps) {
                                     /* Use the `selected` state to conditionally style the selected option. */
                                     return <Listbox.Option as={Fragment} key={i} value={option}>
                                        {({ active }) => (
-                                          <div className={`menu-item flex items-center space-x-2 px-4 py-2 md:py-3 cursor-default select-none
-                                                            ${active && !isSelected ? "bg-blue-50" : ""} ${isSelected && "bg-blue-600 text-white"}  
-                                                        `}>
+                                          <div
+                                             className={cx(
+                                                "menu-item flex items-center space-x-2 px-4 py-2 md:py-3 cursor-default select-none",
+                                                `${active && !isSelected ? "bg-blue-50" : ""}`,
+                                                `${isSelected && "bg-blue-600 text-white"}`
+                                             )}
+                                          >
                                              <span className="w-5">
                                                 {isSelected ? <FiCheck className="text-lg" /> : null}
                                              </span>

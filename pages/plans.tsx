@@ -7,7 +7,7 @@ import Spinner from '@components/Spinner';
 import { queryKeys } from '@configs/reactQueryConfigs';
 import { useModal } from '@contexts/Modal.context';
 import { tableRowStatus } from '@hooks/index';
-import AddExpense from '@modals/AddExpense.modal';
+import AddPlan from '@modals/AddPlan.modal';
 import PlanDetails from '@modals/Plan.modal';
 import { useFetch } from '@utils/fetch';
 import { formatDate, formatNumber } from '@utils/index';
@@ -24,19 +24,6 @@ export default function Plans() {
 
    const plans = data as PaystackPlan[]
 
-   const utilities = [
-      <Button
-         key={1}
-         icon={FiPlus}
-         variant="teal"
-         onClick={() => openModal({
-            element: <AddExpense />,
-            title: '',
-            type: 'modal'
-         })}
-      >New Plan</Button>
-   ]
-
    const onClick = (plan: Plan) => openModal({
       type: 'drawer',
       element: <PlanDetails plan={plan} />,
@@ -44,7 +31,20 @@ export default function Plans() {
 
    return (
       <div className="p-8 pt-0 space-y-6">
-         <PageTitle title="Plans" utilities={utilities} />
+         <PageTitle
+            title="Plans"
+            utilities={
+               <Button
+                  icon={FiPlus}
+                  variant="teal"
+                  onClick={() => openModal({
+                     element: <AddPlan />,
+                     title: '',
+                     type: 'modal'
+                  })}
+               >Create Plan</Button>
+            }
+         />
          <div className="w-full">
             {
                error ?

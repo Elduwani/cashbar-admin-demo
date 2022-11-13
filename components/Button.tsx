@@ -86,7 +86,7 @@ function getClasses({ variant, border, defaultClasses }: ButtonProps): string {
       case "outline":
          return `${defaultClasses} border ${border ?? 'border-gray-300'} bg-white text-gray-600 hover:border-blue-400 hover:text-blue-600`
       case "blue":
-         return `${defaultClasses} bg-blue-600 hover:bg-blue-500 text-white`
+         return `${defaultClasses} bg-indigo-600 hover:bg-indigo-500 text-white`
       case "red":
          return `${defaultClasses} bg-red-500 hover:bg-red-400 text-white`
       case "white":

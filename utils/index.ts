@@ -226,3 +226,5 @@ export function zodError(issues?: z.ZodIssue[]) {
 
    return !!errorString ? errorString : undefined
 }
+
+export const cx = (...classes: string[]) => classes.join(' ')

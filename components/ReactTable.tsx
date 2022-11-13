@@ -11,7 +11,7 @@ import Search from './Search'
 import { TableFilter } from './ReactTableFilter'
 
 interface Props<T = Record<string, any>> {
-   columns: _TableColumn<T>[]
+   columns: _TableColumn<any>[]
    data: T[]
    exportCSV?: string //filename
    headerStyles?: string
