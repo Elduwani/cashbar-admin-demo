@@ -4,7 +4,7 @@ import { _firestore, formatDocumentAmount, getCustomers } from "./firebase.serve
 import { PostLiquidationSchema } from "./schemas.server"
 import { z } from "zod"
 import { addDatesMetaTags } from "./transactions.server"
-import { getPaystackPlans } from "./paystack.server"
+import { createPaystackPlan, getPaystackPlans } from "./paystack.server"
 
 const collectionName: CollectionName = 'subscriptions'
 
@@ -259,36 +259,39 @@ export async function createLiquidation(payload: z.infer<typeof PostLiquidationS
  */
 export async function getAllPlans() {
    console.log(`>> Fetching plans <<`)
-
-   const map: Record<string, PaystackPlan> = {}
    const collectionName: CollectionName = 'plans'
-   const snapshot = await _firestore
-      .collection(collectionName)
-      .orderBy('createdAt', 'desc')
-      .get()
+   // const snapshot = await _firestore
+   //    .collection(collectionName)
+   //    .orderBy('createdAt', 'desc')
+   //    .get()
 
    const paystackPlans = await getPaystackPlans()
-   paystackPlans.data.forEach(plan => {
-      plan.amount = formatBaseCurrency(plan.amount)
-      plan.total_subscriptions_revenue = formatBaseCurrency(plan.total_subscriptions_revenue)
-      map[plan.id] = plan
-   })
-
-   const plans = snapshot.docs.map(d => {
-      const plan = d.data() as Plan
-      const keys: (keyof Plan)[] = [
-         'amount',
-         'total_subscriptions',
-         'active_subscriptions',
-         'total_subscriptions_revenue'
-      ]
-      keys.forEach(k => {
-         //@ts-ignore
-         plan[k] = map[plan.id][k]
+   const plans = paystackPlans.data
+      .map(plan => {
+         const toFormatted: (keyof typeof plan)[] = ['amount', 'total_subscriptions_revenue']
+         toFormatted.forEach(k => {
+            //@ts-expect-error
+            plan[k] = formatBaseCurrency(plan[k])
+         })
+         return plan
       })
-      return plan
-   })
-   // .sort((a, b) => a.active_subscriptions < b.active_subscriptions ? 1 : -1)
+      .sort((a, b) => new Date(a.createdAt) < new Date(b.createdAt) ? 1 : -1)
 
    return plans
+}
+
+export async function createPlan(plan: PaystackPlan) {
+   //Paystack Will throw for unknown/unexpected paramters
+   const paystackResponse = await createPaystackPlan(plan)
+   // const paystackResponse = { id: 340293, status: true, data: { id: 340293 } }
+   if (paystackResponse.status) {
+      console.log(`Seeding firebase with plan: ${plan.name}`)
+      const ref = _firestore.collection('plans').doc(String(paystackResponse.data.id));
+      plan.id = String(paystackResponse.data.id)
+      const keysToDelete = ['total_subscriptions', 'active_subscriptions', 'total_subscriptions_revenue', 'subscriptions']
+         .forEach(key => delete (paystackResponse.data as any)[key])
+      // await ref.set(paystackResponse.data)
+   }
+
+   return paystackResponse.data
 }

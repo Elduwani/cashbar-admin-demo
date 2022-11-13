@@ -1,17 +1,21 @@
 import FullPageCenterItems from "@components/FullPageCenterItems"
 import PageTitle from "@components/PageTitle"
+import { ActionMenu } from "@components/PopOver"
 import ReactTable from "@components/ReactTable"
 import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
+import { useDialog } from "@contexts/Dialog.context"
 import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber, cx } from "@utils/index"
-import { FiArrowDownLeft } from "react-icons/fi"
+import { FiArrowDownLeft, FiTrash } from "react-icons/fi"
 
 interface Props {
    plan: PaystackPlan
 }
 export default function PlanDetails(props: Props) {
+   const { openDialog, closeDialog } = useDialog()
+
    const { data, isFetching } = useFetch({
       key: [queryKeys.plans, props.plan.id],
       url: `/plans?id=${props.plan.id}`,
@@ -25,6 +29,43 @@ export default function PlanDetails(props: Props) {
          <PageTitle
             title={props.plan.name}
             subtitle={`${formatNumber(props.plan.amount, "$")} ${props.plan.interval}`}
+            utilities={
+               <ActionMenu
+                  menu={
+                     [
+                        {
+                           label: 'Delete',
+                           icon: FiTrash,
+                           action: () => openDialog({
+                              title: 'Delete plan',
+                              message:
+                                 <div>
+                                    <p>This action will delete this plan. This means that:</p>
+                                    <ul className="pl-4 my-4 list-disc space-y-2">
+                                       <li>
+                                          Customers will no longer be able to subscribe to this plan.
+                                       </li>
+                                       <li>
+                                          You will no longer be able to view this plan on your dashboard.
+                                       </li>
+                                    </ul>
+                                    <p>Are you sure you want to continue?</p>
+                                 </div>,
+                              accept: () => null,
+                              close: closeDialog,
+                              buttons: {
+                                 accept: {
+                                    text: 'Yes, delete this plan',
+                                    variant: 'red'
+                                 }
+                              }
+                           }),
+                        },
+                     ]
+                  }
+                  className="border"
+               />
+            }
          />
          <div className={cx(
             "flex flex-col items-center space-y-2 p-6 border",

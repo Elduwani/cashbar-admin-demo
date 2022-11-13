@@ -10,7 +10,7 @@ export interface DialogProps {
    isOpen: boolean
    close(): void
    title?: string
-   message: string
+   message: React.ReactNode
    accept(): void
    decline?(): void
    buttons: {

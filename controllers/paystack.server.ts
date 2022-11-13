@@ -36,8 +36,10 @@ export async function getPaystackPlans() {
 
 type PlanPayload = Pick<PaystackPlan, 'name' | 'amount' | 'description' | 'send_invoices' | 'interval' | 'send_sms'>
 export async function createPaystackPlan(plan: PlanPayload) {
-   const { data } = await axios.post('https://api.paystack.co/plan', plan, config);
-   return data as PaystackResponse<PaystackPlan>;
+   plan.amount = +plan.amount * 100
+   console.log(`Creating Paystack plan: ${plan.name}`)
+   const { data: response }: { data: PaystackResponse<PaystackPlan> } = await axios.post('https://api.paystack.co/plan', plan, config);
+   return response;
 }
 
 /** Transactions **/

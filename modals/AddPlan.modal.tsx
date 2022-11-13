@@ -14,32 +14,24 @@ const intervalOptions = ["daily", "weekly", "monthly"]
 
 export default function AddPlan() {
    const { closeModal } = useModal()
-   const { handleSubmit, register, control, formState: { errors } } = useForm<_Object>()
+   const { handleSubmit, register, control, formState: { errors }, setError } = useForm<_Object>()
 
    const { isLoading, mutate } = useMutate({
       url: "/plans",
-      onSuccessCallback: closeModal,
+      // onSuccessCallback: closeModal,
       refetchKeys: [queryKeys.plans],
    })
 
    const onSubmit = (values: _Object) => {
       // Paystack requires: name, amount,interval, description, invoice_limit, send_invoices, send_sms
-      //send_invoices, interval, send_sms,
-      values.amount = +values.amount * 100 //is in kobos
-
-      const payload = {
-         ...values,
-         amount: parseFloat(values.amount),
-         created_by: {
-            email: 'admin@email.com',
-            role: 'Admin'
-         },
+      if (+values.amount < 100) {
+         return setError('amount',
+            { message: "Amount must be 100 or greater" },
+            { shouldFocus: true }
+         )
       }
-
-      console.log(payload)
-
       if (!isLoading) {
-         // mutate(payload as any)
+         mutate(values as any)
       }
    }
 
