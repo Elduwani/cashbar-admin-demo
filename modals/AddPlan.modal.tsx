@@ -12,12 +12,18 @@ import { useForm } from "react-hook-form";
 
 const intervalOptions = ["daily", "weekly", "monthly"]
 
-export default function AddPlan() {
+interface Props {
+   plan?: Plan
+}
+export default function AddPlan(props: Props) {
    const { closeModal } = useModal()
-   const { handleSubmit, register, control, formState: { errors }, setError } = useForm<_Object>()
+   const { handleSubmit, register, control, formState: { errors }, setError } = useForm<_Object>({
+      defaultValues: props.plan
+   })
 
    const { isLoading, mutate } = useMutate({
       url: "/plans",
+      method: props.plan ? 'put' : 'post',
       // onSuccessCallback: closeModal,
       refetchKeys: [queryKeys.plans],
    })
@@ -38,7 +44,7 @@ export default function AddPlan() {
    return (
       <div className='w-screen max-w-lg p-12 pt-0 space-y-6'>
          <PageTitle
-            title='Create a new plan'
+            title={props.plan?.name ?? 'Create a new plan'}
             utilities={isLoading && <Spinner />}
          />
          <form
@@ -48,7 +54,7 @@ export default function AddPlan() {
          >
             <InputWithLabel
                name="name"
-               placeholder='Retirement plan'
+               placeholder={props.plan?.name ?? 'Retirement plan'}
                register={register}
                errors={errors}
                required
@@ -56,35 +62,46 @@ export default function AddPlan() {
             <InputWithLabel
                name="amount"
                pattern='numeric'
-               placeholder='2,500'
+               placeholder={props.plan?.amount?.toString() ?? '2,500'}
                register={register}
                errors={errors}
                required
             />
-            <Select
-               control={control}
-               name="interval"
-               label="interval"
-               options={toSelectOptions(intervalOptions)}
-               register={register}
-               errors={errors}
-               required
-            />
+            {
+               props.plan &&
+               <p className='text-sm text-slate-500'>
+                  This change will only apply to new subscribers. Existing subscribers will maintain their existing plan details.
+               </p>
+            }
+            {
+               //interval cannot be changed if plan is in use
+               !props.plan &&
+               <Select
+                  control={control}
+                  name="interval"
+                  label="interval"
+                  options={toSelectOptions(intervalOptions)}
+                  register={register}
+                  errors={errors}
+                  required
+               />
+            }
             <InputWithLabel
                name="description"
                register={register}
+               placeholder={props.plan?.description}
             />
             <SwitchInput
                control={control}
                name="send_invoices"
                label="send invoices"
-               state={true}
+               state={!!props.plan?.send_invoices}
             />
             <SwitchInput
                control={control}
                name="send_sms"
                label="send sms"
-               state={false}
+               state={!!props.plan?.send_sms}
             />
             <div className="grid grid-cols-2 gap-4 pt-4">
                <Button

@@ -42,6 +42,23 @@ export async function createPaystackPlan(plan: PlanPayload) {
    return response;
 }
 
+export async function updatePaystackPlan(plan: PlanPayload, id: string) {
+   type K = keyof PlanPayload
+
+   plan.amount = +plan.amount * 100
+   const allowList: K[] = ['name', 'amount', 'description', 'send_invoices', 'send_sms']
+
+   for (const key in plan) {
+      if (!allowList.includes(key as K)) {
+         delete plan[key as K]
+      }
+   }
+
+   console.log(`Updating Paystack plan: ${plan.name}`)
+   const response: { data: PaystackResponse<PaystackPlan> } = await axios.put(`https://api.paystack.co/plan/${id}`, plan, config);
+   return response.data.status;
+}
+
 /** Transactions **/
 export async function getPaystackTransactions() {
    /**

@@ -1,4 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
+import { cx } from '@utils/index'
 import { Fragment } from 'react'
 import { IconType } from 'react-icons'
 import { FiMoreVertical } from 'react-icons/fi'
@@ -70,10 +71,10 @@ export function ActionMenu({ menu, className }: ActionMenuProps) {
                      <li
                         key={label}
                         onClick={action}
-                        className={`
-                                    px-4 py-3 flex items-center space-x-4 capitalize group
-                                    cursor-pointer select-none hover:bg-blue-600 hover:text-white
-                                `}
+                        className={cx(
+                           'px-4 py-3 flex items-center space-x-4 capitalize group',
+                           'cursor-pointer select-none hover:bg-blue-600 hover:text-white',
+                        )}
                      >
                         {
                            Icon && <Icon className='text-lg text-gray-400 group-hover:text-blue-400' />

@@ -1,4 +1,4 @@
-import { createPlan, getAllPlans, getPlanLiquidations, getPlanSubscriptions } from "@controllers/subscriptions.server";
+import { createPlan, getAllPlans, getPlanLiquidations, getPlanSubscriptions, updatePlan } from "@controllers/subscriptions.server";
 import { zodError } from "@utils/index";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
@@ -33,6 +33,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.send(responseData)
          }
 
+         case "PUT": {
+            const responseData = await updatePlan(req.body)
+            console.log("Updated Plan Response:", responseData)
+            return res.send(responseData)
+         }
+
          default: {
             return res.status(404).json("Invalid request method")
          }
@@ -41,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    } catch (error: any) {
       const message = zodError(error.issues) ?? error.message
       console.log(message)
-      console.log(error)
+      console.log(error?.response?.data)
       return res.status(400).send(message)
    }
 

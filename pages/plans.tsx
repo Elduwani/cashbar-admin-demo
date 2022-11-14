@@ -60,7 +60,7 @@ export default function Plans() {
                            key={plans?.length}
                            columns={columns}
                            data={plans}
-                           exportCSV={"expenses"}
+                           // exportCSV={"expenses"}
                            onClick={onClick}
                            // className={isFetching ? 'pointer-events-none opacity-50' : ''}
                            utilities

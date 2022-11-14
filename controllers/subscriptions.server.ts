@@ -4,7 +4,7 @@ import { _firestore, formatDocumentAmount, getCustomers } from "./firebase.serve
 import { PostLiquidationSchema } from "./schemas.server"
 import { z } from "zod"
 import { addDatesMetaTags } from "./transactions.server"
-import { createPaystackPlan, getPaystackPlans } from "./paystack.server"
+import { createPaystackPlan, getPaystackPlans, updatePaystackPlan } from "./paystack.server"
 
 const collectionName: CollectionName = 'subscriptions'
 
@@ -285,13 +285,27 @@ export async function createPlan(plan: PaystackPlan) {
    const paystackResponse = await createPaystackPlan(plan)
    // const paystackResponse = { id: 340293, status: true, data: { id: 340293 } }
    if (paystackResponse.status) {
+      //TODO: webhooks will handle this event in live mode 
       console.log(`Seeding firebase with plan: ${plan.name}`)
       const ref = _firestore.collection('plans').doc(String(paystackResponse.data.id));
       plan.id = String(paystackResponse.data.id)
       const keysToDelete = ['total_subscriptions', 'active_subscriptions', 'total_subscriptions_revenue', 'subscriptions']
          .forEach(key => delete (paystackResponse.data as any)[key])
-      // await ref.set(paystackResponse.data)
+      await ref.set(paystackResponse.data)
    }
 
    return paystackResponse.data
+}
+
+export async function updatePlan(plan: PaystackPlan) {
+   const { id, ...planDetails } = plan
+   const updated = await updatePaystackPlan(planDetails, id)
+   if (updated) {
+      //TODO: webhooks will handle this event in live mode 
+      console.log(`Updating firebase with plan: ${plan.name}`)
+      const ref = _firestore.collection('plans').doc(String(plan.id));
+      await ref.set(plan, { merge: true })
+   }
+
+   return updated
 }

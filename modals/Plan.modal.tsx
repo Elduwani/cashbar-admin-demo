@@ -5,16 +5,20 @@ import ReactTable from "@components/ReactTable"
 import Spinner from "@components/Spinner"
 import { queryKeys } from "@configs/reactQueryConfigs"
 import { useDialog } from "@contexts/Dialog.context"
+import { useModal } from "@contexts/Modal.context"
 import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber, cx } from "@utils/index"
 import { FiArrowDownLeft, FiTrash } from "react-icons/fi"
+import { HiCursorClick, HiUserAdd } from "react-icons/hi"
+import AddPlan from "./AddPlan.modal"
 
 interface Props {
    plan: PaystackPlan
 }
 export default function PlanDetails(props: Props) {
    const { openDialog, closeDialog } = useDialog()
+   const { openModal } = useModal()
 
    const { data, isFetching } = useFetch({
       key: [queryKeys.plans, props.plan.id],
@@ -33,6 +37,22 @@ export default function PlanDetails(props: Props) {
                <ActionMenu
                   menu={
                      [
+                        {
+                           label: 'Add subscriber',
+                           icon: HiUserAdd,
+                           action: () => openModal({
+                              type: 'modal',
+                              element: <AddPlan plan={props.plan} />,
+                           }),
+                        },
+                        {
+                           label: 'Update plan',
+                           icon: HiCursorClick,
+                           action: () => openModal({
+                              type: 'modal',
+                              element: <AddPlan plan={props.plan} />,
+                           }),
+                        },
                         {
                            label: 'Delete',
                            icon: FiTrash,
