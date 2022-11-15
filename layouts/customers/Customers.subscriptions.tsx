@@ -7,8 +7,10 @@ import { tableRowStatus } from "@hooks/index"
 import { useFetch } from "@utils/fetch"
 import { formatDate, formatNumber } from "@utils/index"
 import { useRouter } from "next/router"
-import { FiCheck, FiX } from "react-icons/fi"
+import { FiCheck, FiPlus, FiX } from "react-icons/fi"
 import SubscriptionHistory from "@modals/SubscriptionHistory.modal"
+import Button from "@components/Button"
+import AddSubscription from "@modals/AddSubscription.modal "
 
 export default function Subscriptions() {
    const router = useRouter()
@@ -44,17 +46,41 @@ export default function Subscriptions() {
       </FullPageCenterItems>
    )
 
+   const activeSubscriptions = subscriptions.filter(sub => sub.status === 'active')
+
    return (
       <div className="">
+
          {
             subscriptions?.length ?
-               <ReactTable
-                  columns={tabelColumns}
-                  data={subscriptions}
-                  rowStyles={rowStyles}
-                  onClick={onClick}
-               />
-               : null
+               <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                     <div className="flex space-x-2 capitalize">
+                        <p className="">{subscriptions.length} subscriptions,</p>
+                        <p className="text-slate-500">{activeSubscriptions.length} active</p>
+                     </div>
+                     <Button
+                        icon={FiPlus}
+                        variant="teal"
+                        shrink
+                        onClick={() => openModal({
+                           element: <AddSubscription customerID={customerID as string} />,
+                           title: '',
+                           type: 'modal'
+                        })}
+                     >add</Button>
+                  </div>
+                  <ReactTable
+                     columns={tabelColumns}
+                     data={subscriptions}
+                     rowStyles={rowStyles}
+                     onClick={onClick}
+                  />
+               </div>
+               :
+               <FullPageCenterItems>
+                  There are no subscriptions yet for this customer
+               </FullPageCenterItems>
          }
       </div>
    )

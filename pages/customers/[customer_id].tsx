@@ -1,8 +1,6 @@
 import Avatar from '@components/Avatar'
-import Button from '@components/Button'
 import TabsList from '@components/TabsList'
 import { queryKeys } from '@configs/reactQueryConfigs'
-import { useModal } from '@contexts/Modal.context'
 import { CustomersLayout } from '@layouts/customers/Customers.layout'
 import Overview from '@layouts/customers/Customers.overview'
 import Subscriptions from '@layouts/customers/Customers.subscriptions'

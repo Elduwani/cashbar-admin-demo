@@ -36,7 +36,6 @@ export async function getCustomerTransactions(customerID: string) {
    return transactions
 }
 
-
 /**
  * This function converts the amount to the base currency (amount * 100).
  * Only pass the actual amount without conversion.
@@ -64,4 +63,20 @@ export function addDatesMetaTags(payload: _Object) {
    if (!payload.updated_at) {
       payload.updated_at = date
    }
+}
+
+export async function getAuthorizationTokens(customerID: string) {
+   const transactions = await getCustomerTransactions(customerID)
+   const tokens = transactions?.reduce((acc: _Object[], trx) => {
+      if (
+         trx.status === "success" && trx.channel === "card" &&
+         'authorization' in trx && trx.authorization.reusable
+      ) {
+         acc.push(trx.authorization)
+      }
+
+      return acc
+   }, [])
+
+   return tokens
 }

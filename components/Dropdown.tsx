@@ -1,5 +1,6 @@
 import { Menu, Transition } from "@headlessui/react";
 import { notifications } from "@utils/dummyData";
+import { cx } from "@utils/index";
 import { IconType } from "react-icons";
 import { FiCornerDownRight } from "react-icons/fi";
 
@@ -46,26 +47,34 @@ export default function Dropdown({ menuList = defaultLinks, ...props }: Props) {
                   >
                      <Menu.Items
                         static
-                        className={`
-                           absolute right-0 mt-2 origin-top-right bg-white border 
-                           border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg 
-                           outline-none ${props.width ?? "w-56"}
-                        `}
+                        className={cx(
+                           "absolute right-0 mt-2 origin-top-right bg-white border",
+                           "border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg",
+                           `outline-none ${props.width ?? "w-56"}`
+                        )}
                      >
                         {props.header}
                         <div className="py-1">
                            {
                               menuList.map(menu => {
-                                 const { label, icon: Icon, onClick, highlightColor = 'bg-blue-600 text-white', borderTop } = menu
+                                 const {
+                                    label,
+                                    icon: Icon,
+                                    onClick,
+                                    highlightColor = 'bg-indigo-600 text-white',
+                                    borderTop
+                                 } = menu
+
                                  return (
                                     <Menu.Item key={label}>
                                        {({ active }) => (
                                           <button
                                              onClick={onClick}
-                                             className={`group flex rounded-md items-center w-full px-2 py-2 text-sm
-                                                     ${active && highlightColor}
-                                                     ${borderTop && 'border-t'}
-                                                 `}
+                                             className={cx(
+                                                'group flex rounded-md items-center w-full px-2 py-2 text-sm',
+                                                `${active && highlightColor}`,
+                                                `${borderTop && 'border-t'}`
+                                             )}
                                           >
                                              <div className="flex items-center space-x-3">
                                                 {Icon && <Icon className="text-lg opacity-70" />}

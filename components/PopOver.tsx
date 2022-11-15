@@ -37,7 +37,7 @@ export default function PopOver({ button, maxWidth, children, className }: Props
                style={{ width: 600, maxWidth }}
                className={`absolute z-40 w-full px-4 mt-3 sm:px-0 max-w-sm ${className}`}
             >
-               <div className="bg-white overflow-hidden shadow-xl ring-1 ring-gray-300 rounded-lg">
+               <div className="bg-white overflow-hidden shadow-xl ring-1 ring-slate-300 rounded-lg">
                   {children}
                </div>
             </Popover.Panel>
@@ -73,11 +73,11 @@ export function ActionMenu({ menu, className }: ActionMenuProps) {
                         onClick={action}
                         className={cx(
                            'px-4 py-3 flex items-center space-x-4 capitalize group',
-                           'cursor-pointer select-none hover:bg-blue-600 hover:text-white',
+                           'cursor-pointer select-none hover:bg-slate-100 hover:text-indigo-600',
                         )}
                      >
                         {
-                           Icon && <Icon className='text-lg text-gray-400 group-hover:text-blue-400' />
+                           Icon && <Icon className='text-lg text-gray-400 group-hover:text-indigo-600' />
                         }
                         <span>{label}</span>
                      </li>

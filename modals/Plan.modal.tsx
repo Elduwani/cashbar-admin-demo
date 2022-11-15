@@ -38,14 +38,6 @@ export default function PlanDetails(props: Props) {
                   menu={
                      [
                         {
-                           label: 'Add subscriber',
-                           icon: HiUserAdd,
-                           action: () => openModal({
-                              type: 'modal',
-                              element: <AddPlan plan={props.plan} />,
-                           }),
-                        },
-                        {
                            label: 'Update plan',
                            icon: HiCursorClick,
                            action: () => openModal({
